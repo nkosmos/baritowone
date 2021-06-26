@@ -320,7 +320,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             // the state depends on the facing of the player sometimes
             ctx.player().rotationYaw = rot.getYaw();
             ctx.player().rotationPitch = rot.getPitch();
-            IBlockState wouldBePlaced = ((ItemBlock) stack.getItem()).getBlock().getStateForPlacement(
+            IBlockState wouldBePlaced = ((ItemBlock) stack.getItem()).getBlock().onBlockPlaced(
                     ctx.world(),
                     result.getBlockPos().offset(result.sideHit),
                     result.sideHit,
@@ -828,7 +828,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 continue;
             }
             // <toxic cloud>
-            result.add(((ItemBlock) stack.getItem()).getBlock().getStateForPlacement(ctx.world(), ctx.playerFeet(), EnumFacing.UP, (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()), ctx.player()));
+            result.add(((ItemBlock) stack.getItem()).getBlock().onBlockPlaced(ctx.world(), ctx.playerFeet(), EnumFacing.UP, (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()), ctx.player()));
             // </toxic cloud>
         }
         return result;

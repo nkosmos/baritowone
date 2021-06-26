@@ -39,7 +39,7 @@ public enum PrimaryPlayerContext implements IPlayerContext, Helper {
 
     @Override
     public EntityPlayerSP player() {
-        return mc.player;
+        return mc.thePlayer;
     }
 
     @Override
@@ -49,7 +49,7 @@ public enum PrimaryPlayerContext implements IPlayerContext, Helper {
 
     @Override
     public World world() {
-        return mc.world;
+        return mc.theWorld;
     }
 
     @Override

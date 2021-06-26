@@ -41,7 +41,7 @@ public class MixinChunkRenderContainer {
             )
     )
     private BlockPos getPosition(RenderChunk renderChunkIn) {
-        if (Baritone.settings().renderCachedChunks.value && !Minecraft.getMinecraft().isSingleplayer() && Minecraft.getMinecraft().world.getChunkFromBlockCoords(renderChunkIn.getPosition()).isEmpty()) {
+        if (Baritone.settings().renderCachedChunks.value && !Minecraft.getMinecraft().isSingleplayer() && Minecraft.getMinecraft().theWorld.getChunkFromBlockCoords(renderChunkIn.getPosition()).isEmpty()) {
             GlStateManager.enableAlpha();
             GlStateManager.enableBlend();
             GL14.glBlendColor(0, 0, 0, Baritone.settings().cachedChunksOpacity.value);

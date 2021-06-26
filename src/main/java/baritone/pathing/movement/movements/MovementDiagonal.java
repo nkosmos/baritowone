@@ -147,11 +147,11 @@ public class MovementDiagonal extends Movement {
             multiplier += (WALK_ONE_OVER_SOUL_SAND_COST - WALK_ONE_BLOCK_COST) / 2;
         }
         Block cuttingOver1 = context.get(x, y - 1, destZ).getBlock();
-        if (cuttingOver1 == Blocks.MAGMA || MovementHelper.isLava(cuttingOver1)) {
+        if (MovementHelper.isLava(cuttingOver1)) {
             return;
         }
         Block cuttingOver2 = context.get(destX, y - 1, z).getBlock();
-        if (cuttingOver2 == Blocks.MAGMA || MovementHelper.isLava(cuttingOver2)) {
+        if (MovementHelper.isLava(cuttingOver2)) {
             return;
         }
         Block startIn = context.getBlock(x, y, z);

@@ -118,7 +118,7 @@ public class ContainerMemory implements IContainerMemory {
         int count = in.readInt();
         List<ItemStack> result = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            result.add(in.readItemStack());
+            result.add(in.readItemStackFromBuffer());
         }
         return result;
     }
@@ -134,7 +134,7 @@ public class ContainerMemory implements IContainerMemory {
         PacketBuffer out = out2; // avoid reassigning an argument LOL
         out = new PacketBuffer(out.writeInt(write.size()));
         for (ItemStack stack : write) {
-            out = out.writeItemStack(stack);
+            out = out.writeItemStackToBuffer(stack);
         }
         return out;
     }

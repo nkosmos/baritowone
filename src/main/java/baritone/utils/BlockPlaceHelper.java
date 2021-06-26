@@ -20,7 +20,6 @@ package baritone.utils;
 import baritone.Baritone;
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
-import baritone.api.utils.accessor.IItemStack;
 import baritonex.utils.XHelper;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;

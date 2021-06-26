@@ -190,8 +190,8 @@ public final class RotationUtils {
             return possibleRotation;
         }
 
-        IBlockState state = entity.world.getBlockState(pos);
-        AxisAlignedBB aabb = state.getBoundingBox(entity.world, pos);
+        IBlockState state = entity.worldObj.getBlockState(pos);
+        AxisAlignedBB aabb = state.getBoundingBox(entity.worldObj, pos);
         for (Vec3d sideOffset : BLOCK_SIDE_MULTIPLIERS) {
             double xDiff = aabb.minX * sideOffset.xCoord + aabb.maxX * (1 - sideOffset.xCoord);
             double yDiff = aabb.minY * sideOffset.yCoord + aabb.maxY * (1 - sideOffset.yCoord);
@@ -224,7 +224,7 @@ public final class RotationUtils {
             if (result.getBlockPos().equals(pos)) {
                 return Optional.of(rotation);
             }
-            if (entity.world.getBlockState(pos).getBlock() instanceof BlockFire && result.getBlockPos().equals(pos.down())) {
+            if (entity.worldObj.getBlockState(pos).getBlock() instanceof BlockFire && result.getBlockPos().equals(pos.down())) {
                 return Optional.of(rotation);
             }
         }
@@ -241,6 +241,6 @@ public final class RotationUtils {
      * @return The optional rotation
      */
     public static Optional<Rotation> reachableCenter(Entity entity, BlockPos pos, double blockReachDistance, boolean wouldSneak) {
-        return reachableOffset(entity, pos, VecUtils.calculateBlockCenter(entity.world, pos), blockReachDistance, wouldSneak);
+        return reachableOffset(entity, pos, VecUtils.calculateBlockCenter(entity.worldObj, pos), blockReachDistance, wouldSneak);
     }
 }

@@ -267,7 +267,6 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean avoidWalkingInto(Block block) {
         return block instanceof BlockLiquid
-                || block == Blocks.MAGMA
                 || block == Blocks.CACTUS
                 || block == Blocks.FIRE
                 || block == Blocks.END_PORTAL
@@ -288,7 +287,7 @@ public interface MovementHelper extends ActionCosts, Helper {
      */
     static boolean canWalkOn(BlockStateInterface bsi, int x, int y, int z, IBlockState state) {
         Block block = state.getBlock();
-        if (block == Blocks.AIR || block == Blocks.MAGMA) {
+        if (block == Blocks.AIR) {
             // early return for most common case (air)
             // plus magma, which is a normal cube but it hurts you
             return false;

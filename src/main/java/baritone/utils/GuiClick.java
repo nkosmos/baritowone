@@ -69,7 +69,7 @@ public class GuiClick extends GuiScreen {
         Vec3d far = toWorld(mx, my, 1); // "Use 0.945 that's what stack overflow says" - leijurv
         if (near != null && far != null) {
             Vec3d viewerPos = new Vec3d(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);
-            RayTraceResult result = mc.world.rayTraceBlocks(near.add(viewerPos), far.add(viewerPos), false, false, true);
+            RayTraceResult result = mc.theWorld.rayTraceBlocks(near.add(viewerPos), far.add(viewerPos), false, false, true);
             if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK) {
                 currentMouseOver = result.getBlockPos();
             }

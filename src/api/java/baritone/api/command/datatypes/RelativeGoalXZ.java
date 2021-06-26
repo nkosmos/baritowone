@@ -36,8 +36,8 @@ public enum RelativeGoalXZ implements IDatatypePost<GoalXZ, BetterBlockPos> {
 
         final IArgConsumer consumer = ctx.getConsumer();
         return new GoalXZ(
-                MathHelper.floor(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.x)),
-                MathHelper.floor(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.z))
+                MathHelper.floor_double(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.x)),
+                MathHelper.floor_double(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.z))
         );
     }
 

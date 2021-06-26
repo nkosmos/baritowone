@@ -36,9 +36,9 @@ public enum RelativeGoalBlock implements IDatatypePost<GoalBlock, BetterBlockPos
 
         final IArgConsumer consumer = ctx.getConsumer();
         return new GoalBlock(
-                MathHelper.floor(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.x)),
-                MathHelper.floor(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.y)),
-                MathHelper.floor(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.z))
+                MathHelper.floor_double(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.x)),
+                MathHelper.floor_double(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.y)),
+                MathHelper.floor_double(consumer.getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.z))
         );
     }
 

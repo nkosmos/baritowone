@@ -83,4 +83,9 @@ public final class BlockStateInterfaceAccessWrapper implements IBlockAccess {
 	public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
 		return getBlockState(pos).isSideSolid(this, pos, side);
 	}
+
+	@Override
+	public boolean extendedLevelsInChunkCache() {
+		return false;
+	}
 }

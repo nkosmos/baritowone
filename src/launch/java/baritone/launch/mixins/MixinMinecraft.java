@@ -50,12 +50,12 @@ import java.util.function.BiFunction;
 public class MixinMinecraft {
 
     @Shadow
-    public EntityPlayerSP player;
+    public EntityPlayerSP thePlayer;
     @Shadow
-    public WorldClient world;
+    public WorldClient theWorld;
 
     @Inject(
-            method = "init",
+            method = "startGame",
             at = @At("RETURN")
     )
     private void postInit(CallbackInfo ci) {
@@ -93,7 +93,7 @@ public class MixinMinecraft {
     )
     private void preLoadWorld(WorldClient world, String loadingMessage, CallbackInfo ci) {
         // If we're unloading the world but one doesn't exist, ignore it
-        if (this.world == null && world == null) {
+        if (this.theWorld == null && world == null) {
             return;
         }
 
@@ -133,7 +133,7 @@ public class MixinMinecraft {
     )
     private boolean isAllowUserInput(GuiScreen screen) {
         // allow user input is only the primary baritone
-        return (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && player != null) || screen.allowUserInput;
+        return (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && thePlayer != null) || screen.allowUserInput;
     }
 
     @Inject(

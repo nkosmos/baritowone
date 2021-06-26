@@ -51,6 +51,6 @@ public class MixinChunkProviderServer implements IChunkProviderServer {
 
 	@Override
 	public boolean isChunkGeneratedAt(int x, int z) {
-		return this.id2ChunkMap.containsKey(ChunkPos.asLong(x, z)) || ((IAnvilChunkLoader)this.chunkLoader).isChunkGeneratedAt(x, z);
+		return this.id2ChunkMap.containsKey(ChunkPos.chunkXZ2Int(x, z)) || ((IAnvilChunkLoader)this.chunkLoader).isChunkGeneratedAt(x, z);
 	}
 }

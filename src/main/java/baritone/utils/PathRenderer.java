@@ -68,7 +68,7 @@ public final class PathRenderer implements IRenderer {
 
         Entity renderView = Helper.mc.getRenderViewEntity();
 
-        if (renderView.world != BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world()) {
+        if (renderView.worldObj != BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world()) {
             System.out.println("I have no idea what's going on");
             System.out.println("The primary baritone is in a different world than the render view entity");
             System.out.println("Not rendering the path");
@@ -189,9 +189,9 @@ public final class PathRenderer implements IRenderer {
             AxisAlignedBB toDraw;
 
             if (state.getBlock().equals(Blocks.AIR)) {
-                toDraw = Blocks.DIRT.getDefaultState().getSelectedBoundingBox(player.world, pos);
+                toDraw = Blocks.DIRT.getDefaultState().getSelectedBoundingBox(player.worldObj, pos);
             } else {
-                toDraw = state.getSelectedBoundingBox(player.world, pos);
+                toDraw = state.getSelectedBoundingBox(player.worldObj, pos);
             }
 
             IRenderer.drawAABB(toDraw, .002D);
@@ -251,7 +251,7 @@ public final class PathRenderer implements IRenderer {
                         goalPos.getZ() - renderPosZ,
                         settings.renderGoalAnimated.value ? partialTicks : 0,
                         1.0,
-                        settings.renderGoalAnimated.value ? player.world.getTotalWorldTime() : 0,
+                        settings.renderGoalAnimated.value ? player.worldObj.getTotalWorldTime() : 0,
                         0,
                         256,
                         color.getColorComponents(null)

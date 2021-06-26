@@ -56,7 +56,7 @@ public final class RayTraceUtils {
                 direction.yCoord * blockReachDistance,
                 direction.zCoord * blockReachDistance
         );
-        return entity.world.rayTraceBlocks(start, end, false, false, true);
+        return entity.worldObj.rayTraceBlocks(start, end, false, false, true);
     }
 
     public static Vec3d inferSneakingEyePosition(Entity entity) {

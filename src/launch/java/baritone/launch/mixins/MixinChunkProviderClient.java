@@ -40,6 +40,6 @@ public class MixinChunkProviderClient implements IChunkProviderClient {
 
 	@Override
 	public boolean isChunkGeneratedAt(int x, int z) {
-		return this.chunkMapping.containsKey(ChunkPos.asLong(x, z));
+		return this.chunkMapping.containsKey(ChunkPos.chunkXZ2Int(x, z));
 	}
 }

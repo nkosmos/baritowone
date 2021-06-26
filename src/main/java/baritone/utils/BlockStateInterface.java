@@ -80,7 +80,7 @@ public class BlockStateInterface {
     }
 
     public boolean worldContainsLoadedChunk(int blockX, int blockZ) {
-        return loadedChunks.containsKey(ChunkPos.asLong(blockX >> 4, blockZ >> 4));
+        return loadedChunks.containsKey(ChunkPos.chunkXZ2Int(blockX >> 4, blockZ >> 4));
     }
 
     public static Block getBlock(IPlayerContext ctx, BlockPos pos) { // won't be called from the pathing thread because the pathing thread doesn't make a single blockpos pog
@@ -115,7 +115,7 @@ public class BlockStateInterface {
             if (cached != null && cached.xPosition == x >> 4 && cached.zPosition == z >> 4) {
                 return cached.getBlockState(x, y, z);
             }
-            Chunk chunk = loadedChunks.get(ChunkPos.asLong(x >> 4, z >> 4));
+            Chunk chunk = loadedChunks.get(ChunkPos.chunkXZ2Int(x >> 4, z >> 4));
 
             if (chunk != null && chunk.isLoaded()) {
                 prev = chunk;
@@ -148,7 +148,7 @@ public class BlockStateInterface {
         if (prevChunk != null && prevChunk.xPosition == x >> 4 && prevChunk.zPosition == z >> 4) {
             return true;
         }
-        prevChunk = loadedChunks.get(ChunkPos.asLong(x >> 4, z >> 4));
+        prevChunk = loadedChunks.get(ChunkPos.chunkXZ2Int(x >> 4, z >> 4));
         if (prevChunk != null && prevChunk.isLoaded()) {
             prev = prevChunk;
             return true;

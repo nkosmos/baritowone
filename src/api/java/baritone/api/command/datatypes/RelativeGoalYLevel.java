@@ -35,7 +35,7 @@ public enum RelativeGoalYLevel implements IDatatypePost<GoalYLevel, BetterBlockP
         }
 
         return new GoalYLevel(
-                MathHelper.floor(ctx.getConsumer().getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.y))
+                MathHelper.floor_double(ctx.getConsumer().getDatatypePost(RelativeCoordinate.INSTANCE, (double) origin.y))
         );
     }
 

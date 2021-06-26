@@ -72,7 +72,7 @@ public class SubstituteSchematic extends AbstractSchematic {
         if (blockStateCache.containsKey(state) && blockStateCache.get(state).containsKey(block)) {
             return blockStateCache.get(state).get(block);
         }
-        Collection<IProperty<?>> properties = state.getPropertyKeys();
+        Collection<IProperty<?>> properties = state.getPropertyNames();
         IBlockState newState = block.getDefaultState();
         for (IProperty<?> property : properties) {
             try {
