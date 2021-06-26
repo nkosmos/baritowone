@@ -38,6 +38,7 @@ import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.ToolSet;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockEndPortal;
@@ -51,6 +52,7 @@ import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.BlockTrapDoor;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -85,11 +87,12 @@ public interface MovementHelper extends ActionCosts, Helper {
         // we assume that it's ALWAYS okay to break the block thats ABOVE liquid
         IBlockState state = bsi.get0(x, y, z);
         Block block = state.getBlock();
+        Material material = block.getMaterial();
         if (!directlyAbove // it is fine to mine a block that has a falling block directly above, this (the cost of breaking the stacked fallings) is included in cost calculations
                 // therefore if directlyAbove is true, we will actually ignore if this is falling
                 && block instanceof BlockFalling // obviously, this check is only valid for falling blocks
                 && Baritone.settings().avoidUpdatingFallingBlocks.value // and if the setting is enabled
-                && BlockFalling.canFallThrough(bsi.get0(x, y - 1, z))) { // and if it would fall (i.e. it's unsupported)
+                && (block == Blocks.fire || material == Material.air || material == Material.water || material == Material.lava)) { // and if it would fall (i.e. it's unsupported)
             return true; // dont break a block that is adjacent to unsupported gravel because it can cause really weird stuff
         }
         return block instanceof BlockLiquid;
@@ -269,7 +272,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return false;
         }
 
-        EnumFacing.Axis facing = blockState.getValue(BlockHorizontal.FACING).getAxis();
+        EnumFacing.Axis facing = blockState.getValue(BlockDirectional.FACING).getAxis();
         boolean open = blockState.getValue(propertyOpen);
 
         EnumFacing.Axis playerFacing;

@@ -22,7 +22,6 @@ import baritone.api.IBaritone;
 import baritone.api.event.events.TabCompleteEvent;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.util.TabCompleter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

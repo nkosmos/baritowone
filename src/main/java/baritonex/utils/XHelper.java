@@ -1,21 +1,101 @@
 package baritonex.utils;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.lwjgl.opengl.GL11;
 
+import com.google.common.base.Optional;
+
 import baritone.api.utils.accessor.IItemStack;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.MathHelper;
 
 public class XHelper {
+	
+	// PROPERTY
+	
+	private static Map<PropertyEnum, Map<String, Object>> nameToValueCache = new HashMap<>();
+	
+	public static Optional parseValue(IProperty property, String string){
+		if(property instanceof PropertyBool) {
+			return Optional.of(Boolean.parseBoolean(string));
+		}
+		if(property instanceof PropertyInteger) {
+			Collection<Integer> allowed = property.getAllowedValues();
+			try {
+				Integer val = Integer.valueOf(string);
+				return allowed.contains(val) ? Optional.of(val) : Optional.absent();
+			} catch(NumberFormatException e) {
+				return Optional.absent();
+			}
+		}
+		if(property instanceof PropertyEnum) {
+			PropertyEnum p = (PropertyEnum)property;
+			if(!nameToValueCache.containsKey(p)) {
+				Map<String, Object> map = new HashMap<>();
+				for(Object o : p.getAllowedValues()) {
+					if(o instanceof IStringSerializable) {
+						map.put(((IStringSerializable)o).getName(), o);
+					}
+				}
+				nameToValueCache.put(p, map);
+			}
+			return Optional.fromNullable(nameToValueCache.get(p).get(string));
+		}
+		
+		return Optional.absent();
+	}
+	
+	// INVENTORY
+	
+	/**
+	 * thx minecraft
+	 * @param stack1
+	 * @param stack2
+	 * @return boolean
+	 */
+	private static boolean stackEqualExact(ItemStack stack1, ItemStack stack2) {
+        return stack1.getItem() == stack2.getItem() && (!stack1.getHasSubtypes() || stack1.getMetadata() == stack2.getMetadata()) && ItemStack.areItemStackTagsEqual(stack1, stack2);
+    }
+	
+	/**
+	 * thx minecraft (slightly modified)
+	 * @param stack
+	 * @return int
+	 */
+    public static int getSlotFor(EntityPlayerSP player, ItemStack stack) {
+        for (int i = 0; i < player.inventory.mainInventory.length; ++i) {
+            if (player.inventory.mainInventory[i] != null && stackEqualExact(stack, player.inventory.mainInventory[i])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public static boolean isHotbar(int index) {
+        return index >= 0 && index < 9;
+    }
 
+    // ITEMSTACK
+    
 	public static boolean isEmpty(ItemStack itemStack) {
 		return itemStack == null ? true : ((IItemStack) (Object) itemStack).isEmpty();
 	}
 
+	// RENDERER
+	
 	public static void renderBeamSegment(double x, double y, double z, double partialTicks, double textureScale,
 			double totalWorldTime, int yOffset, int height, float[] colors, double beamRadius, double glowRadius) {
 		int i = yOffset + height;

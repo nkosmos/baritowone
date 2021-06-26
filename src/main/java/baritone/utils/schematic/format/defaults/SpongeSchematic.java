@@ -17,19 +17,20 @@
 
 package baritone.utils.schematic.format.defaults;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import baritone.utils.schematic.StaticSchematic;
 import baritone.utils.type.VarInt;
+import baritonex.utils.XHelper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Brady
@@ -145,7 +146,7 @@ public final class SpongeSchematic extends StaticSchematic {
         }
 
         private static <T extends Comparable<T>> IBlockState setPropertyValue(IBlockState state, IProperty<T> property, String value) {
-            com.google.common.base.Optional<T> parsed = property.parseValue(value);
+            com.google.common.base.Optional<T> parsed = XHelper.parseValue(property, value);
             if (parsed.isPresent()) {
                 return state.withProperty(property, parsed.get());
             } else {

@@ -34,10 +34,10 @@ import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.pathing.MutableMoveResult;
+import baritonex.utils.XHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -94,12 +94,12 @@ public class MovementFall extends Movement {
         Block destBlock = ctx.world().getBlockState(dest).getBlock();
         boolean isWater = destBlock == Blocks.water || destBlock == Blocks.flowing_water;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
-            if (!InventoryPlayer.isHotbar(ctx.player().inventory.getSlotFor(STACK_BUCKET_WATER)) || ctx.world().provider.doesWaterVaporize()) {
+            if (!XHelper.isHotbar(XHelper.getSlotFor(ctx.player(), STACK_BUCKET_WATER)) || ctx.world().provider.doesWaterVaporize()) {
                 return state.setStatus(MovementStatus.UNREACHABLE);
             }
 
             if (ctx.player().posY - dest.getY() < ctx.playerController().getBlockReachDistance() && !ctx.player().onGround) {
-                ctx.player().inventory.currentItem = ctx.player().inventory.getSlotFor(STACK_BUCKET_WATER);
+                ctx.player().inventory.currentItem = XHelper.getSlotFor(ctx.player(), STACK_BUCKET_WATER);
 
                 targetRotation = new Rotation(toDest.getYaw(), 90.0F);
 
@@ -115,8 +115,8 @@ public class MovementFall extends Movement {
         }
         if (playerFeet.equals(dest) && (ctx.player().posY - playerFeet.getY() < 0.094 || isWater)) { // 0.094 because lilypads
             if (isWater) { // only match water, not flowing water (which we cannot pick up with a bucket)
-                if (InventoryPlayer.isHotbar(ctx.player().inventory.getSlotFor(STACK_BUCKET_EMPTY))) {
-                    ctx.player().inventory.currentItem = ctx.player().inventory.getSlotFor(STACK_BUCKET_EMPTY);
+                if (XHelper.isHotbar(XHelper.getSlotFor(ctx.player(), STACK_BUCKET_EMPTY))) {
+                    ctx.player().inventory.currentItem = XHelper.getSlotFor(ctx.player(), STACK_BUCKET_EMPTY);
                     if (ctx.player().motionY >= 0) {
                         return state.setInput(Input.CLICK_RIGHT, true);
                     } else {

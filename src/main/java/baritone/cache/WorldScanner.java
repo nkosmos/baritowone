@@ -34,6 +34,7 @@ import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
@@ -75,8 +76,8 @@ public enum WorldScanner implements IWorldScanner {
                     foundChunks = true;
                     int chunkX = xoff + playerChunkX;
                     int chunkZ = zoff + playerChunkZ;
-                    Chunk chunk = chunkProvider.getLoadedChunk(chunkX, chunkZ);
-                    if (chunk == null) {
+                    Chunk chunk = chunkProvider.provideChunk(chunkX, chunkZ);
+                    if (chunk == null || chunk instanceof EmptyChunk) {
                         continue;
                     }
                     allUnloaded = false;
@@ -102,7 +103,7 @@ public enum WorldScanner implements IWorldScanner {
         }
 
         ChunkProviderClient chunkProvider = (ChunkProviderClient) ctx.world().getChunkProvider();
-        Chunk chunk = chunkProvider.getLoadedChunk(pos.chunkXPos, pos.chunkZPos);
+        Chunk chunk = chunkProvider.provideChunk(pos.chunkXPos, pos.chunkZPos);
         int playerY = ctx.playerFeet().getY();
 
         if (chunk == null || chunk.isEmpty()) {
@@ -137,7 +138,7 @@ public enum WorldScanner implements IWorldScanner {
         int queued = 0;
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
-                Chunk chunk = chunkProvider.getLoadedChunk(x, z);
+                Chunk chunk = chunkProvider.provideChunk(x, z);
 
                 if (chunk != null && !chunk.isEmpty()) {
                     queued++;
