@@ -89,7 +89,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         if (block == Blocks.AIR) { // early return for most common case
             return true;
         }
-        if (block == Blocks.FIRE || block == Blocks.TRIPWIRE || block == Blocks.WEB || block == Blocks.END_PORTAL || block == Blocks.COCOA || block instanceof BlockSkull || block instanceof BlockTrapDoor || block == Blocks.END_ROD) {
+        if (block == Blocks.FIRE || block == Blocks.TRIPWIRE || block == Blocks.web || block == Blocks.END_PORTAL || block == Blocks.COCOA || block instanceof BlockSkull || block instanceof BlockTrapDoor || block == Blocks.END_ROD) {
             return false;
         }
         if (Baritone.settings().blocksToAvoid.value.contains(block)) {
@@ -131,7 +131,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             if (up.getBlock() instanceof BlockLiquid || up.getBlock() instanceof BlockLilyPad) {
                 return false;
             }
-            return block == Blocks.WATER || block == Blocks.FLOWING_WATER;
+            return block == Blocks.water || block == Blocks.FLOWING_WATER;
         }
 
         return block.isPassable(bsi.access, bsi.isPassableBlockPos.setPos(x, y, z));
@@ -167,7 +167,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         // exceptions - blocks that are isPassable true, but we can't actually jump through
         if (block == Blocks.FIRE
                 || block == Blocks.TRIPWIRE
-                || block == Blocks.WEB
+                || block == Blocks.web
                 || block == Blocks.VINE
                 || block == Blocks.LADDER
                 || block == Blocks.COCOA
@@ -270,7 +270,7 @@ public interface MovementHelper extends ActionCosts, Helper {
                 || block == Blocks.CACTUS
                 || block == Blocks.FIRE
                 || block == Blocks.END_PORTAL
-                || block == Blocks.WEB;
+                || block == Blocks.web;
     }
 
     /**
@@ -308,7 +308,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             // since this is called literally millions of times per second, the benefit of not allocating millions of useless "pos.up()"
             // BlockPos s that we'd just garbage collect immediately is actually noticeable. I don't even think its a decrease in readability
             Block up = bsi.get0(x, y + 1, z).getBlock();
-            if (up == Blocks.WATERLILY || up == Blocks.CARPET) {
+            if (up == Blocks.waterlily || up == Blocks.CARPET) {
                 return true;
             }
             if (isFlowing(x, y, z, state, bsi) || block == Blocks.FLOWING_WATER) {
@@ -453,7 +453,7 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @return Whether or not the block is water
      */
     static boolean isWater(Block b) {
-        return b == Blocks.FLOWING_WATER || b == Blocks.WATER;
+        return b == Blocks.FLOWING_WATER || b == Blocks.water;
     }
 
     /**
@@ -567,6 +567,6 @@ public interface MovementHelper extends ActionCosts, Helper {
         return b == Blocks.AIR ||
                 b == Blocks.FLOWING_LAVA ||
                 b == Blocks.FLOWING_WATER ||
-                b == Blocks.WATER;
+                b == Blocks.water;
     }
 }

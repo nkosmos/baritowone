@@ -824,7 +824,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         for (int i = 0; i < size; i++) {
             ItemStack stack = ctx.player().inventory.mainInventory[i];
             if (XHelper.isEmpty(stack) || !(stack.getItem() instanceof ItemBlock)) {
-                result.add(Blocks.AIR.getDefaultState());
+                result.add(Blocks.air.getDefaultState());
                 continue;
             }
             // <toxic cloud>

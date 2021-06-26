@@ -42,7 +42,7 @@ import static baritone.api.pathing.movement.ActionCosts.COST_INF;
  */
 public class CalculationContext {
 
-    private static final ItemStack STACK_BUCKET_WATER = new ItemStack(Items.WATER_BUCKET);
+    private static final ItemStack STACK_BUCKET_WATER = new ItemStack(Items.water_bucket);
 
     public final boolean safeForThreadedUse;
     public final IBaritone baritone;

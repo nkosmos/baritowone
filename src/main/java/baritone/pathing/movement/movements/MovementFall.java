@@ -48,7 +48,7 @@ import java.util.Set;
 
 public class MovementFall extends Movement {
 
-    private static final ItemStack STACK_BUCKET_WATER = new ItemStack(Items.WATER_BUCKET);
+    private static final ItemStack STACK_BUCKET_WATER = new ItemStack(Items.water_bucket);
     private static final ItemStack STACK_BUCKET_EMPTY = new ItemStack(Items.BUCKET);
 
     public MovementFall(IBaritone baritone, BetterBlockPos src, BetterBlockPos dest) {
@@ -92,7 +92,7 @@ public class MovementFall extends Movement {
         Rotation toDest = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations());
         Rotation targetRotation = null;
         Block destBlock = ctx.world().getBlockState(dest).getBlock();
-        boolean isWater = destBlock == Blocks.WATER || destBlock == Blocks.FLOWING_WATER;
+        boolean isWater = destBlock == Blocks.water || destBlock == Blocks.FLOWING_WATER;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
             if (!InventoryPlayer.isHotbar(ctx.player().inventory.getSlotFor(STACK_BUCKET_WATER)) || ctx.world().provider.doesWaterVaporize()) {
                 return state.setStatus(MovementStatus.UNREACHABLE);

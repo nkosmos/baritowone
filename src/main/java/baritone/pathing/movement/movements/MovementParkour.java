@@ -78,7 +78,7 @@ public class MovementParkour extends Movement {
             // second most common case -- we could just traverse not parkour
             return;
         }
-        if (MovementHelper.avoidWalkingInto(adj.getBlock()) && adj.getBlock() != Blocks.WATER && adj.getBlock() != Blocks.FLOWING_WATER) { // magma sucks
+        if (MovementHelper.avoidWalkingInto(adj.getBlock()) && adj.getBlock() != Blocks.water && adj.getBlock() != Blocks.flowing_water) { // magma sucks
             return;
         }
         if (!MovementHelper.fullyPassable(context, x + xDiff, y + 1, z + zDiff)) {
@@ -91,11 +91,11 @@ public class MovementParkour extends Movement {
             return;
         }
         IBlockState standingOn = context.get(x, y - 1, z);
-        if (standingOn.getBlock() == Blocks.VINE || standingOn.getBlock() == Blocks.LADDER || standingOn.getBlock() instanceof BlockStairs || MovementHelper.isBottomSlab(standingOn) || standingOn.getBlock() instanceof BlockLiquid) {
+        if (standingOn.getBlock() == Blocks.vine || standingOn.getBlock() == Blocks.ladder || standingOn.getBlock() instanceof BlockStairs || MovementHelper.isBottomSlab(standingOn) || standingOn.getBlock() instanceof BlockLiquid) {
             return;
         }
         int maxJump;
-        if (standingOn.getBlock() == Blocks.SOUL_SAND) {
+        if (standingOn.getBlock() == Blocks.soul_sand) {
             maxJump = 2; // 1 block gap
         } else {
             if (context.canSprint) {

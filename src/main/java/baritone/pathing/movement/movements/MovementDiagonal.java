@@ -136,7 +136,7 @@ public class MovementDiagonal extends Movement {
         // For either possible soul sand, that affects half of our walking
         if (destWalkOn.getBlock() == Blocks.SOUL_SAND) {
             multiplier += (WALK_ONE_OVER_SOUL_SAND_COST - WALK_ONE_BLOCK_COST) / 2;
-        } else if (destWalkOn.getBlock() == Blocks.WATER) {
+        } else if (destWalkOn.getBlock() == Blocks.water) {
             multiplier += context.walkOnWaterOnePenalty * SQRT_2;
         }
         Block fromDown = context.get(x, y - 1, z).getBlock();
@@ -204,7 +204,7 @@ public class MovementDiagonal extends Movement {
             return;
         }
         IBlockState pb3 = context.get(destX, y + 1, z);
-        if (optionA == 0 && ((MovementHelper.avoidWalkingInto(pb2.getBlock()) && pb2.getBlock() != Blocks.WATER) || MovementHelper.avoidWalkingInto(pb3.getBlock()))) {
+        if (optionA == 0 && ((MovementHelper.avoidWalkingInto(pb2.getBlock()) && pb2.getBlock() != Blocks.water) || MovementHelper.avoidWalkingInto(pb3.getBlock()))) {
             // at this point we're done calculating optionA, so we can check if it's actually possible to edge around in that direction
             return;
         }
@@ -213,7 +213,7 @@ public class MovementDiagonal extends Movement {
             // and finally, if the cost is nonzero for both ways to approach this diagonal, it's not possible
             return;
         }
-        if (optionB == 0 && ((MovementHelper.avoidWalkingInto(pb0.getBlock()) && pb0.getBlock() != Blocks.WATER) || MovementHelper.avoidWalkingInto(pb1.getBlock()))) {
+        if (optionB == 0 && ((MovementHelper.avoidWalkingInto(pb0.getBlock()) && pb0.getBlock() != Blocks.water) || MovementHelper.avoidWalkingInto(pb1.getBlock()))) {
             // and now that option B is fully calculated, see if we can edge around that way
             return;
         }

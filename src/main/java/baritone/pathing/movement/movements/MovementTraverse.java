@@ -17,6 +17,11 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.Optional;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
@@ -30,15 +35,16 @@ import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
-import com.google.common.collect.ImmutableSet;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.math.Vec3d;
-
-import java.util.Optional;
-import java.util.Set;
 
 public class MovementTraverse extends Movement {
 
@@ -260,7 +266,7 @@ public class MovementTraverse extends Movement {
             IBlockState destDown = BlockStateInterface.get(ctx, dest.down());
             BlockPos against = positionsToBreak[0];
             if (feet.getY() != dest.getY() && ladder && (destDown.getBlock() == Blocks.VINE || destDown.getBlock() == Blocks.LADDER)) {
-                against = destDown.getBlock() == Blocks.VINE ? MovementPillar.getAgainst(new CalculationContext(baritone), dest.down()) : dest.offset(destDown.getValue(BlockLadder.FACING).getOpposite());
+                against = destDown.getBlock() == Blocks.vine ? MovementPillar.getAgainst(new CalculationContext(baritone), dest.down()) : dest.offset(destDown.getValue(BlockLadder.FACING).getOpposite());
                 if (against == null) {
                     logDirect("Unable to climb vines. Consider disabling allowVines.");
                     return state.setStatus(MovementStatus.UNREACHABLE);
@@ -271,7 +277,7 @@ public class MovementTraverse extends Movement {
         } else {
             wasTheBridgeBlockAlwaysThere = false;
             Block standingOn = BlockStateInterface.get(ctx, feet.down()).getBlock();
-            if (standingOn.equals(Blocks.SOUL_SAND) || standingOn instanceof BlockSlab) { // see issue #118
+            if (standingOn.equals(Blocks.soul_sand) || standingOn instanceof BlockSlab) { // see issue #118
                 double dist = Math.max(Math.abs(dest.getX() + 0.5 - ctx.player().posX), Math.abs(dest.getZ() + 0.5 - ctx.player().posZ));
                 if (dist < 0.85) { // 0.5 + 0.3 + epsilon
                     MovementHelper.moveTowards(ctx, state, dest);
@@ -354,7 +360,7 @@ public class MovementTraverse extends Movement {
     protected boolean prepared(MovementState state) {
         if (ctx.playerFeet().equals(src) || ctx.playerFeet().equals(src.down())) {
             Block block = BlockStateInterface.getBlock(ctx, src.down());
-            if (block == Blocks.LADDER || block == Blocks.VINE) {
+            if (block == Blocks.ladder || block == Blocks.vine) {
                 state.setInput(Input.SNEAK, true);
             }
         }
