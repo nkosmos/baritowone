@@ -96,8 +96,8 @@ public class GoalXZ implements Goal {
 
     public static GoalXZ fromDirection(Vec3d origin, float yaw, double distance) {
         float theta = (float) Math.toRadians(yaw);
-        double x = origin.x - MathHelper.sin(theta) * distance;
-        double z = origin.z + MathHelper.cos(theta) * distance;
+        double x = origin.xCoord - MathHelper.sin(theta) * distance;
+        double z = origin.zCoord + MathHelper.cos(theta) * distance;
         return new GoalXZ(MathHelper.floor(x), MathHelper.floor(z));
     }
 

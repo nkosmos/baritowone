@@ -40,11 +40,11 @@ public class MixinRenderChunk {
             method = "rebuildChunk",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/world/ChunkCache.isEmpty()Z"
+                    target = "net/minecraft/world/ChunkCache.extendedLevelsInChunkCache()Z"
             )
     )
     private boolean isEmpty(ChunkCache chunkCache) {
-        if (!chunkCache.isEmpty()) {
+        if (!chunkCache.extendedLevelsInChunkCache()) {
             return false;
         }
         if (Baritone.settings().renderCachedChunks.value && !Minecraft.getMinecraft().isSingleplayer()) {

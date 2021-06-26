@@ -20,6 +20,7 @@ package baritone.launch.mixins;
 import baritone.utils.accessor.IChunkProviderClient;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,4 +37,9 @@ public class MixinChunkProviderClient implements IChunkProviderClient {
     public Long2ObjectMap<Chunk> loadedChunks() {
         return this.chunkMapping;
     }
+
+	@Override
+	public boolean isChunkGeneratedAt(int x, int z) {
+		return this.chunkMapping.containsKey(ChunkPos.asLong(x, z));
+	}
 }

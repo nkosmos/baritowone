@@ -25,7 +25,7 @@ import net.minecraft.world.chunk.storage.IChunkLoader;
  * @see WorldProvider
  * @since 8/4/2018
  */
-public interface IChunkProviderServer {
+public interface IChunkProviderServer extends IChunkProvider {
 
     IChunkLoader getChunkLoader();
 }

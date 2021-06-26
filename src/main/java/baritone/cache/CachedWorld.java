@@ -102,8 +102,8 @@ public final class CachedWorld implements ICachedWorld, Helper {
 
     @Override
     public final void queueForPacking(Chunk chunk) {
-        if (toPackMap.put(chunk.getPos(), chunk) == null) {
-            toPackQueue.add(chunk.getPos());
+        if (toPackMap.put(chunk.getChunkCoordIntPair(), chunk) == null) {
+            toPackQueue.add(chunk.getChunkCoordIntPair());
         }
     }
 

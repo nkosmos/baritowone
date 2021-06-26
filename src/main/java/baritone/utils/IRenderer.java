@@ -109,6 +109,6 @@ public interface IRenderer {
     }
 
     static void drawAABB(AxisAlignedBB aabb, double expand) {
-        drawAABB(aabb.grow(expand, expand, expand));
+        drawAABB(aabb.expand(expand, expand, expand));
     }
 }

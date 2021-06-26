@@ -18,6 +18,8 @@
 package baritone.utils;
 
 import baritone.Baritone;
+import baritone.api.utils.accessor.IItemStack;
+import baritonex.utils.XHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -125,6 +127,9 @@ public class ToolSet {
         IBlockState blockState = b.getDefaultState();
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = player.inventory.getStackInSlot(i);
+            
+            if (XHelper.isEmpty(itemStack)) continue;
+            
             if (!Baritone.settings().useSwordToMine.value && itemStack.getItem() instanceof ItemSword) {
                 continue;
             }
@@ -182,16 +187,20 @@ public class ToolSet {
             return -1;
         }
 
-        float speed = item.getStrVsBlock(state);
-        if (speed > 1) {
-            int effLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, item);
-            if (effLevel > 0 && !item.isEmpty()) {
-                speed += effLevel * effLevel + 1;
+        float speed = 1;
+        if(item != null) {
+        	speed = item.getStrVsBlock(state);
+            if (speed > 1) {
+                int effLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, item);
+                if (effLevel > 0 && !XHelper.isEmpty(item)) {
+                    speed += effLevel * effLevel + 1;
+                }
             }
         }
 
         speed /= hardness;
-        if (state.getMaterial().isToolNotRequired() || (!item.isEmpty() && item.canHarvestBlock(state))) {
+        
+        if (state.getMaterial().isToolNotRequired() || (!XHelper.isEmpty(item) && item.canHarvestBlock(state))) {
             return speed / 30;
         } else {
             return speed / 100;

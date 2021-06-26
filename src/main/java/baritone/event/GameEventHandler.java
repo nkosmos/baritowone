@@ -25,6 +25,7 @@ import baritone.api.event.listener.IGameEventListener;
 import baritone.api.utils.Helper;
 import baritone.cache.WorldProvider;
 import baritone.utils.BlockStateInterface;
+import baritone.utils.accessor.IChunkProvider;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -89,7 +90,7 @@ public final class GameEventHandler implements IEventBus, Helper {
         // to make sure the chunk being unloaded is already loaded.
         boolean isPreUnload = state == EventState.PRE
                 && type == ChunkEvent.Type.UNLOAD
-                && world.getChunkProvider().isChunkGeneratedAt(event.getX(), event.getZ());
+                && ((IChunkProvider)world.getChunkProvider()).isChunkGeneratedAt(event.getX(), event.getZ());
 
         if (isPostPopulate || isPreUnload) {
             baritone.getWorldProvider().ifWorldLoaded(worldData -> {

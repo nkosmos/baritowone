@@ -27,10 +27,12 @@ import baritone.api.process.PathingCommandType;
 import baritone.api.utils.RayTraceUtils;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
+import baritone.api.utils.accessor.IItemStack;
 import baritone.api.utils.input.Input;
 import baritone.cache.WorldScanner;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.BaritoneProcessHelper;
+import baritonex.utils.XHelper;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -168,11 +170,11 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
     }
 
     private boolean isBoneMeal(ItemStack stack) {
-        return !stack.isEmpty() && stack.getItem() instanceof ItemDye && EnumDyeColor.byDyeDamage(stack.getMetadata()) == EnumDyeColor.WHITE;
+        return !XHelper.isEmpty(stack) && stack.getItem() instanceof ItemDye && EnumDyeColor.byDyeDamage(stack.getMetadata()) == EnumDyeColor.WHITE;
     }
 
     private boolean isNetherWart(ItemStack stack) {
-        return !stack.isEmpty() && stack.getItem().equals(Items.NETHER_WART);
+        return !XHelper.isEmpty(stack) && stack.getItem().equals(Items.NETHER_WART);
     }
 
     @Override
@@ -300,7 +302,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         for (Entity entity : ctx.world().loadedEntityList) {
             if (entity instanceof EntityItem && entity.onGround) {
                 EntityItem ei = (EntityItem) entity;
-                if (PICKUP_DROPPED.contains(ei.getItem().getItem())) {
+                if (PICKUP_DROPPED.contains(ei.getEntityItem().getItem())) {
                     // +0.1 because of farmland's 0.9375 dummy height lol
                     goalz.add(new GoalBlock(new BlockPos(entity.posX, entity.posY + 0.1, entity.posZ)));
                 }

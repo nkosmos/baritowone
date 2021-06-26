@@ -174,7 +174,7 @@ public class MovementPillar extends Movement {
             // stay centered while swimming up a water column
             state.setTarget(new MovementState.MovementTarget(RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations()), false));
             Vec3d destCenter = VecUtils.getBlockPosCenter(dest);
-            if (Math.abs(ctx.player().posX - destCenter.x) > 0.2 || Math.abs(ctx.player().posZ - destCenter.z) > 0.2) {
+            if (Math.abs(ctx.player().posX - destCenter.xCoord) > 0.2 || Math.abs(ctx.player().posZ - destCenter.zCoord) > 0.2) {
                 state.setInput(Input.MOVE_FORWARD, true);
             }
             if (ctx.playerFeet().equals(dest)) {

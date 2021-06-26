@@ -106,7 +106,7 @@ public final class RotationUtils {
      * @return The rotation from the origin to the destination
      */
     private static Rotation calcRotationFromVec3d(Vec3d orig, Vec3d dest) {
-        double[] delta = {orig.x - dest.x, orig.y - dest.y, orig.z - dest.z};
+        double[] delta = {orig.xCoord - dest.xCoord, orig.yCoord - dest.yCoord, orig.zCoord - dest.zCoord};
         double yaw = MathHelper.atan2(delta[0], -delta[2]);
         double dist = Math.sqrt(delta[0] * delta[0] + delta[2] * delta[2]);
         double pitch = MathHelper.atan2(delta[1], dist);
@@ -193,9 +193,9 @@ public final class RotationUtils {
         IBlockState state = entity.world.getBlockState(pos);
         AxisAlignedBB aabb = state.getBoundingBox(entity.world, pos);
         for (Vec3d sideOffset : BLOCK_SIDE_MULTIPLIERS) {
-            double xDiff = aabb.minX * sideOffset.x + aabb.maxX * (1 - sideOffset.x);
-            double yDiff = aabb.minY * sideOffset.y + aabb.maxY * (1 - sideOffset.y);
-            double zDiff = aabb.minZ * sideOffset.z + aabb.maxZ * (1 - sideOffset.z);
+            double xDiff = aabb.minX * sideOffset.xCoord + aabb.maxX * (1 - sideOffset.xCoord);
+            double yDiff = aabb.minY * sideOffset.yCoord + aabb.maxY * (1 - sideOffset.yCoord);
+            double zDiff = aabb.minZ * sideOffset.zCoord + aabb.maxZ * (1 - sideOffset.zCoord);
             possibleRotation = reachableOffset(entity, pos, new Vec3d(pos).addVector(xDiff, yDiff, zDiff), blockReachDistance, wouldSneak);
             if (possibleRotation.isPresent()) {
                 return possibleRotation;

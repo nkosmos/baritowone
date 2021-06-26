@@ -34,6 +34,7 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.RayTraceUtils;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
+import baritone.api.utils.accessor.IItemStack;
 import baritone.api.utils.input.Input;
 import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.Movement;
@@ -45,6 +46,7 @@ import baritone.utils.schematic.MapArtSchematic;
 import baritone.utils.schematic.SelectionSchematic;
 import baritone.utils.schematic.SchematicSystem;
 import baritone.utils.schematic.schematica.SchematicaHelper;
+import baritonex.utils.XHelper;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
@@ -286,14 +288,14 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             if (MovementHelper.isReplaceable(placeAgainstPos.x, placeAgainstPos.y, placeAgainstPos.z, placeAgainstState, bsi)) {
                 continue;
             }
-            if (!ctx.world().mayPlace(toPlace.getBlock(), new BetterBlockPos(x, y, z), false, against, null)) {
+            if (!ctx.world().canBlockBePlaced(toPlace.getBlock(), new BetterBlockPos(x, y, z), false, against, null, null)) {
                 continue;
             }
             AxisAlignedBB aabb = placeAgainstState.getBoundingBox(ctx.world(), placeAgainstPos);
             for (Vec3d placementMultiplier : aabbSideMultipliers(against)) {
-                double placeX = placeAgainstPos.x + aabb.minX * placementMultiplier.x + aabb.maxX * (1 - placementMultiplier.x);
-                double placeY = placeAgainstPos.y + aabb.minY * placementMultiplier.y + aabb.maxY * (1 - placementMultiplier.y);
-                double placeZ = placeAgainstPos.z + aabb.minZ * placementMultiplier.z + aabb.maxZ * (1 - placementMultiplier.z);
+                double placeX = placeAgainstPos.x + aabb.minX * placementMultiplier.xCoord + aabb.maxX * (1 - placementMultiplier.xCoord);
+                double placeY = placeAgainstPos.y + aabb.minY * placementMultiplier.yCoord + aabb.maxY * (1 - placementMultiplier.yCoord);
+                double placeZ = placeAgainstPos.z + aabb.minZ * placementMultiplier.zCoord + aabb.maxZ * (1 - placementMultiplier.zCoord);
                 Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), new Vec3d(placeX, placeY, placeZ), ctx.playerRotations());
                 RayTraceResult result = RayTraceUtils.rayTraceTowards(ctx.player(), rot, ctx.playerController().getBlockReachDistance(), true);
                 if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK && result.getBlockPos().equals(placeAgainstPos) && result.sideHit == against.getOpposite()) {
@@ -305,12 +307,12 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             }
         }
         return Optional.empty();
-    }
-
+    }    
+    
     private OptionalInt hasAnyItemThatWouldPlace(IBlockState desired, RayTraceResult result, Rotation rot) {
         for (int i = 0; i < 9; i++) {
-            ItemStack stack = ctx.player().inventory.mainInventory.get(i);
-            if (stack.isEmpty() || !(stack.getItem() instanceof ItemBlock)) {
+        	ItemStack stack = ctx.player().inventory.mainInventory[i];
+            if (XHelper.isEmpty(stack) || !(stack.getItem() instanceof ItemBlock)) {
                 continue;
             }
             float originalYaw = ctx.player().rotationYaw;
@@ -322,9 +324,9 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                     ctx.world(),
                     result.getBlockPos().offset(result.sideHit),
                     result.sideHit,
-                    (float) result.hitVec.x - result.getBlockPos().getX(), // as in PlayerControllerMP
-                    (float) result.hitVec.y - result.getBlockPos().getY(),
-                    (float) result.hitVec.z - result.getBlockPos().getZ(),
+                    (float) result.hitVec.xCoord - result.getBlockPos().getX(), // as in PlayerControllerMP
+                    (float) result.hitVec.yCoord - result.getBlockPos().getY(),
+                    (float) result.hitVec.zCoord - result.getBlockPos().getZ(),
                     stack.getItem().getMetadata(stack.getMetadata()),
                     ctx.player()
             );
@@ -733,7 +735,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         IBlockState current = ctx.world().getBlockState(pos);
         for (EnumFacing facing : Movement.HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP) {
             //noinspection ConstantConditions
-            if (MovementHelper.canPlaceAgainst(ctx, pos.offset(facing)) && ctx.world().mayPlace(bcc.getSchematic(pos.getX(), pos.getY(), pos.getZ(), current).getBlock(), pos, false, facing, null)) {
+            if (MovementHelper.canPlaceAgainst(ctx, pos.offset(facing)) && ctx.world().canBlockBePlaced(bcc.getSchematic(pos.getX(), pos.getY(), pos.getZ(), current).getBlock(), pos, false, facing, null, null)) {
                 return new GoalAdjacent(pos, pos.offset(facing), allowSameLevel);
             }
         }
@@ -820,8 +822,8 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     private List<IBlockState> approxPlaceable(int size) {
         List<IBlockState> result = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            ItemStack stack = ctx.player().inventory.mainInventory.get(i);
-            if (stack.isEmpty() || !(stack.getItem() instanceof ItemBlock)) {
+            ItemStack stack = ctx.player().inventory.mainInventory[i];
+            if (XHelper.isEmpty(stack) || !(stack.getItem() instanceof ItemBlock)) {
                 result.add(Blocks.AIR.getDefaultState());
                 continue;
             }

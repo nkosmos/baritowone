@@ -20,6 +20,8 @@ package baritone.utils;
 import baritone.Baritone;
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
+import baritone.api.utils.accessor.IItemStack;
+import baritonex.utils.XHelper;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
@@ -48,7 +50,7 @@ public class BlockPlaceHelper implements Helper {
                 ctx.player().swingArm(hand);
                 return;
             }
-            if (!ctx.player().getHeldItem(hand).isEmpty() && ctx.playerController().processRightClick(ctx.player(), ctx.world(), hand) == EnumActionResult.SUCCESS) {
+            if (!XHelper.isEmpty(ctx.player().getHeldItem(hand)) && ctx.playerController().processRightClick(ctx.player(), ctx.world(), hand) == EnumActionResult.SUCCESS) {
                 return;
             }
         }

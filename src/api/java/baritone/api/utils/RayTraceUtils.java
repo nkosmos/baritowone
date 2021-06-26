@@ -52,9 +52,9 @@ public final class RayTraceUtils {
         }
         Vec3d direction = RotationUtils.calcVec3dFromRotation(rotation);
         Vec3d end = start.addVector(
-                direction.x * blockReachDistance,
-                direction.y * blockReachDistance,
-                direction.z * blockReachDistance
+                direction.xCoord * blockReachDistance,
+                direction.yCoord * blockReachDistance,
+                direction.zCoord * blockReachDistance
         );
         return entity.world.rayTraceBlocks(start, end, false, false, true);
     }

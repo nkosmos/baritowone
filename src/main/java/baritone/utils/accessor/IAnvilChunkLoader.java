@@ -29,4 +29,6 @@ import java.io.File;
 public interface IAnvilChunkLoader {
 
     File getChunkSaveLocation();
+    
+    boolean isChunkGeneratedAt(int x, int z);
 }

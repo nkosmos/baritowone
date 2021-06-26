@@ -17,22 +17,28 @@
 
 package baritone.behavior;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.OptionalInt;
+import java.util.Random;
+import java.util.function.Predicate;
+
 import baritone.Baritone;
 import baritone.api.event.events.TickEvent;
 import baritone.utils.ToolSet;
+import baritonex.utils.XHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTool;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
-
-import java.util.ArrayList;
-import java.util.OptionalInt;
-import java.util.Random;
-import java.util.function.Predicate;
 
 public final class InventoryBehavior extends Behavior {
 
@@ -67,12 +73,12 @@ public final class InventoryBehavior extends Behavior {
             swapWithHotBar(inMainInvy, destination.getAsInt());
         }
     }
-
+    
     public OptionalInt getTempHotbarSlot(Predicate<Integer> disallowedHotbar) {
         // we're using 0 and 8 for pickaxe and throwaway
         ArrayList<Integer> candidates = new ArrayList<>();
         for (int i = 1; i < 8; i++) {
-            if (ctx.player().inventory.mainInventory.get(i).isEmpty() && !disallowedHotbar.test(i)) {
+            if (XHelper.isEmpty(ctx.player().inventory.mainInventory[i]) && !disallowedHotbar.test(i)) {
                 candidates.add(i);
             }
         }
@@ -94,7 +100,7 @@ public final class InventoryBehavior extends Behavior {
     }
 
     private int firstValidThrowaway() { // TODO offhand idk
-        NonNullList<ItemStack> invy = ctx.player().inventory.mainInventory;
+    	List<ItemStack> invy = Arrays.asList(ctx.player().inventory.mainInventory);
         for (int i = 0; i < invy.size(); i++) {
             if (Baritone.settings().acceptableThrowawayItems.value.contains(invy.get(i).getItem())) {
                 return i;
@@ -104,12 +110,12 @@ public final class InventoryBehavior extends Behavior {
     }
 
     private int bestToolAgainst(Block against, Class<? extends ItemTool> cla$$) {
-        NonNullList<ItemStack> invy = ctx.player().inventory.mainInventory;
+    	List<ItemStack> invy = Arrays.asList(ctx.player().inventory.mainInventory);
         int bestInd = -1;
         double bestSpeed = -1;
         for (int i = 0; i < invy.size(); i++) {
             ItemStack stack = invy.get(i);
-            if (stack.isEmpty()) {
+            if (XHelper.isEmpty(stack)) {
                 continue;
             }
             if (Baritone.settings().itemSaver.value && (stack.getItemDamage() + Baritone.settings().itemSaverThreshold.value) >= stack.getMaxDamage() && stack.getMaxDamage() > 1) {
@@ -157,9 +163,10 @@ public final class InventoryBehavior extends Behavior {
 
     public boolean throwaway(boolean select, Predicate<? super ItemStack> desired, boolean allowInventory) {
         EntityPlayerSP p = ctx.player();
-        NonNullList<ItemStack> inv = p.inventory.mainInventory;
+        List<ItemStack> inv = Arrays.asList(p.inventory.mainInventory);
         for (int i = 0; i < 9; i++) {
             ItemStack item = inv.get(i);
+            if(XHelper.isEmpty(item)) continue;
             // this usage of settings() is okay because it's only called once during pathing
             // (while creating the CalculationContext at the very beginning)
             // and then it's called during execution
@@ -172,7 +179,12 @@ public final class InventoryBehavior extends Behavior {
                 return true;
             }
         }
-        if (desired.test(p.inventory.offHandInventory.get(0))) {
+        
+        if (inv.size() == 0) return false;
+        ItemStack stack = Arrays.asList(p.inventory.offHandInventory).get(0);
+        if (XHelper.isEmpty(stack)) return false;
+        
+        if (desired.test(stack)) {
             // main hand takes precedence over off hand
             // that means that if we have block A selected in main hand and block B in off hand, right clicking places block B
             // we've already checked above ^ and the main hand can't possible have an acceptablethrowawayitem
@@ -180,7 +192,7 @@ public final class InventoryBehavior extends Behavior {
             // so not a shovel, not a hoe, not a block, etc
             for (int i = 0; i < 9; i++) {
                 ItemStack item = inv.get(i);
-                if (item.isEmpty() || item.getItem() instanceof ItemPickaxe) {
+                if (XHelper.isEmpty(item) || item.getItem() instanceof ItemPickaxe) {
                     if (select) {
                         p.inventory.currentItem = i;
                     }

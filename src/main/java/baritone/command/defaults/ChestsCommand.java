@@ -55,7 +55,7 @@ public class ChestsCommand extends Command {
             logDirect(pos.toString());
             for (ItemStack item : inv.getContents()) {
                 ITextComponent component = item.getTextComponent();
-                component.appendText(String.format(" x %d", item.getCount()));
+                component.appendText(String.format(" x %d", item.stackSize));
                 logDirect(component);
             }
         }

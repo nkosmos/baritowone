@@ -17,12 +17,17 @@
 
 package baritone.launch.mixins;
 
-import baritone.utils.accessor.IChunkProviderServer;
-import net.minecraft.world.chunk.storage.IChunkLoader;
-import net.minecraft.world.gen.ChunkProviderServer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+
+import baritone.utils.accessor.IAnvilChunkLoader;
+import baritone.utils.accessor.IChunkProviderServer;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.IChunkLoader;
+import net.minecraft.world.gen.ChunkProviderServer;
 
 /**
  * @author Brady
@@ -35,8 +40,17 @@ public class MixinChunkProviderServer implements IChunkProviderServer {
     @Final
     private IChunkLoader chunkLoader;
 
+    @Shadow
+    @Final
+    private Long2ObjectMap<Chunk> id2ChunkMap;
+    
     @Override
     public IChunkLoader getChunkLoader() {
         return this.chunkLoader;
     }
+
+	@Override
+	public boolean isChunkGeneratedAt(int x, int z) {
+		return this.id2ChunkMap.containsKey(ChunkPos.asLong(x, z)) || ((IAnvilChunkLoader)this.chunkLoader).isChunkGeneratedAt(x, z);
+	}
 }

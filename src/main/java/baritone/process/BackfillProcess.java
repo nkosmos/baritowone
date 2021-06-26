@@ -104,7 +104,7 @@ public final class BackfillProcess extends BaritoneProcessHelper {
                 .keySet()
                 .stream()
                 .filter(pos -> ctx.world().getBlockState(pos).getBlock() == Blocks.AIR)
-                .filter(pos -> ctx.world().mayPlace(Blocks.DIRT, pos, false, EnumFacing.UP, null))
+                .filter(pos -> ctx.world().canBlockBePlaced(Blocks.DIRT, pos, false, EnumFacing.UP, null, null))
                 .filter(pos -> !partOfCurrentMovement(pos))
                 .sorted(Comparator.<BlockPos>comparingDouble(ctx.player()::getDistanceSq).reversed())
                 .collect(Collectors.toList());

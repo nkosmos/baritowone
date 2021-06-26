@@ -75,12 +75,12 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
 
     @Override
     public EnumActionResult processRightClickBlock(EntityPlayerSP player, World world, BlockPos pos, EnumFacing direction, Vec3d vec, EnumHand hand) {
-        return mc.playerController.processRightClickBlock(player, (WorldClient) world, pos, direction, vec, hand);
+        return mc.playerController.processRightClickBlock(player, (WorldClient) world, player.getHeldItem(hand), pos, direction, vec, hand);
     }
 
     @Override
     public EnumActionResult processRightClick(EntityPlayerSP player, World world, EnumHand hand) {
-        return mc.playerController.processRightClick(player, world, hand);
+        return mc.playerController.processRightClick(player, world, player.getHeldItem(hand), hand);
     }
 
     @Override

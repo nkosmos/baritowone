@@ -51,5 +51,7 @@ public class BaritoneTweaker extends SimpleTweaker {
         MixinEnvironment.getDefaultEnvironment().setObfuscationContext(obfuscation);
 
         Mixins.addConfiguration("mixins.baritone.json");
+        
+        classLoader.addTransformerExclusion("it.unimi.dsi.fastutil");
     }
 }

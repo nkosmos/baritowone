@@ -18,6 +18,7 @@
 package baritone.launch.mixins;
 
 import baritone.api.utils.accessor.IItemStack;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
@@ -31,10 +32,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack implements IItemStack {
 
+	private static final ItemStack EMPTY = new ItemStack((Item)null);
+	
     @Shadow
-    @Final
     private Item item;
 
+    @Shadow
+    private int stackSize;
+    
     @Shadow
     private int itemDamage;
 
@@ -64,5 +69,10 @@ public abstract class MixinItemStack implements IItemStack {
     @Override
     public int getBaritoneHash() {
         return baritoneHash;
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return (ItemStack)(Object)this == EMPTY ? true : (item != null && item != Item.getItemFromBlock(Blocks.AIR) ? (this.stackSize <= 0 ? true : this.itemDamage < -32768 || this.itemDamage > 65535) : true);
     }
 }
