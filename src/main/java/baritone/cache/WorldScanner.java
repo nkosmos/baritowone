@@ -29,6 +29,8 @@ import baritone.api.cache.IWorldScanner;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
+import baritone.utils.accessor.IExtendedBlockStorage;
+import baritonex.reoptimize.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.BlockPos;
@@ -160,7 +162,7 @@ public enum WorldScanner implements IWorldScanner {
                 continue;
             }
             int yReal = y0 << 4;
-            char[] bsc = extendedblockstorage.getData();
+            BlockStateContainer bsc = ((IExtendedBlockStorage) extendedblockstorage).getBSCData();
             // storageArray uses an optimized algorithm that's faster than getAt
             // creating this array and then using getAtPalette is faster than even getFast(int index)
             int[] storage = bsc.storageArray();
