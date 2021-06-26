@@ -110,7 +110,7 @@ public final class SpongeSchematic extends StaticSchematic {
                 this.blockState = block.getDefaultState();
 
                 this.properties.keySet().stream().sorted(String::compareTo).forEachOrdered(key -> {
-                    IProperty<?> property = block.getBlockState().getProperty(key);
+                	IProperty<?> property = block.getBlockState().getProperties().stream().filter(p -> p.getName().equalsIgnoreCase(key)).findFirst().orElse(null);
                     if (property != null) {
                         this.blockState = setPropertyValue(this.blockState, property, this.properties.get(key));
                     }
