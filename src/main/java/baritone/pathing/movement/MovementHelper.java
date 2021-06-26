@@ -17,29 +17,48 @@
 
 package baritone.pathing.movement;
 
+import static baritone.pathing.movement.Movement.HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP;
+
+import java.util.Optional;
+
 import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.ActionCosts;
 import baritone.api.pathing.movement.MovementStatus;
-import baritone.api.utils.*;
+import baritone.api.utils.BetterBlockPos;
+import baritone.api.utils.Helper;
+import baritone.api.utils.IPlayerContext;
+import baritone.api.utils.RayTraceUtils;
+import baritone.api.utils.Rotation;
+import baritone.api.utils.RotationUtils;
+import baritone.api.utils.VecUtils;
 import baritone.api.utils.input.Input;
 import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.ToolSet;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockDoublePlant;
+import net.minecraft.block.BlockEndPortal;
+import net.minecraft.block.BlockFalling;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockLilyPad;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockSilverfish;
+import net.minecraft.block.BlockSkull;
+import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockSnow;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
-
-import java.util.Optional;
-
-import static baritone.pathing.movement.Movement.HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP;
 
 /**
  * Static helpers for cost calculation
@@ -50,7 +69,7 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean avoidBreaking(BlockStateInterface bsi, int x, int y, int z, IBlockState state) {
         Block b = state.getBlock();
-        return b == Blocks.ICE // ice becomes water, and water can mess up the path
+        return b == Blocks.ice // ice becomes water, and water can mess up the path
                 || b instanceof BlockSilverfish // obvious reasons
                 // call context.get directly with x,y,z. no need to make 5 new BlockPos for no reason
                 || avoidAdjacentBreaking(bsi, x, y + 1, z, true)
@@ -86,10 +105,10 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean canWalkThrough(BlockStateInterface bsi, int x, int y, int z, IBlockState state) {
         Block block = state.getBlock();
-        if (block == Blocks.AIR) { // early return for most common case
+        if (block == Blocks.air) { // early return for most common case
             return true;
         }
-        if (block == Blocks.FIRE || block == Blocks.TRIPWIRE || block == Blocks.web || block == Blocks.END_PORTAL || block == Blocks.COCOA || block instanceof BlockSkull || block instanceof BlockTrapDoor || block == Blocks.END_ROD) {
+        if (block == Blocks.fire || block == Blocks.tripwire || block == Blocks.web || block == Blocks.end_portal || block == Blocks.cocoa || block instanceof BlockSkull || block instanceof BlockTrapDoor) {
             return false;
         }
         if (Baritone.settings().blocksToAvoid.value.contains(block)) {
@@ -99,9 +118,9 @@ public interface MovementHelper extends ActionCosts, Helper {
             // Because there's no nice method in vanilla to check if a door is openable or not, we just have to assume
             // that anything that isn't an iron door isn't openable, ignoring that some doors introduced in mods can't
             // be opened by just interacting.
-            return block != Blocks.IRON_DOOR;
+            return block != Blocks.iron_door;
         }
-        if (block == Blocks.CARPET) {
+        if (block == Blocks.carpet) {
             return canWalkOn(bsi, x, y - 1, z);
         }
         if (block instanceof BlockSnow) {
@@ -131,10 +150,10 @@ public interface MovementHelper extends ActionCosts, Helper {
             if (up.getBlock() instanceof BlockLiquid || up.getBlock() instanceof BlockLilyPad) {
                 return false;
             }
-            return block == Blocks.water || block == Blocks.FLOWING_WATER;
+            return block == Blocks.water || block == Blocks.flowing_water;
         }
 
-        return block.isPassable(bsi.access, bsi.isPassableBlockPos.setPos(x, y, z));
+        return block.isPassable(bsi.access, bsi.isPassableBlockPos.set(x, y, z));
     }
 
     /**
@@ -150,7 +169,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     static boolean fullyPassable(CalculationContext context, int x, int y, int z) {
         return fullyPassable(
                 context.bsi.access,
-                context.bsi.isPassableBlockPos.setPos(x, y, z),
+                context.bsi.isPassableBlockPos.set(x, y, z),
                 context.bsi.get0(x, y, z)
         );
     }
@@ -161,16 +180,16 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean fullyPassable(IBlockAccess access, BlockPos pos, IBlockState state) {
         Block block = state.getBlock();
-        if (block == Blocks.AIR) { // early return for most common case
+        if (block == Blocks.air) { // early return for most common case
             return true;
         }
         // exceptions - blocks that are isPassable true, but we can't actually jump through
-        if (block == Blocks.FIRE
-                || block == Blocks.TRIPWIRE
+        if (block == Blocks.fire
+                || block == Blocks.tripwire
                 || block == Blocks.web
-                || block == Blocks.VINE
-                || block == Blocks.LADDER
-                || block == Blocks.COCOA
+                || block == Blocks.vine
+                || block == Blocks.ladder
+                || block == Blocks.cocoa
                 || block instanceof BlockDoor
                 || block instanceof BlockFenceGate
                 || block instanceof BlockSnow
@@ -196,7 +215,7 @@ public interface MovementHelper extends ActionCosts, Helper {
          *     }
          */
         Block block = state.getBlock();
-        if (block == Blocks.AIR || isWater(block)) {
+        if (block == Blocks.air || isWater(block)) {
             // early return for common cases hehe
             return true;
         }
@@ -211,7 +230,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             BlockDoublePlant.EnumPlantType kek = state.getValue(BlockDoublePlant.VARIANT);
             return kek == BlockDoublePlant.EnumPlantType.FERN || kek == BlockDoublePlant.EnumPlantType.GRASS;
         }
-        return state.getMaterial().isReplaceable();
+        return state.getBlock().getMaterial().isReplaceable();
     }
 
     @Deprecated
@@ -267,9 +286,9 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean avoidWalkingInto(Block block) {
         return block instanceof BlockLiquid
-                || block == Blocks.CACTUS
-                || block == Blocks.FIRE
-                || block == Blocks.END_PORTAL
+                || block == Blocks.cactus
+                || block == Blocks.fire
+                || block == Blocks.end_portal
                 || block == Blocks.web;
     }
 
@@ -287,31 +306,31 @@ public interface MovementHelper extends ActionCosts, Helper {
      */
     static boolean canWalkOn(BlockStateInterface bsi, int x, int y, int z, IBlockState state) {
         Block block = state.getBlock();
-        if (block == Blocks.AIR) {
+        if (block == Blocks.air) {
             // early return for most common case (air)
             // plus magma, which is a normal cube but it hurts you
             return false;
         }
-        if (state.isBlockNormalCube()) {
+        if (state.getBlock().isBlockNormalCube()) {
             return true;
         }
-        if (block == Blocks.LADDER || (block == Blocks.VINE && Baritone.settings().allowVines.value)) { // TODO reconsider this
+        if (block == Blocks.ladder || (block == Blocks.vine && Baritone.settings().allowVines.value)) { // TODO reconsider this
             return true;
         }
-        if (block == Blocks.FARMLAND || block == Blocks.GRASS_PATH) {
+        if (block == Blocks.farmland) {
             return true;
         }
-        if (block == Blocks.ENDER_CHEST || block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST) {
+        if (block == Blocks.ender_chest || block == Blocks.chest || block == Blocks.trapped_chest) {
             return true;
         }
         if (isWater(block)) {
             // since this is called literally millions of times per second, the benefit of not allocating millions of useless "pos.up()"
             // BlockPos s that we'd just garbage collect immediately is actually noticeable. I don't even think its a decrease in readability
             Block up = bsi.get0(x, y + 1, z).getBlock();
-            if (up == Blocks.waterlily || up == Blocks.CARPET) {
+            if (up == Blocks.waterlily || up == Blocks.carpet) {
                 return true;
             }
-            if (isFlowing(x, y, z, state, bsi) || block == Blocks.FLOWING_WATER) {
+            if (isFlowing(x, y, z, state, bsi) || block == Blocks.flowing_water) {
                 // the only scenario in which we can walk on flowing water is if it's under still water with jesus off
                 return isWater(up) && !Baritone.settings().assumeWalkOnWater.value;
             }
@@ -322,7 +341,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         if (Baritone.settings().assumeWalkOnLava.value && isLava(block) && !isFlowing(x, y, z, state, bsi)) {
             return true;
         }
-        if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS) {
+        if (block == Blocks.glass || block == Blocks.stained_glass) {
             return true;
         }
         if (block instanceof BlockSlab) {
@@ -369,7 +388,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         // can we look at the center of a side face of this block and likely be able to place?
         // (thats how this check is used)
         // therefore dont include weird things that we technically could place against (like carpet) but practically can't
-        return state.isBlockNormalCube() || state.isFullBlock() || state.getBlock() == Blocks.GLASS || state.getBlock() == Blocks.STAINED_GLASS;
+        return state.getBlock().isBlockNormalCube() || state.getBlock().isFullBlock() || state.getBlock() == Blocks.glass || state.getBlock() == Blocks.stained_glass;
     }
 
     static double getMiningDurationTicks(CalculationContext context, int x, int y, int z, boolean includeFalling) {
@@ -453,7 +472,7 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @return Whether or not the block is water
      */
     static boolean isWater(Block b) {
-        return b == Blocks.FLOWING_WATER || b == Blocks.water;
+        return b == Blocks.flowing_water || b == Blocks.water;
     }
 
     /**
@@ -469,7 +488,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
     static boolean isLava(Block b) {
-        return b == Blocks.FLOWING_LAVA || b == Blocks.LAVA;
+        return b == Blocks.flowing_lava || b == Blocks.lava;
     }
 
     /**
@@ -522,9 +541,9 @@ public interface MovementHelper extends ActionCosts, Helper {
                 double faceX = (placeAt.getX() + against1.getX() + 1.0D) * 0.5D;
                 double faceY = (placeAt.getY() + against1.getY() + 0.5D) * 0.5D;
                 double faceZ = (placeAt.getZ() + against1.getZ() + 1.0D) * 0.5D;
-                Rotation place = RotationUtils.calcRotationFromVec3d(wouldSneak ? RayTraceUtils.inferSneakingEyePosition(ctx.player()) : ctx.playerHead(), new Vec3d(faceX, faceY, faceZ), ctx.playerRotations());
-                RayTraceResult res = RayTraceUtils.rayTraceTowards(ctx.player(), place, ctx.playerController().getBlockReachDistance(), wouldSneak);
-                if (res != null && res.typeOfHit == RayTraceResult.Type.BLOCK && res.getBlockPos().equals(against1) && res.getBlockPos().offset(res.sideHit).equals(placeAt)) {
+                Rotation place = RotationUtils.calcRotationFromVec3d(wouldSneak ? RayTraceUtils.inferSneakingEyePosition(ctx.player()) : ctx.playerHead(), new Vec3(faceX, faceY, faceZ), ctx.playerRotations());
+                MovingObjectPosition res = RayTraceUtils.rayTraceTowards(ctx.player(), place, ctx.playerController().getBlockReachDistance(), wouldSneak);
+                if (res != null && res.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && res.getBlockPos().equals(against1) && res.getBlockPos().offset(res.sideHit).equals(placeAt)) {
                     state.setTarget(new MovementState.MovementTarget(place, true));
                     found = true;
 
@@ -564,9 +583,9 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean isTransparent(Block b) {
 
-        return b == Blocks.AIR ||
-                b == Blocks.FLOWING_LAVA ||
-                b == Blocks.FLOWING_WATER ||
+        return b == Blocks.air ||
+                b == Blocks.flowing_lava ||
+                b == Blocks.flowing_water ||
                 b == Blocks.water;
     }
 }

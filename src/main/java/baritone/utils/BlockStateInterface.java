@@ -28,8 +28,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -52,7 +52,7 @@ public class BlockStateInterface {
 
     private final boolean useTheRealWorld;
 
-    private static final IBlockState AIR = Blocks.AIR.getDefaultState();
+    private static final IBlockState AIR = Blocks.air.getDefaultState();
 
     public BlockStateInterface(IPlayerContext ctx) {
         this(ctx, false);
@@ -80,7 +80,7 @@ public class BlockStateInterface {
     }
 
     public boolean worldContainsLoadedChunk(int blockX, int blockZ) {
-        return loadedChunks.containsKey(ChunkPos.chunkXZ2Int(blockX >> 4, blockZ >> 4));
+        return loadedChunks.containsKey(ChunkCoordIntPair.chunkXZ2Int(blockX >> 4, blockZ >> 4));
     }
 
     public static Block getBlock(IPlayerContext ctx, BlockPos pos) { // won't be called from the pathing thread because the pathing thread doesn't make a single blockpos pog
@@ -113,13 +113,13 @@ public class BlockStateInterface {
             // which is a Long2ObjectOpenHashMap.get
             // see issue #113
             if (cached != null && cached.xPosition == x >> 4 && cached.zPosition == z >> 4) {
-                return cached.getBlockState(x, y, z);
+                return cached.getBlockState(new BlockPos(x, y, z));
             }
-            Chunk chunk = loadedChunks.get(ChunkPos.chunkXZ2Int(x >> 4, z >> 4));
+            Chunk chunk = loadedChunks.get(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 
             if (chunk != null && chunk.isLoaded()) {
                 prev = chunk;
-                return chunk.getBlockState(x, y, z);
+                return chunk.getBlockState(new BlockPos(x, y, z));
             }
         }
         // same idea here, skip the Long2ObjectOpenHashMap.get if at all possible
@@ -148,7 +148,7 @@ public class BlockStateInterface {
         if (prevChunk != null && prevChunk.xPosition == x >> 4 && prevChunk.zPosition == z >> 4) {
             return true;
         }
-        prevChunk = loadedChunks.get(ChunkPos.chunkXZ2Int(x >> 4, z >> 4));
+        prevChunk = loadedChunks.get(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
         if (prevChunk != null && prevChunk.isLoaded()) {
             prev = prevChunk;
             return true;

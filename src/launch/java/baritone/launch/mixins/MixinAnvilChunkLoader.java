@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.Unique;
 
 import baritone.utils.accessor.IAnvilChunkLoader;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.chunk.storage.RegionFile;
 import net.minecraft.world.chunk.storage.RegionFileCache;
@@ -45,7 +45,7 @@ public class MixinAnvilChunkLoader implements IAnvilChunkLoader {
     
     @Shadow
     @Final
-    private Map<ChunkPos, NBTTagCompound> chunksToRemove;
+    private Map<ChunkCoordIntPair, NBTTagCompound> chunksToRemove;
 
     @Override
     public File getChunkSaveLocation() {
@@ -54,7 +54,7 @@ public class MixinAnvilChunkLoader implements IAnvilChunkLoader {
 
 	@Override
 	public boolean isChunkGeneratedAt(int x, int z) {
-		ChunkPos chunkpos = new ChunkPos(x, z);
+		ChunkCoordIntPair chunkpos = new ChunkCoordIntPair(x, z);
         NBTTagCompound nbttagcompound = (NBTTagCompound)this.chunksToRemove.get(chunkpos);
         return nbttagcompound != null ? true : chunkExists(this.chunkSaveLocation, x, z);
 	}
@@ -69,17 +69,17 @@ public class MixinAnvilChunkLoader implements IAnvilChunkLoader {
 	private static RegionFile getRegionFileIfExists(File file, int x, int z) {
 		File file1 = new File(file, "region");
         File file2 = new File(file1, "r." + (x >> 5) + "." + (z >> 5) + ".mca");
-        RegionFile regionfile = (RegionFile)RegionFileCache.REGIONS_BY_FILE.get(file2);
+        RegionFile regionfile = (RegionFile)RegionFileCache.regionsByFilename.get(file2);
 
         if (regionfile != null) {
             return regionfile;
         } else if (file1.exists() && file2.exists()) {
-            if (RegionFileCache.REGIONS_BY_FILE.size() >= 256) {
+            if (RegionFileCache.regionsByFilename.size() >= 256) {
             	RegionFileCache.clearRegionFileReferences();
             }
 
             RegionFile regionfile1 = new RegionFile(file2);
-            RegionFileCache.REGIONS_BY_FILE.put(file2, regionfile1);
+            RegionFileCache.regionsByFilename.put(file2, regionfile1);
             return regionfile1;
         } else {
             return null;

@@ -18,8 +18,8 @@
 package baritone.api.pathing.goals;
 
 import baritone.api.utils.SettingsUtil;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 
 /**
  * Dig a tunnel in a certain direction, but if you have to deviate from the path, go back to where you started

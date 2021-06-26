@@ -17,14 +17,9 @@
 
 package baritone.api.utils;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.Settings;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.Vec3i;
+import static net.minecraft.client.Minecraft.getMinecraft;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -44,7 +39,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.minecraft.client.Minecraft.getMinecraft;
+import baritone.api.BaritoneAPI;
+import baritone.api.Settings;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Vec3i;
 
 public class SettingsUtil {
 
@@ -251,7 +251,7 @@ public class SettingsUtil {
         ITEM(
                 Item.class,
                 str -> Item.getByNameOrId(str.trim()),
-                item -> Item.REGISTRY.getNameForObject(item).toString()
+                item -> Item.itemRegistry.getNameForObject(item).toString()
         ),
         LIST() {
             @Override

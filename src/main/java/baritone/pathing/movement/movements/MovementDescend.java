@@ -17,6 +17,10 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
@@ -29,16 +33,13 @@ import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.pathing.MutableMoveResult;
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
-import java.util.Set;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 
 public class MovementDescend extends Movement {
 
@@ -86,7 +87,7 @@ public class MovementDescend extends Movement {
         }
 
         Block fromDown = context.get(x, y - 1, z).getBlock();
-        if (fromDown == Blocks.LADDER || fromDown == Blocks.VINE) {
+        if (fromDown == Blocks.ladder || fromDown == Blocks.vine) {
             return;
         }
 
@@ -106,13 +107,13 @@ public class MovementDescend extends Movement {
             return;
         }
 
-        if (destDown.getBlock() == Blocks.LADDER || destDown.getBlock() == Blocks.VINE) {
+        if (destDown.getBlock() == Blocks.ladder || destDown.getBlock() == Blocks.vine) {
             return;
         }
 
         // we walk half the block plus 0.3 to get to the edge, then we walk the other 0.2 while simultaneously falling (math.max because of how it's in parallel)
         double walk = WALK_OFF_BLOCK_COST;
-        if (fromDown == Blocks.SOUL_SAND) {
+        if (fromDown == Blocks.soul_sand) {
             // use this ratio to apply the soul sand speed penalty to our 0.8 block distance
             walk *= WALK_ONE_OVER_SOUL_SAND_COST / WALK_ONE_BLOCK_COST;
         }
@@ -166,7 +167,7 @@ public class MovementDescend extends Movement {
                 res.cost = tentativeCost;// TODO incorporate water swim up cost?
                 return false;
             }
-            if (unprotectedFallHeight <= 11 && (ontoBlock.getBlock() == Blocks.VINE || ontoBlock.getBlock() == Blocks.LADDER)) {
+            if (unprotectedFallHeight <= 11 && (ontoBlock.getBlock() == Blocks.vine || ontoBlock.getBlock() == Blocks.ladder)) {
                 // if fall height is greater than or equal to 11, we don't actually grab on to vines or ladders. the more you know
                 // this effectively "resets" our falling speed
                 costSoFar += FALL_N_BLOCKS_COST[unprotectedFallHeight - 1];// we fall until the top of this block (not including this block)
@@ -225,7 +226,7 @@ public class MovementDescend extends Movement {
             EntityPlayerSP player = ctx.player();
             state.setTarget(new MovementState.MovementTarget(
                     new Rotation(RotationUtils.calcRotationFromVec3d(ctx.playerHead(),
-                            new Vec3d(destX, dest.getY(), destZ),
+                            new Vec3(destX, dest.getY(), destZ),
                             new Rotation(player.rotationYaw, player.rotationPitch)).getYaw(), player.rotationPitch),
                     false
             )).setInput(Input.MOVE_FORWARD, true);

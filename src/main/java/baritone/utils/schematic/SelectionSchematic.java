@@ -17,14 +17,14 @@
 
 package baritone.utils.schematic;
 
+import java.util.stream.Stream;
+
 import baritone.api.schematic.ISchematic;
 import baritone.api.schematic.MaskSchematic;
 import baritone.api.selection.ISelection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.Vec3i;
-
-import java.util.stream.Stream;
+import net.minecraft.util.Vec3i;
 
 public class SelectionSchematic extends MaskSchematic {
 

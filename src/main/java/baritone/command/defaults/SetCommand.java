@@ -17,6 +17,18 @@
 
 package baritone.command.defaults;
 
+import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
+import static baritone.api.utils.SettingsUtil.javaOnlySetting;
+import static baritone.api.utils.SettingsUtil.settingDefaultToString;
+import static baritone.api.utils.SettingsUtil.settingTypeToString;
+import static baritone.api.utils.SettingsUtil.settingValueToString;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.Settings;
@@ -28,20 +40,11 @@ import baritone.api.command.exception.CommandInvalidTypeException;
 import baritone.api.command.helpers.Paginator;
 import baritone.api.command.helpers.TabCompleteHelper;
 import baritone.api.utils.SettingsUtil;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.HoverEvent;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
-import static baritone.api.utils.SettingsUtil.*;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 
 public class SetCommand extends Command {
 
@@ -78,24 +81,24 @@ public class SetCommand extends Command {
                                     : String.format("All %ssettings:", viewModified ? "modified " : "")
                     ),
                     setting -> {
-                        ITextComponent typeComponent = new TextComponentString(String.format(
+                    	IChatComponent typeComponent = new ChatComponentText(String.format(
                                 " (%s)",
                                 settingTypeToString(setting)
                         ));
-                        typeComponent.getStyle().setColor(TextFormatting.DARK_GRAY);
-                        ITextComponent hoverComponent = new TextComponentString("");
-                        hoverComponent.getStyle().setColor(TextFormatting.GRAY);
+                        typeComponent.getChatStyle().setColor(EnumChatFormatting.DARK_GRAY);
+                        IChatComponent hoverComponent = new ChatComponentText("");
+                        hoverComponent.getChatStyle().setColor(EnumChatFormatting.GRAY);
                         hoverComponent.appendText(setting.getName());
                         hoverComponent.appendText(String.format("\nType: %s", settingTypeToString(setting)));
                         hoverComponent.appendText(String.format("\n\nValue:\n%s", settingValueToString(setting)));
                         hoverComponent.appendText(String.format("\n\nDefault Value:\n%s", settingDefaultToString(setting)));
                         String commandSuggestion = Baritone.settings().prefix.value + String.format("set %s ", setting.getName());
-                        ITextComponent component = new TextComponentString(setting.getName());
-                        component.getStyle().setColor(TextFormatting.GRAY);
+                        IChatComponent component = new ChatComponentText(setting.getName());
+                        component.getChatStyle().setColor(EnumChatFormatting.GRAY);
                         component.appendSibling(typeComponent);
-                        component.getStyle()
-                                .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverComponent))
-                                .setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandSuggestion));
+                        component.getChatStyle()
+                                .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverComponent))
+                                .setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandSuggestion));
                         return component;
                     },
                     FORCE_COMMAND_PREFIX + "set " + arg + " " + search
@@ -170,23 +173,23 @@ public class SetCommand extends Command {
                         settingValueToString(setting)
                 ));
             }
-            ITextComponent oldValueComponent = new TextComponentString(String.format("Old value: %s", oldValue));
-            oldValueComponent.getStyle()
-                    .setColor(TextFormatting.GRAY)
-                    .setHoverEvent(new HoverEvent(
+            IChatComponent oldValueComponent = new ChatComponentText(String.format("Old value: %s", oldValue));
+            oldValueComponent.getChatStyle()
+                    .setColor(EnumChatFormatting.GRAY)
+                    .setChatHoverEvent(new HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            new TextComponentString("Click to set the setting back to this value")
+                            new ChatComponentText("Click to set the setting back to this value")
                     ))
-                    .setClickEvent(new ClickEvent(
+                    .setChatClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
                             FORCE_COMMAND_PREFIX + String.format("set %s %s", setting.getName(), oldValue)
                     ));
             logDirect(oldValueComponent);
             if ((setting.getName().equals("chatControl") && !(Boolean) setting.value && !Baritone.settings().chatControlAnyway.value) ||
                     setting.getName().equals("chatControlAnyway") && !(Boolean) setting.value && !Baritone.settings().chatControl.value) {
-                logDirect("Warning: Chat commands will no longer work. If you want to revert this change, use prefix control (if enabled) or click the old value listed above.", TextFormatting.RED);
+                logDirect("Warning: Chat commands will no longer work. If you want to revert this change, use prefix control (if enabled) or click the old value listed above.", EnumChatFormatting.RED);
             } else if (setting.getName().equals("prefixControl") && !(Boolean) setting.value) {
-                logDirect("Warning: Prefixed commands will no longer work. If you want to revert this change, use chat control (if enabled) or click the old value listed above.", TextFormatting.RED);
+                logDirect("Warning: Prefixed commands will no longer work. If you want to revert this change, use chat control (if enabled) or click the old value listed above.", EnumChatFormatting.RED);
             }
         }
         SettingsUtil.save(Baritone.settings());

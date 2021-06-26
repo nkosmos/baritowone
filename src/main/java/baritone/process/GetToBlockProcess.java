@@ -17,8 +17,19 @@
 
 package baritone.process;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
 import baritone.Baritone;
-import baritone.api.pathing.goals.*;
+import baritone.api.pathing.goals.Goal;
+import baritone.api.pathing.goals.GoalBlock;
+import baritone.api.pathing.goals.GoalComposite;
+import baritone.api.pathing.goals.GoalGetToBlock;
+import baritone.api.pathing.goals.GoalRunAway;
+import baritone.api.pathing.goals.GoalTwoBlocks;
 import baritone.api.process.IGetToBlockProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
@@ -33,9 +44,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerPlayer;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.*;
+import net.minecraft.util.BlockPos;
 
 public final class GetToBlockProcess extends BaritoneProcessHelper implements IGetToBlockProcess {
 
@@ -202,7 +211,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         if (walkIntoInsteadOfAdjacent(gettingTo.getBlock())) {
             return new GoalTwoBlocks(pos);
         }
-        if (blockOnTopMustBeRemoved(gettingTo.getBlock()) && baritone.bsi.get0(pos.up()).isBlockNormalCube()) {
+        if (blockOnTopMustBeRemoved(gettingTo.getBlock()) && baritone.bsi.get0(pos.up()).getBlock().isBlockNormalCube()) {
             return new GoalBlock(pos.up());
         }
         return new GoalGetToBlock(pos);
@@ -235,14 +244,14 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         if (!Baritone.settings().enterPortal.value) {
             return false;
         }
-        return block == Blocks.PORTAL;
+        return block == Blocks.portal;
     }
 
     private boolean rightClickOnArrival(Block block) {
         if (!Baritone.settings().rightClickContainerOnArrival.value) {
             return false;
         }
-        return block == Blocks.CRAFTING_TABLE || block == Blocks.FURNACE || block == Blocks.ENDER_CHEST || block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST;
+        return block == Blocks.crafting_table || block == Blocks.furnace || block == Blocks.ender_chest || block == Blocks.chest || block == Blocks.trapped_chest;
     }
 
     private boolean blockOnTopMustBeRemoved(Block block) {
@@ -250,6 +259,6 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
             return false;
         }
         // only these chests; you can open a crafting table or furnace even with a block on top
-        return block == Blocks.ENDER_CHEST || block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST;
+        return block == Blocks.ender_chest || block == Blocks.chest || block == Blocks.trapped_chest;
     }
 }

@@ -29,7 +29,7 @@ public enum EntityClassById implements IDatatypeFor<Class<? extends Entity>> {
 
     @Override
     public Class<? extends Entity> get(IDatatypeContext ctx) throws CommandException {
-        Class<? extends Entity> entity = EntityList.NAME_TO_CLASS.get(ctx.getConsumer().getString());
+        Class<? extends Entity> entity = EntityList.stringToClassMapping.get(ctx.getConsumer().getString());
         if (entity == null) {
             throw new IllegalArgumentException("no entity found by that id");
         }

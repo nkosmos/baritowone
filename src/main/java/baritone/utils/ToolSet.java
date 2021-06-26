@@ -17,23 +17,23 @@
 
 package baritone.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
 import baritone.Baritone;
-import baritone.api.utils.accessor.IItemStack;
 import baritonex.utils.XHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * A cached list of the best tools on the hotbar for any block
@@ -95,7 +95,7 @@ public class ToolSet {
     }
 
     public boolean hasSilkTouch(ItemStack stack) {
-        return EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0;
+        return EnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch.effectId, stack) > 0;
     }
 
     /**
@@ -182,16 +182,18 @@ public class ToolSet {
      * @return how long it would take in ticks
      */
     public static double calculateSpeedVsBlock(ItemStack item, IBlockState state) {
-        float hardness = state.getBlockHardness(null, null);
+    	Block block = state.getBlock();
+    	
+        float hardness = block.getBlockHardness(null, null);
         if (hardness < 0) {
             return -1;
         }
 
         float speed = 1;
         if(item != null) {
-        	speed = item.getStrVsBlock(state);
+        	speed = item.getStrVsBlock(block);
             if (speed > 1) {
-                int effLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, item);
+                int effLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency.effectId, item);
                 if (effLevel > 0 && !XHelper.isEmpty(item)) {
                     speed += effLevel * effLevel + 1;
                 }
@@ -200,7 +202,7 @@ public class ToolSet {
 
         speed /= hardness;
         
-        if (state.getMaterial().isToolNotRequired() || (!XHelper.isEmpty(item) && item.canHarvestBlock(state))) {
+        if (block.getMaterial().isToolNotRequired() || (!XHelper.isEmpty(item) && item.canHarvestBlock(block))) {
             return speed / 30;
         } else {
             return speed / 100;
@@ -214,11 +216,11 @@ public class ToolSet {
      */
     private double potionAmplifier() {
         double speed = 1;
-        if (player.isPotionActive(MobEffects.HASTE)) {
-            speed *= 1 + (player.getActivePotionEffect(MobEffects.HASTE).getAmplifier() + 1) * 0.2;
+        if (player.isPotionActive(Potion.digSpeed)) {
+            speed *= 1 + (player.getActivePotionEffect(Potion.digSpeed).getAmplifier() + 1) * 0.2;
         }
-        if (player.isPotionActive(MobEffects.MINING_FATIGUE)) {
-            switch (player.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier()) {
+        if (player.isPotionActive(Potion.digSlowdown)) {
+            switch (player.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) {
                 case 0:
                     speed *= 0.3;
                     break;

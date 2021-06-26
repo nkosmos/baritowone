@@ -17,15 +17,15 @@
 
 package baritone.api.utils;
 
+import java.util.Optional;
+
 import baritone.api.cache.IWorldData;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-
-import java.util.Optional;
 
 /**
  * @author Brady
@@ -41,7 +41,7 @@ public interface IPlayerContext {
 
     IWorldData worldData();
 
-    RayTraceResult objectMouseOver();
+    MovingObjectPosition objectMouseOver();
 
     default BetterBlockPos playerFeet() {
         // TODO find a better way to deal with soul sand!!!!!
@@ -64,12 +64,12 @@ public interface IPlayerContext {
         return feet;
     }
 
-    default Vec3d playerFeetAsVec() {
-        return new Vec3d(player().posX, player().posY, player().posZ);
+    default Vec3 playerFeetAsVec() {
+        return new Vec3(player().posX, player().posY, player().posZ);
     }
 
-    default Vec3d playerHead() {
-        return new Vec3d(player().posX, player().posY + player().getEyeHeight(), player().posZ);
+    default Vec3 playerHead() {
+        return new Vec3(player().posX, player().posY + player().getEyeHeight(), player().posZ);
     }
 
     default Rotation playerRotations() {
@@ -86,8 +86,8 @@ public interface IPlayerContext {
      * @return The position of the highlighted block
      */
     default Optional<BlockPos> getSelectedBlock() {
-        RayTraceResult result = objectMouseOver();
-        if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK) {
+    	MovingObjectPosition result = objectMouseOver();
+        if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             return Optional.of(result.getBlockPos());
         }
         return Optional.empty();

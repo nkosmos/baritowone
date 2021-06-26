@@ -17,6 +17,10 @@
 
 package baritone.utils.pathing;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import baritone.Baritone;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.IPlayerContext;
@@ -25,11 +29,7 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import net.minecraft.util.BlockPos;
 
 public class Avoidance {
 

@@ -80,7 +80,7 @@ public class FollowCommand extends Command {
                         .forEach(this::logDirect);
             } else {
                 classes.stream()
-                        .map(EntityList::getEntityStringFromClass)
+                        .map(c -> EntityList.classToStringMapping.get(c))
                         .map(Objects::requireNonNull)
                         .forEach(this::logDirect);
             }

@@ -17,18 +17,18 @@
 
 package baritone.command.defaults;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
 import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalStrictDirection;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class TunnelCommand extends Command {
 

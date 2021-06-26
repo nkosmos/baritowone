@@ -17,9 +17,18 @@
 
 package baritone.behavior;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import baritone.Baritone;
 import baritone.api.behavior.IPathingBehavior;
-import baritone.api.event.events.*;
+import baritone.api.event.events.PathEvent;
+import baritone.api.event.events.RenderEvent;
+import baritone.api.event.events.SprintStateEvent;
+import baritone.api.event.events.TickEvent;
 import baritone.api.pathing.calc.IPath;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalXZ;
@@ -36,13 +45,7 @@ import baritone.pathing.path.PathExecutor;
 import baritone.utils.PathRenderer;
 import baritone.utils.PathingCommandContext;
 import baritone.utils.pathing.Favoring;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.LinkedBlockingQueue;
+import net.minecraft.util.BlockPos;
 
 public final class PathingBehavior extends Behavior implements IPathingBehavior, Helper {
 

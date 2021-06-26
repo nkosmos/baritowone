@@ -17,12 +17,12 @@
 
 package baritone.api.utils;
 
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
-
 import javax.annotation.Nonnull;
+
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3i;
 
 /**
  * A better BlockPos that has fewer hash collisions (and slightly more performant offsets)

@@ -17,18 +17,22 @@
 
 package baritone.launch.mixins;
 
-import baritone.Baritone;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ChunkRenderContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.chunk.RenderChunk;
-import net.minecraft.util.math.BlockPos;
+import static org.lwjgl.opengl.GL11.GL_CONSTANT_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_ONE;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_CONSTANT_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_ZERO;
+
 import org.lwjgl.opengl.GL14;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import static org.lwjgl.opengl.GL11.*;
+import baritone.Baritone;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ChunkRenderContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.chunk.RenderChunk;
+import net.minecraft.util.BlockPos;
 
 @Mixin(ChunkRenderContainer.class)
 public class MixinChunkRenderContainer {

@@ -17,7 +17,7 @@
 
 package com.github.lunatrius.core.util.math;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockPos;
 
 public class MBlockPos extends BlockPos {
 

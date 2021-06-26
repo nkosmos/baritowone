@@ -73,6 +73,6 @@ public abstract class MixinItemStack implements IItemStack {
     
     @Override
     public boolean isEmpty() {
-        return (ItemStack)(Object)this == EMPTY ? true : (item != null && item != Item.getItemFromBlock(Blocks.AIR) ? (this.stackSize <= 0 ? true : this.itemDamage < -32768 || this.itemDamage > 65535) : true);
+        return (ItemStack)(Object)this == EMPTY ? true : (item != null && item != Item.getItemFromBlock(Blocks.air) ? (this.stackSize <= 0 ? true : this.itemDamage < -32768 || this.itemDamage > 65535) : true);
     }
 }

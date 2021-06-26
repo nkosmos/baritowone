@@ -17,13 +17,13 @@
 
 package baritone.api.command.datatypes;
 
+import java.util.stream.Stream;
+
 import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.utils.BetterBlockPos;
-import net.minecraft.util.math.MathHelper;
-
-import java.util.stream.Stream;
+import net.minecraft.util.MathHelper;
 
 public enum RelativeGoalBlock implements IDatatypePost<GoalBlock, BetterBlockPos> {
     INSTANCE;

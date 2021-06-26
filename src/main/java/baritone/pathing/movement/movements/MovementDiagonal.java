@@ -17,6 +17,12 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
@@ -28,17 +34,12 @@ import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.pathing.MutableMoveResult;
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class MovementDiagonal extends Movement {
 
@@ -134,16 +135,16 @@ public class MovementDiagonal extends Movement {
         }
         double multiplier = WALK_ONE_BLOCK_COST;
         // For either possible soul sand, that affects half of our walking
-        if (destWalkOn.getBlock() == Blocks.SOUL_SAND) {
+        if (destWalkOn.getBlock() == Blocks.soul_sand) {
             multiplier += (WALK_ONE_OVER_SOUL_SAND_COST - WALK_ONE_BLOCK_COST) / 2;
         } else if (destWalkOn.getBlock() == Blocks.water) {
             multiplier += context.walkOnWaterOnePenalty * SQRT_2;
         }
         Block fromDown = context.get(x, y - 1, z).getBlock();
-        if (fromDown == Blocks.LADDER || fromDown == Blocks.VINE) {
+        if (fromDown == Blocks.ladder || fromDown == Blocks.vine) {
             return;
         }
-        if (fromDown == Blocks.SOUL_SAND) {
+        if (fromDown == Blocks.soul_sand) {
             multiplier += (WALK_ONE_OVER_SOUL_SAND_COST - WALK_ONE_BLOCK_COST) / 2;
         }
         Block cuttingOver1 = context.get(x, y - 1, destZ).getBlock();
@@ -219,7 +220,7 @@ public class MovementDiagonal extends Movement {
         }
         if (optionA != 0 || optionB != 0) {
             multiplier *= SQRT_2 - 0.001; // TODO tune
-            if (startIn == Blocks.LADDER || startIn == Blocks.VINE) {
+            if (startIn == Blocks.ladder || startIn == Blocks.vine) {
                 // edging around doesn't work if doing so would climb a ladder or vine instead of moving sideways
                 return;
             }

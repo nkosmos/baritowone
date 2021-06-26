@@ -57,7 +57,7 @@ public class SubstituteSchematic extends AbstractSchematic {
         }
         for (Block substitute : substitutes) {
             if (substitute instanceof BlockAir) {
-                return current.getBlock() instanceof BlockAir ? current : Blocks.AIR.getDefaultState(); // can always "place" air
+                return current.getBlock() instanceof BlockAir ? current : Blocks.air.getDefaultState(); // can always "place" air
             }
             for (IBlockState placeable : approxPlaceable) {
                 if (substitute.equals(placeable.getBlock())) {
@@ -72,7 +72,7 @@ public class SubstituteSchematic extends AbstractSchematic {
         if (blockStateCache.containsKey(state) && blockStateCache.get(state).containsKey(block)) {
             return blockStateCache.get(state).get(block);
         }
-        Collection<IProperty<?>> properties = state.getPropertyNames();
+        Collection<IProperty> properties = state.getPropertyNames();
         IBlockState newState = block.getDefaultState();
         for (IProperty<?> property : properties) {
             try {

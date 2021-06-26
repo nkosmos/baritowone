@@ -17,6 +17,8 @@
 
 package baritone.pathing.movement;
 
+import static baritone.api.pathing.movement.ActionCosts.COST_INF;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.ActionCosts;
@@ -31,10 +33,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-
-import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
 /**
  * @author Brady

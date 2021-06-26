@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import baritone.utils.accessor.IAnvilChunkLoader;
 import baritone.utils.accessor.IChunkProviderServer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 import net.minecraft.world.gen.ChunkProviderServer;
@@ -51,6 +51,6 @@ public class MixinChunkProviderServer implements IChunkProviderServer {
 
 	@Override
 	public boolean isChunkGeneratedAt(int x, int z) {
-		return this.id2ChunkMap.containsKey(ChunkPos.chunkXZ2Int(x, z)) || ((IAnvilChunkLoader)this.chunkLoader).isChunkGeneratedAt(x, z);
+		return this.id2ChunkMap.containsKey(ChunkCoordIntPair.chunkXZ2Int(x, z)) || ((IAnvilChunkLoader)this.chunkLoader).isChunkGeneratedAt(x, z);
 	}
 }

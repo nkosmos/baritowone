@@ -18,8 +18,8 @@
 package baritone.api.utils;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 
 /**
  * @author Brady
@@ -39,19 +39,19 @@ public final class RayTraceUtils {
      * @param blockReachDistance The block reach distance of the entity
      * @return The calculated raytrace result
      */
-    public static RayTraceResult rayTraceTowards(Entity entity, Rotation rotation, double blockReachDistance) {
+    public static MovingObjectPosition rayTraceTowards(Entity entity, Rotation rotation, double blockReachDistance) {
         return rayTraceTowards(entity, rotation, blockReachDistance, false);
     }
 
-    public static RayTraceResult rayTraceTowards(Entity entity, Rotation rotation, double blockReachDistance, boolean wouldSneak) {
-        Vec3d start;
+    public static MovingObjectPosition rayTraceTowards(Entity entity, Rotation rotation, double blockReachDistance, boolean wouldSneak) {
+    	Vec3 start;
         if (wouldSneak) {
             start = inferSneakingEyePosition(entity);
         } else {
             start = entity.getPositionEyes(1.0F); // do whatever is correct
         }
-        Vec3d direction = RotationUtils.calcVec3dFromRotation(rotation);
-        Vec3d end = start.addVector(
+        Vec3 direction = RotationUtils.calcVec3dFromRotation(rotation);
+        Vec3 end = start.addVector(
                 direction.xCoord * blockReachDistance,
                 direction.yCoord * blockReachDistance,
                 direction.zCoord * blockReachDistance
@@ -59,7 +59,7 @@ public final class RayTraceUtils {
         return entity.worldObj.rayTraceBlocks(start, end, false, false, true);
     }
 
-    public static Vec3d inferSneakingEyePosition(Entity entity) {
-        return new Vec3d(entity.posX, entity.posY + IPlayerContext.eyeHeight(true), entity.posZ);
+    public static Vec3 inferSneakingEyePosition(Entity entity) {
+        return new Vec3(entity.posX, entity.posY + IPlayerContext.eyeHeight(true), entity.posZ);
     }
 }

@@ -17,6 +17,10 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
@@ -37,19 +41,15 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import net.minecraft.util.Vec3;
+import net.minecraft.util.Vec3i;
 
 public class MovementFall extends Movement {
 
     private static final ItemStack STACK_BUCKET_WATER = new ItemStack(Items.water_bucket);
-    private static final ItemStack STACK_BUCKET_EMPTY = new ItemStack(Items.BUCKET);
+    private static final ItemStack STACK_BUCKET_EMPTY = new ItemStack(Items.bucket);
 
     public MovementFall(IBaritone baritone, BetterBlockPos src, BetterBlockPos dest) {
         super(baritone, src, dest, MovementFall.buildPositionsToBreak(src, dest));
@@ -92,7 +92,7 @@ public class MovementFall extends Movement {
         Rotation toDest = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations());
         Rotation targetRotation = null;
         Block destBlock = ctx.world().getBlockState(dest).getBlock();
-        boolean isWater = destBlock == Blocks.water || destBlock == Blocks.FLOWING_WATER;
+        boolean isWater = destBlock == Blocks.water || destBlock == Blocks.flowing_water;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
             if (!InventoryPlayer.isHotbar(ctx.player().inventory.getSlotFor(STACK_BUCKET_WATER)) || ctx.world().provider.doesWaterVaporize()) {
                 return state.setStatus(MovementStatus.UNREACHABLE);
@@ -131,7 +131,7 @@ public class MovementFall extends Movement {
                 return state.setStatus(MovementStatus.SUCCESS);
             }
         }
-        Vec3d destCenter = VecUtils.getBlockPosCenter(dest); // we are moving to the 0.5 center not the edge (like if we were falling on a ladder)
+        Vec3 destCenter = VecUtils.getBlockPosCenter(dest); // we are moving to the 0.5 center not the edge (like if we were falling on a ladder)
         if (Math.abs(ctx.player().posX + ctx.player().motionX - destCenter.xCoord) > 0.1 || Math.abs(ctx.player().posZ + ctx.player().motionZ - destCenter.zCoord) > 0.1) {
             if (!ctx.player().onGround && Math.abs(ctx.player().motionY) > 0.4) {
                 state.setInput(Input.SNEAK, true);
@@ -150,7 +150,7 @@ public class MovementFall extends Movement {
             }
         }
         if (targetRotation == null) {
-            Vec3d destCenterOffset = new Vec3d(destCenter.xCoord + 0.125 * avoid.getX(), destCenter.yCoord, destCenter.zCoord + 0.125 * avoid.getZ());
+        	Vec3 destCenterOffset = new Vec3(destCenter.xCoord + 0.125 * avoid.getX(), destCenter.yCoord, destCenter.zCoord + 0.125 * avoid.getZ());
             state.setTarget(new MovementTarget(RotationUtils.calcRotationFromVec3d(ctx.playerHead(), destCenterOffset, ctx.playerRotations()), false));
         }
         return state;
@@ -159,7 +159,7 @@ public class MovementFall extends Movement {
     private EnumFacing avoid() {
         for (int i = 0; i < 15; i++) {
             IBlockState state = ctx.world().getBlockState(ctx.playerFeet().down(i));
-            if (state.getBlock() == Blocks.LADDER) {
+            if (state.getBlock() == Blocks.ladder) {
                 return state.getValue(BlockLadder.FACING);
             }
         }

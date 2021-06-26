@@ -39,7 +39,7 @@ import net.minecraft.util.BlockPos;
 public final class CachedChunk {
 
     public static final ImmutableSet<Block> BLOCKS_TO_KEEP_TRACK_OF = ImmutableSet.of(
-            Blocks.DIAMOND_BLOCK,
+            Blocks.diamond_block,
             //Blocks.COAL_ORE,
             Blocks.coal_block,
             //Blocks.IRON_ORE,

@@ -17,15 +17,15 @@
 
 package baritone.api.utils;
 
-import baritone.api.BaritoneAPI;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.stream.Stream;
+
+import baritone.api.BaritoneAPI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 
 /**
  * An ease-of-access interface to provide the {@link Minecraft} game instance,
@@ -46,16 +46,16 @@ public interface Helper {
      */
     Minecraft mc = Minecraft.getMinecraft();
 
-    static ITextComponent getPrefix() {
+    static IChatComponent getPrefix() {
         // Inner text component
         final Calendar now = Calendar.getInstance();
         final boolean xd = now.get(Calendar.MONTH) == Calendar.APRIL && now.get(Calendar.DAY_OF_MONTH) <= 3;
-        ITextComponent baritone = new TextComponentString(xd ? "Baritoe" : BaritoneAPI.getSettings().shortBaritonePrefix.value ? "B" : "Baritone");
-        baritone.getStyle().setColor(TextFormatting.LIGHT_PURPLE);
+        IChatComponent baritone = new ChatComponentText(xd ? "Baritoe" : BaritoneAPI.getSettings().shortBaritonePrefix.value ? "B" : "Baritone");
+        baritone.getChatStyle().setColor(EnumChatFormatting.LIGHT_PURPLE);
 
         // Outer brackets
-        ITextComponent prefix = new TextComponentString("");
-        prefix.getStyle().setColor(TextFormatting.DARK_PURPLE);
+        IChatComponent prefix = new ChatComponentText("");
+        prefix.getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE);
         prefix.appendText("[");
         prefix.appendSibling(baritone);
         prefix.appendText("]");
@@ -127,13 +127,13 @@ public interface Helper {
      * @param logAsToast Whether to log as a toast notification
      * @param components The components to send
      */
-    default void logDirect(boolean logAsToast, ITextComponent... components) {
-        ITextComponent component = new TextComponentString("");
+    default void logDirect(boolean logAsToast, IChatComponent... components) {
+    	IChatComponent component = new ChatComponentText("");
         if (!logAsToast) {
             // If we are not logging as a Toast
             // Append the prefix to the base component line
             component.appendSibling(getPrefix());
-            component.appendSibling(new TextComponentString(" "));
+            component.appendSibling(new ChatComponentText(" "));
         }
         Arrays.asList(components).forEach(component::appendSibling);
         mc.addScheduledTask(() -> BaritoneAPI.getSettings().logger.value.accept(component));
@@ -144,7 +144,7 @@ public interface Helper {
      *
      * @param components The components to send
      */
-    default void logDirect(ITextComponent... components) {
+    default void logDirect(IChatComponent... components) {
         logDirect(false, components);
     }
 
@@ -156,10 +156,10 @@ public interface Helper {
      * @param color      The color to print that message in
      * @param logAsToast Whether to log as a toast notification
      */
-    default void logDirect(String message, TextFormatting color, boolean logAsToast) {
+    default void logDirect(String message, EnumChatFormatting color, boolean logAsToast) {
         Stream.of(message.split("\n")).forEach(line -> {
-            ITextComponent component = new TextComponentString(line.replace("\t", "    "));
-            component.getStyle().setColor(color);
+            IChatComponent component = new ChatComponentText(line.replace("\t", "    "));
+            component.getChatStyle().setColor(color);
             logDirect(logAsToast, component);
         });
     }
@@ -171,7 +171,7 @@ public interface Helper {
      * @param message The message to display in chat
      * @param color   The color to print that message in
      */
-    default void logDirect(String message, TextFormatting color) {
+    default void logDirect(String message, EnumChatFormatting color) {
         logDirect(message, color, false);
     }
 
@@ -183,7 +183,7 @@ public interface Helper {
      * @param logAsToast Whether to log as a toast notification
      */
     default void logDirect(String message, boolean logAsToast) {
-        logDirect(message, TextFormatting.GRAY, logAsToast);
+        logDirect(message, EnumChatFormatting.GRAY, logAsToast);
     }
 
     /**

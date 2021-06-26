@@ -17,6 +17,11 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.Objects;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
@@ -30,15 +35,17 @@ import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
-import com.google.common.collect.ImmutableSet;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
+import net.minecraft.block.BlockFalling;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
-import java.util.Objects;
-import java.util.Set;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 
 public class MovementPillar extends Movement {
 
@@ -59,17 +66,17 @@ public class MovementPillar extends Movement {
     public static double cost(CalculationContext context, int x, int y, int z) {
         IBlockState fromState = context.get(x, y, z);
         Block from = fromState.getBlock();
-        boolean ladder = from == Blocks.LADDER || from == Blocks.VINE;
+        boolean ladder = from == Blocks.ladder || from == Blocks.vine;
         IBlockState fromDown = context.get(x, y - 1, z);
         if (!ladder) {
-            if (fromDown.getBlock() == Blocks.LADDER || fromDown.getBlock() == Blocks.VINE) {
+            if (fromDown.getBlock() == Blocks.ladder || fromDown.getBlock() == Blocks.vine) {
                 return COST_INF; // can't pillar from a ladder or vine onto something that isn't also climbable
             }
             if (fromDown.getBlock() instanceof BlockSlab && !((BlockSlab) fromDown.getBlock()).isDouble() && fromDown.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.BOTTOM) {
                 return COST_INF; // can't pillar up from a bottom slab onto a non ladder
             }
         }
-        if (from == Blocks.VINE && !hasAgainst(context, x, y, z)) { // TODO this vine can't be climbed, but we could place a pillar still since vines are replacable, no? perhaps the pillar jump would be impossible because of the slowdown actually.
+        if (from == Blocks.vine && !hasAgainst(context, x, y, z)) { // TODO this vine can't be climbed, but we could place a pillar still since vines are replacable, no? perhaps the pillar jump would be impossible because of the slowdown actually.
             return COST_INF;
         }
         IBlockState toBreak = context.get(x, y + 2, z);
@@ -91,7 +98,7 @@ public class MovementPillar extends Movement {
             if (placeCost >= COST_INF) {
                 return COST_INF;
             }
-            if (fromDown.getBlock() == Blocks.AIR) {
+            if (fromDown.getBlock() == Blocks.air) {
                 placeCost += 0.1; // slightly (1/200th of a second) penalize pillaring on what's currently air
             }
         }
@@ -106,7 +113,7 @@ public class MovementPillar extends Movement {
             return COST_INF;
         }
         if (hardness != 0) {
-            if (toBreakBlock == Blocks.LADDER || toBreakBlock == Blocks.VINE) {
+            if (toBreakBlock == Blocks.ladder || toBreakBlock == Blocks.vine) {
                 hardness = 0; // we won't actually need to break the ladder / vine because we're going to use it
             } else {
                 IBlockState check = context.get(x, y + 3, z); // the block on top of the one we're going to break, could it fall on us?
@@ -136,23 +143,23 @@ public class MovementPillar extends Movement {
     }
 
     public static boolean hasAgainst(CalculationContext context, int x, int y, int z) {
-        return context.get(x + 1, y, z).isBlockNormalCube() ||
-                context.get(x - 1, y, z).isBlockNormalCube() ||
-                context.get(x, y, z + 1).isBlockNormalCube() ||
-                context.get(x, y, z - 1).isBlockNormalCube();
+        return context.get(x + 1, y, z).getBlock().isBlockNormalCube() ||
+                context.get(x - 1, y, z).getBlock().isBlockNormalCube() ||
+                context.get(x, y, z + 1).getBlock().isBlockNormalCube() ||
+                context.get(x, y, z - 1).getBlock().isBlockNormalCube();
     }
 
     public static BlockPos getAgainst(CalculationContext context, BetterBlockPos vine) {
-        if (context.get(vine.north()).isBlockNormalCube()) {
+        if (context.get(vine.north()).getBlock().isBlockNormalCube()) {
             return vine.north();
         }
-        if (context.get(vine.south()).isBlockNormalCube()) {
+        if (context.get(vine.south()).getBlock().isBlockNormalCube()) {
             return vine.south();
         }
-        if (context.get(vine.east()).isBlockNormalCube()) {
+        if (context.get(vine.east()).getBlock().isBlockNormalCube()) {
             return vine.east();
         }
-        if (context.get(vine.west()).isBlockNormalCube()) {
+        if (context.get(vine.west()).getBlock().isBlockNormalCube()) {
             return vine.west();
         }
         return null;
@@ -173,7 +180,7 @@ public class MovementPillar extends Movement {
         if (MovementHelper.isWater(fromDown.getBlock()) && MovementHelper.isWater(ctx, dest)) {
             // stay centered while swimming up a water column
             state.setTarget(new MovementState.MovementTarget(RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations()), false));
-            Vec3d destCenter = VecUtils.getBlockPosCenter(dest);
+            Vec3 destCenter = VecUtils.getBlockPosCenter(dest);
             if (Math.abs(ctx.player().posX - destCenter.xCoord) > 0.2 || Math.abs(ctx.player().posZ - destCenter.zCoord) > 0.2) {
                 state.setInput(Input.MOVE_FORWARD, true);
             }
@@ -182,8 +189,8 @@ public class MovementPillar extends Movement {
             }
             return state;
         }
-        boolean ladder = fromDown.getBlock() == Blocks.LADDER || fromDown.getBlock() == Blocks.VINE;
-        boolean vine = fromDown.getBlock() == Blocks.VINE;
+        boolean ladder = fromDown.getBlock() == Blocks.ladder || fromDown.getBlock() == Blocks.vine;
+        boolean vine = fromDown.getBlock() == Blocks.vine;
         Rotation rotation = RotationUtils.calcRotationFromVec3d(ctx.playerHead(),
                 VecUtils.getBlockPosCenter(positionToPlace),
                 new Rotation(ctx.player().rotationYaw, ctx.player().rotationPitch));
@@ -246,7 +253,7 @@ public class MovementPillar extends Movement {
                 IBlockState frState = BlockStateInterface.get(ctx, src);
                 Block fr = frState.getBlock();
                 // TODO: Evaluate usage of getMaterial().isReplaceable()
-                if (!(fr instanceof BlockAir || frState.getMaterial().isReplaceable())) {
+                if (!(fr instanceof BlockAir || frState.getBlock().getMaterial().isReplaceable())) {
                     RotationUtils.reachable(ctx.player(), src, ctx.playerController().getBlockReachDistance())
                             .map(rot -> new MovementState.MovementTarget(rot, true))
                             .ifPresent(state::setTarget);
@@ -271,7 +278,7 @@ public class MovementPillar extends Movement {
     protected boolean prepared(MovementState state) {
         if (ctx.playerFeet().equals(src) || ctx.playerFeet().equals(src.down())) {
             Block block = BlockStateInterface.getBlock(ctx, src.down());
-            if (block == Blocks.LADDER || block == Blocks.VINE) {
+            if (block == Blocks.ladder || block == Blocks.vine) {
                 state.setInput(Input.SNEAK, true);
             }
         }

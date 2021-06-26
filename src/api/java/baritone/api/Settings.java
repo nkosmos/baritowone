@@ -17,6 +17,19 @@
 
 package baritone.api;
 
+import java.awt.Color;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import baritone.api.utils.NotificationHelper;
 import baritone.api.utils.SettingsUtil;
 import baritone.api.utils.TypeUtils;
@@ -24,17 +37,8 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.text.ITextComponent;
-
-import java.awt.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.BiConsumer;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.Vec3i;
 
 /**
  * Baritone's settings. Settings apply to all Baritone instances.
@@ -173,10 +177,10 @@ public final class Settings {
      * Blocks that Baritone is allowed to place (as throwaway, for sneak bridging, pillaring, etc.)
      */
     public final Setting<List<Item>> acceptableThrowawayItems = new Setting<>(new ArrayList<>(Arrays.asList(
-            Item.getItemFromBlock(Blocks.DIRT),
-            Item.getItemFromBlock(Blocks.COBBLESTONE),
-            Item.getItemFromBlock(Blocks.NETHERRACK),
-            Item.getItemFromBlock(Blocks.STONE)
+            Item.getItemFromBlock(Blocks.dirt),
+            Item.getItemFromBlock(Blocks.cobblestone),
+            Item.getItemFromBlock(Blocks.netherrack),
+            Item.getItemFromBlock(Blocks.stone)
     )));
 
     /**
@@ -190,13 +194,13 @@ public final class Settings {
      * Blocks that Baritone is not allowed to break
      */
     public final Setting<List<Block>> blocksToAvoidBreaking = new Setting<>(new ArrayList<>(Arrays.asList( // TODO can this be a HashSet or ImmutableSet?
-            Blocks.CRAFTING_TABLE,
-            Blocks.FURNACE,
-            Blocks.LIT_FURNACE,
-            Blocks.CHEST,
-            Blocks.TRAPPED_CHEST,
-            Blocks.STANDING_SIGN,
-            Blocks.WALL_SIGN
+            Blocks.crafting_table,
+            Blocks.furnace,
+            Blocks.lit_furnace,
+            Blocks.chest,
+            Blocks.trapped_chest,
+            Blocks.standing_sign,
+            Blocks.wall_sign
     )));
 
     /**
@@ -1070,7 +1074,7 @@ public final class Settings {
      * via {@link Consumer#andThen(Consumer)} or it can completely be overriden via setting
      * {@link Setting#value};
      */
-    public final Setting<Consumer<ITextComponent>> logger = new Setting<>(Minecraft.getMinecraft().ingameGUI.getChatGUI()::printChatMessage);
+    public final Setting<Consumer<IChatComponent>> logger = new Setting<>(Minecraft.getMinecraft().ingameGUI.getChatGUI()::printChatMessage);
 
     /**
      * The function that is called when Baritone will send a desktop notification. This function can be added to

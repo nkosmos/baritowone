@@ -44,7 +44,7 @@ import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Vec3;
 
 public class MovementTraverse extends Movement {
 
@@ -85,12 +85,12 @@ public class MovementTraverse extends Movement {
                 WC = context.waterWalkSpeed;
                 water = true;
             } else {
-                if (destOn.getBlock() == Blocks.SOUL_SAND) {
+                if (destOn.getBlock() == Blocks.soul_sand) {
                     WC += (WALK_ONE_OVER_SOUL_SAND_COST - WALK_ONE_BLOCK_COST) / 2;
-                } else if (destOn.getBlock() == Blocks.WATER) {
+                } else if (destOn.getBlock() == Blocks.water) {
                     WC += context.walkOnWaterOnePenalty;
                 }
-                if (srcDown == Blocks.SOUL_SAND) {
+                if (srcDown == Blocks.soul_sand) {
                     WC += (WALK_ONE_OVER_SOUL_SAND_COST - WALK_ONE_BLOCK_COST) / 2;
                 }
             }
@@ -108,13 +108,13 @@ public class MovementTraverse extends Movement {
                 }
                 return WC;
             }
-            if (srcDown == Blocks.LADDER || srcDown == Blocks.VINE) {
+            if (srcDown == Blocks.ladder || srcDown == Blocks.vine) {
                 hardness1 *= 5;
                 hardness2 *= 5;
             }
             return WC + hardness1 + hardness2;
         } else {//this is a bridge, so we need to place a block
-            if (srcDown == Blocks.LADDER || srcDown == Blocks.VINE) {
+            if (srcDown == Blocks.ladder || srcDown == Blocks.vine) {
                 return COST_INF;
             }
             if (MovementHelper.isReplaceable(destX, y - 1, destZ, destOn, context.bsi)) {
@@ -145,10 +145,10 @@ public class MovementTraverse extends Movement {
                     }
                 }
                 // now that we've checked all possible directions to side place, we actually need to backplace
-                if (srcDown == Blocks.SOUL_SAND || (srcDown instanceof BlockSlab && !((BlockSlab) srcDown).isDouble())) {
+                if (srcDown == Blocks.soul_sand || (srcDown instanceof BlockSlab && !((BlockSlab) srcDown).isDouble())) {
                     return COST_INF; // can't sneak and backplace against soul sand or half slabs (regardless of whether it's top half or bottom half) =/
                 }
-                if (srcDown == Blocks.FLOWING_WATER || srcDown == Blocks.WATER) {
+                if (srcDown == Blocks.flowing_water || srcDown == Blocks.water) {
                     return COST_INF; // this is obviously impossible
                 }
                 WC = WC * (SNEAK_ONE_BLOCK_COST / WALK_ONE_BLOCK_COST);//since we are sneak backplacing, we are sneaking lol
@@ -193,7 +193,7 @@ public class MovementTraverse extends Movement {
             // it's safe to do this since the two blocks we break (in a traverse) are right on top of each other and so will have the same yaw
             float yawToDest = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.calculateBlockCenter(ctx.world(), dest), ctx.playerRotations()).getYaw();
             float pitchToBreak = state.getTarget().getRotation().get().getPitch();
-            if ((pb0.isFullCube() || pb0.getBlock() instanceof BlockAir && (pb1.isFullCube() || pb1.getBlock() instanceof BlockAir))) {
+            if ((pb0.getBlock().isFullCube() || pb0.getBlock() instanceof BlockAir && (pb1.getBlock().isFullCube() || pb1.getBlock() instanceof BlockAir))) {
                 // in the meantime, before we're right up against the block, we can break efficiently at this angle
                 pitchToBreak = 26;
             }
@@ -207,12 +207,12 @@ public class MovementTraverse extends Movement {
         state.setInput(Input.SNEAK, false);
 
         Block fd = BlockStateInterface.get(ctx, src.down()).getBlock();
-        boolean ladder = fd == Blocks.LADDER || fd == Blocks.VINE;
+        boolean ladder = fd == Blocks.ladder || fd == Blocks.vine;
 
         if (pb0.getBlock() instanceof BlockDoor || pb1.getBlock() instanceof BlockDoor) {
 
             boolean notPassable = pb0.getBlock() instanceof BlockDoor && !MovementHelper.isDoorPassable(ctx, src, dest) || pb1.getBlock() instanceof BlockDoor && !MovementHelper.isDoorPassable(ctx, dest, src);
-            boolean canOpen = !(Blocks.IRON_DOOR.equals(pb0.getBlock()) || Blocks.IRON_DOOR.equals(pb1.getBlock()));
+            boolean canOpen = !(Blocks.iron_door.equals(pb0.getBlock()) || Blocks.iron_door.equals(pb1.getBlock()));
 
             if (notPassable && canOpen) {
                 return state.setTarget(new MovementState.MovementTarget(RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.calculateBlockCenter(ctx.world(), positionsToBreak[0]), ctx.playerRotations()), true))
@@ -251,7 +251,7 @@ public class MovementTraverse extends Movement {
             }
             Block low = BlockStateInterface.get(ctx, src).getBlock();
             Block high = BlockStateInterface.get(ctx, src.up()).getBlock();
-            if (ctx.player().posY > src.y + 0.1D && !ctx.player().onGround && (low == Blocks.VINE || low == Blocks.LADDER || high == Blocks.VINE || high == Blocks.LADDER)) {
+            if (ctx.player().posY > src.y + 0.1D && !ctx.player().onGround && (low == Blocks.vine || low == Blocks.ladder || high == Blocks.vine || high == Blocks.ladder)) {
                 // hitting W could cause us to climb the ladder instead of going forward
                 // wait until we're on the ground
                 return state;
@@ -265,7 +265,7 @@ public class MovementTraverse extends Movement {
 
             IBlockState destDown = BlockStateInterface.get(ctx, dest.down());
             BlockPos against = positionsToBreak[0];
-            if (feet.getY() != dest.getY() && ladder && (destDown.getBlock() == Blocks.VINE || destDown.getBlock() == Blocks.LADDER)) {
+            if (feet.getY() != dest.getY() && ladder && (destDown.getBlock() == Blocks.vine || destDown.getBlock() == Blocks.ladder)) {
                 against = destDown.getBlock() == Blocks.vine ? MovementPillar.getAgainst(new CalculationContext(baritone), dest.down()) : dest.offset(destDown.getValue(BlockLadder.FACING).getOpposite());
                 if (against == null) {
                     logDirect("Unable to climb vines. Consider disabling allowVines.");
@@ -323,7 +323,7 @@ public class MovementTraverse extends Movement {
                 // faceX, faceY, faceZ is the middle of the face between from and to
                 BlockPos goalLook = src.down(); // this is the block we were just standing on, and the one we want to place against
 
-                Rotation backToFace = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), new Vec3d(faceX, faceY, faceZ), ctx.playerRotations());
+                Rotation backToFace = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), new Vec3(faceX, faceY, faceZ), ctx.playerRotations());
                 float pitch = backToFace.getPitch();
                 double dist2 = Math.max(Math.abs(ctx.player().posX - faceX), Math.abs(ctx.player().posZ - faceZ));
                 if (dist2 < 0.29) { // see issue #208

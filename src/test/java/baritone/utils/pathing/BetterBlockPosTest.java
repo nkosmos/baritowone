@@ -17,13 +17,14 @@
 
 package baritone.utils.pathing;
 
-import baritone.api.utils.BetterBlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+import baritone.api.utils.BetterBlockPos;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 
 public class BetterBlockPosTest {
 

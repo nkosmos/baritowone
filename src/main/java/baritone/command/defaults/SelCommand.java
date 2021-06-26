@@ -17,6 +17,15 @@
 
 package baritone.command.defaults;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
@@ -30,27 +39,26 @@ import baritone.api.command.exception.CommandInvalidTypeException;
 import baritone.api.command.helpers.TabCompleteHelper;
 import baritone.api.event.events.RenderEvent;
 import baritone.api.event.listener.AbstractGameEventListener;
-import baritone.api.schematic.*;
+import baritone.api.schematic.CompositeSchematic;
+import baritone.api.schematic.FillSchematic;
+import baritone.api.schematic.ISchematic;
+import baritone.api.schematic.ReplaceSchematic;
+import baritone.api.schematic.ShellSchematic;
+import baritone.api.schematic.WallsSchematic;
 import baritone.api.selection.ISelection;
 import baritone.api.selection.ISelectionManager;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMeta;
 import baritone.api.utils.BlockOptionalMetaLookup;
-import baritone.utils.IRenderer;
 import baritone.utils.BlockStateInterface;
+import baritone.utils.IRenderer;
 import baritone.utils.schematic.StaticSchematic;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
-
-import java.awt.*;
-import java.util.List;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import net.minecraft.util.Vec3i;
 
 public class SelCommand extends Command {
 
@@ -119,7 +127,7 @@ public class SelCommand extends Command {
             }
         } else if (action == Action.SET || action == Action.WALLS || action == Action.SHELL || action == Action.CLEARAREA || action == Action.REPLACE) {
             BlockOptionalMeta type = action == Action.CLEARAREA
-                    ? new BlockOptionalMeta(Blocks.AIR)
+                    ? new BlockOptionalMeta(Blocks.air)
                     : args.getDatatypeFor(ForBlockOptionalMeta.INSTANCE);
             BlockOptionalMetaLookup replaces = null;
             if (action == Action.REPLACE) {

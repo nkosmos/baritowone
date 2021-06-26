@@ -17,22 +17,25 @@
 
 package baritone.cache;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import baritone.api.cache.ICachedWorld;
 import baritone.api.cache.IWorldScanner;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
-import baritone.utils.accessor.IBlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-
-import java.util.*;
-import java.util.stream.IntStream;
 
 public enum WorldScanner implements IWorldScanner {
 
@@ -93,7 +96,7 @@ public enum WorldScanner implements IWorldScanner {
     }
 
     @Override
-    public List<BlockPos> scanChunk(IPlayerContext ctx, BlockOptionalMetaLookup filter, ChunkPos pos, int max, int yLevelThreshold) {
+    public List<BlockPos> scanChunk(IPlayerContext ctx, BlockOptionalMetaLookup filter, ChunkCoordIntPair pos, int max, int yLevelThreshold) {
         if (filter.blocks().isEmpty()) {
             return Collections.emptyList();
         }
@@ -156,7 +159,7 @@ public enum WorldScanner implements IWorldScanner {
                 continue;
             }
             int yReal = y0 << 4;
-            IBlockStateContainer bsc = (IBlockStateContainer) extendedblockstorage.getData();
+            char[] bsc = extendedblockstorage.getData();
             // storageArray uses an optimized algorithm that's faster than getAt
             // creating this array and then using getAtPalette is faster than even getFast(int index)
             int[] storage = bsc.storageArray();

@@ -32,7 +32,7 @@ public enum BlockById implements IDatatypeFor<Block> {
     public Block get(IDatatypeContext ctx) throws CommandException {
         ResourceLocation id = new ResourceLocation(ctx.getConsumer().getString());
         Block block;
-        if ((block = Block.REGISTRY.getObject(id)) == Blocks.AIR) {
+        if ((block = Block.blockRegistry.getObject(id)) == Blocks.air) {
             throw new IllegalArgumentException("no block found by that id");
         }
         return block;
@@ -42,7 +42,7 @@ public enum BlockById implements IDatatypeFor<Block> {
     public Stream<String> tabComplete(IDatatypeContext ctx) throws CommandException {
         return new TabCompleteHelper()
                 .append(
-                        Block.REGISTRY.getKeys()
+                        Block.blockRegistry.getKeys()
                                 .stream()
                                 .map(Object::toString)
                 )

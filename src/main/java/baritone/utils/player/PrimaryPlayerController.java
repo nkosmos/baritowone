@@ -23,13 +23,10 @@ import baritone.utils.accessor.IPlayerControllerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings.GameType;
 
@@ -64,7 +61,7 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
     }
 
     @Override
-    public ItemStack windowClick(int windowId, int slotId, int mouseButton, ClickType type, EntityPlayer player) {
+    public ItemStack windowClick(int windowId, int slotId, int mouseButton, int type, EntityPlayer player) {
         return mc.playerController.windowClick(windowId, slotId, mouseButton, type, player);
     }
 
@@ -74,13 +71,13 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
     }
 
     @Override
-    public EnumActionResult processRightClickBlock(EntityPlayerSP player, World world, BlockPos pos, EnumFacing direction, Vec3d vec, EnumHand hand) {
-        return mc.playerController.processRightClickBlock(player, (WorldClient) world, player.getHeldItem(hand), pos, direction, vec, hand);
+    public boolean processRightClickBlock(EntityPlayerSP player, World world, BlockPos pos, EnumFacing direction, Vec3 vec) {
+        return mc.playerController.onPlayerRightClick(player, (WorldClient) world, player.getHeldItem(), pos, direction, vec);
     }
 
     @Override
-    public EnumActionResult processRightClick(EntityPlayerSP player, World world, EnumHand hand) {
-        return mc.playerController.processRightClick(player, world, player.getHeldItem(hand), hand);
+    public boolean processRightClick(EntityPlayerSP player, World world) {
+        return mc.playerController.sendUseItem(player, world, player.getHeldItem());
     }
 
     @Override
