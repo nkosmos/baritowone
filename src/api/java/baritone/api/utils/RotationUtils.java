@@ -195,7 +195,7 @@ public final class RotationUtils {
         }
 
         IBlockState state = entity.worldObj.getBlockState(pos);
-        AxisAlignedBB aabb = state.getBlock().getCollisionBoundingBox(entity.worldObj, pos, state);
+        AxisAlignedBB aabb = state.getBlock().getSelectedBoundingBox(entity.worldObj, pos);
         for (Vec3 sideOffset : BLOCK_SIDE_MULTIPLIERS) {
         	double xDiff = (aabb.minX - pos.getX()) * sideOffset.xCoord + (aabb.maxX - pos.getX()) * (1 - sideOffset.xCoord);
             double yDiff = (aabb.minY - pos.getY()) * sideOffset.yCoord + (aabb.maxY - pos.getY()) * (1 - sideOffset.yCoord);

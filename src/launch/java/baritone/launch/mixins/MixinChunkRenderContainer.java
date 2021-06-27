@@ -41,7 +41,7 @@ public class MixinChunkRenderContainer {
             method = "preRenderChunk",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/client/renderer/chunk/RenderChunk.getPosition()Lnet/minecraft/util/math/BlockPos;"
+                    target = "net/minecraft/client/renderer/chunk/RenderChunk.getPosition()Lnet/minecraft/util/BlockPos;"
             )
     )
     private BlockPos getPosition(RenderChunk renderChunkIn) {

@@ -73,7 +73,7 @@ public class MixinRenderChunk {
             method = "rebuildChunk",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/world/ChunkCache.getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;"
+                    target = "net/minecraft/world/ChunkCache.getBlockState(Lnet/minecraft/util/BlockPos;)Lnet/minecraft/block/state/IBlockState;"
             )
     )
     private IBlockState getBlockState(ChunkCache chunkCache, BlockPos pos) {

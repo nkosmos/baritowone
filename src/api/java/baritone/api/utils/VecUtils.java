@@ -43,10 +43,10 @@ public final class VecUtils {
      */
     public static Vec3 calculateBlockCenter(World world, BlockPos pos) {
         IBlockState b = world.getBlockState(pos);
-        AxisAlignedBB bbox = b.getBlock().getCollisionBoundingBox(world, pos, b);
-        double xDiff = (bbox.minX + bbox.maxX) / 2;
-        double yDiff = (bbox.minY + bbox.maxY) / 2;
-        double zDiff = (bbox.minZ + bbox.maxZ) / 2;
+        AxisAlignedBB bbox = b.getBlock().getSelectedBoundingBox(world, pos);
+        double xDiff = (bbox.maxX - bbox.minX) / 2;
+        double yDiff = (bbox.maxY - bbox.minY) / 2;
+        double zDiff = (bbox.maxZ - bbox.minZ) / 2;
         if (b.getBlock() instanceof BlockFire) {//look at bottom of fire when putting it out
             yDiff = 0;
         }

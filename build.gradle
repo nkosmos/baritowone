@@ -143,7 +143,7 @@ jar {
 processResources {
 	rename '(.+_at.cfg)', 'META-INF/$1'
 }
-
+/*
 task proguard(type: ProguardTask) {
     url 'https://downloads.sourceforge.net/project/proguard/proguard/6.0/proguard6.0.3.zip'
     extract 'proguard6.0.3/lib/proguard.jar'
@@ -174,3 +174,5 @@ install {
 }
 
 install.dependsOn(build)
+
+*/

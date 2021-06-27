@@ -67,7 +67,7 @@ public class MixinMinecraft {
                     value = "FIELD",
                     opcode = Opcodes.GETFIELD,
                     target = "net/minecraft/client/Minecraft.currentScreen:Lnet/minecraft/client/gui/GuiScreen;",
-                    ordinal = 5,
+                    ordinal = 4,
                     shift = At.Shift.BY,
                     by = -3
             )
@@ -131,7 +131,6 @@ public class MixinMinecraft {
             )
     )
     private boolean isAllowUserInput(GuiScreen screen) {
-    	System.out.println("> yes");
         // allow user input is only the primary baritone
         return (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && thePlayer != null) || screen.allowUserInput;
     }
