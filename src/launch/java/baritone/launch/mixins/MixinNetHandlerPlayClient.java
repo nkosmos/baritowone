@@ -34,7 +34,6 @@ import net.minecraft.network.play.server.S21PacketChunkData;
 import net.minecraft.network.play.server.S22PacketMultiBlockChange;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.network.play.server.S42PacketCombatEvent;
-import net.minecraft.network.play.server.S42PacketCombatEvent.Event;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 

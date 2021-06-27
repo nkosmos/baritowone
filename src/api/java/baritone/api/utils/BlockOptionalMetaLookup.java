@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import baritonex.utils.XHelper;
+
 public class BlockOptionalMetaLookup {
 
     private final BlockOptionalMeta[] boms;
@@ -72,6 +74,8 @@ public class BlockOptionalMetaLookup {
     }
 
     public boolean has(ItemStack stack) {
+    	if(XHelper.isEmpty(stack)) return false;
+    	
         for (BlockOptionalMeta bom : boms) {
             if (bom.matches(stack)) {
                 return true;

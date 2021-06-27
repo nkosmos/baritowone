@@ -75,6 +75,11 @@ minecraft {
     makeObfSourceJar = true
 }
 
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
 repositories {
     mavenCentral()
 
@@ -90,10 +95,10 @@ repositories {
 }
 
 dependencies {
-	implementation fileTree(dir: 'libs', include: '*.jar')
+	shade fileTree(dir: 'libs', include: '*.jar')
 
-    runtime launchCompile('com.github.ImpactDevelopment:SimpleTweaker:1.2')
-    runtime launchCompile('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+    shade('com.github.ImpactDevelopment:SimpleTweaker:1.2')
+    shade('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
         // Mixin includes a lot of dependencies that are too up-to-date
         exclude module: 'launchwrapper'
         exclude module: 'guava'
@@ -101,6 +106,7 @@ dependencies {
         exclude module: 'commons-io'
         exclude module: 'log4j-core'
     }
+    
     testImplementation 'junit:junit:4.12'
 }
 
@@ -134,9 +140,19 @@ jar {
 
                 'Implementation-Title': 'Baritone',
                 'Implementation-Version': version,
-                'TweakClass': 'baritone.launch.BaritoneTweaker',
-                'FMLAT': 'baritone_at.cfg'
+                
+                'FMLAT': 'baritone_at.cfg',
+                
+                'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            	'TweakOrder': 0,
+            	'FMLCorePluginContainsFMLMod': 'baritone.launch.BaritoneTweaker'
         )
+    }
+    
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF/*.*'
+        }
     }
 }
 

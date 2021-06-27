@@ -51,6 +51,7 @@ import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.BaritoneProcessHelper;
 import baritone.utils.BlockStateInterface;
+import baritonex.utils.XHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockFalling;
@@ -91,6 +92,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         if (desiredQuantity > 0) {
             int curr = Arrays.stream(ctx.player().inventory.mainInventory)
+            		.filter(stack -> !XHelper.isEmpty(stack))
                     .filter(stack -> filter.has(stack))
                     .mapToInt(is -> is.stackSize).sum();
             System.out.println("Currently have " + curr + " valid items");
