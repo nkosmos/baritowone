@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import baritone.utils.accessor.IAnvilChunkLoader;
 import baritone.utils.accessor.IChunkProviderServer;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.IChunkLoader;
@@ -41,8 +41,7 @@ public class MixinChunkProviderServer implements IChunkProviderServer {
     private IChunkLoader chunkLoader;
 
     @Shadow
-    @Final
-    private Long2ObjectMap<Chunk> id2ChunkMap;
+    private LongHashMap<Chunk> id2ChunkMap;
     
     @Override
     public IChunkLoader getChunkLoader() {
@@ -51,6 +50,6 @@ public class MixinChunkProviderServer implements IChunkProviderServer {
 
 	@Override
 	public boolean isChunkGeneratedAt(int x, int z) {
-		return this.id2ChunkMap.containsKey(ChunkCoordIntPair.chunkXZ2Int(x, z)) || ((IAnvilChunkLoader)this.chunkLoader).isChunkGeneratedAt(x, z);
+		return this.id2ChunkMap.containsItem(ChunkCoordIntPair.chunkXZ2Int(x, z)) || ((IAnvilChunkLoader)this.chunkLoader).isChunkGeneratedAt(x, z);
 	}
 }

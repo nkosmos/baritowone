@@ -22,13 +22,12 @@ import baritone.api.utils.IPlayerContext;
 import baritone.cache.CachedRegion;
 import baritone.cache.WorldData;
 import baritone.utils.accessor.IChunkProviderClient;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -41,7 +40,7 @@ import net.minecraft.world.chunk.Chunk;
  */
 public class BlockStateInterface {
 
-    private final Long2ObjectMap<Chunk> loadedChunks;
+    private final LongHashMap<Chunk> loadedChunks;
     private final WorldData worldData;
     protected final IBlockAccess world;
     public final BlockPos.MutableBlockPos isPassableBlockPos;
@@ -65,9 +64,9 @@ public class BlockStateInterface {
     public BlockStateInterface(World world, WorldData worldData, boolean copyLoadedChunks) {
         this.world = world;
         this.worldData = worldData;
-        Long2ObjectMap<Chunk> worldLoaded = ((IChunkProviderClient) world.getChunkProvider()).loadedChunks();
+        LongHashMap<Chunk> worldLoaded = ((IChunkProviderClient) world.getChunkProvider()).loadedChunks();
         if (copyLoadedChunks) {
-            this.loadedChunks = new Long2ObjectOpenHashMap<>(worldLoaded); // make a copy that we can safely access from another thread
+            this.loadedChunks = clone(worldLoaded); // make a copy that we can safely access from another thread
         } else {
             this.loadedChunks = worldLoaded; // this will only be used on the main thread
         }
@@ -78,9 +77,20 @@ public class BlockStateInterface {
         this.isPassableBlockPos = new BlockPos.MutableBlockPos();
         this.access = new BlockStateInterfaceAccessWrapper(this);
     }
+    
+    private <T> LongHashMap<T> clone(LongHashMap<T> original){
+    	LongHashMap<T> coolMap = new LongHashMap();
+    	coolMap.capacity = original.capacity;
+    	coolMap.hashArray = original.hashArray;
+    	coolMap.mask = original.mask;
+    	coolMap.modCount = original.modCount;
+    	coolMap.numHashElements = original.numHashElements;
+    	coolMap.percentUseable = original.percentUseable; 
+    	return coolMap;
+    }
 
     public boolean worldContainsLoadedChunk(int blockX, int blockZ) {
-        return loadedChunks.containsKey(ChunkCoordIntPair.chunkXZ2Int(blockX >> 4, blockZ >> 4));
+        return loadedChunks.containsItem(ChunkCoordIntPair.chunkXZ2Int(blockX >> 4, blockZ >> 4));
     }
 
     public static Block getBlock(IPlayerContext ctx, BlockPos pos) { // won't be called from the pathing thread because the pathing thread doesn't make a single blockpos pog
@@ -115,7 +125,7 @@ public class BlockStateInterface {
             if (cached != null && cached.xPosition == x >> 4 && cached.zPosition == z >> 4) {
                 return cached.getBlockState(new BlockPos(x, y, z));
             }
-            Chunk chunk = loadedChunks.get(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
+            Chunk chunk = loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 
             if (chunk != null && chunk.isLoaded()) {
                 prev = chunk;
@@ -148,7 +158,7 @@ public class BlockStateInterface {
         if (prevChunk != null && prevChunk.xPosition == x >> 4 && prevChunk.zPosition == z >> 4) {
             return true;
         }
-        prevChunk = loadedChunks.get(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
+        prevChunk = loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
         if (prevChunk != null && prevChunk.isLoaded()) {
             prev = prevChunk;
             return true;

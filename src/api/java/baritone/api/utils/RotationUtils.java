@@ -197,9 +197,9 @@ public final class RotationUtils {
         IBlockState state = entity.worldObj.getBlockState(pos);
         AxisAlignedBB aabb = state.getBlock().getCollisionBoundingBox(entity.worldObj, pos, state);
         for (Vec3 sideOffset : BLOCK_SIDE_MULTIPLIERS) {
-            double xDiff = aabb.minX * sideOffset.xCoord + aabb.maxX * (1 - sideOffset.xCoord);
-            double yDiff = aabb.minY * sideOffset.yCoord + aabb.maxY * (1 - sideOffset.yCoord);
-            double zDiff = aabb.minZ * sideOffset.zCoord + aabb.maxZ * (1 - sideOffset.zCoord);
+        	double xDiff = (aabb.minX - pos.getX()) * sideOffset.xCoord + (aabb.maxX - pos.getX()) * (1 - sideOffset.xCoord);
+            double yDiff = (aabb.minY - pos.getY()) * sideOffset.yCoord + (aabb.maxY - pos.getY()) * (1 - sideOffset.yCoord);
+            double zDiff = (aabb.minZ - pos.getZ()) * sideOffset.zCoord + (aabb.maxZ - pos.getZ()) * (1 - sideOffset.zCoord);
             possibleRotation = reachableOffset(entity, pos, new Vec3(pos).addVector(xDiff, yDiff, zDiff), blockReachDistance, wouldSneak);
             if (possibleRotation.isPresent()) {
                 return possibleRotation;

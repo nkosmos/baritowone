@@ -17,13 +17,12 @@
 
 package baritone.launch.mixins;
 
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import baritone.utils.accessor.IChunkProviderClient;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
+import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 
@@ -31,16 +30,15 @@ import net.minecraft.world.chunk.Chunk;
 public class MixinChunkProviderClient implements IChunkProviderClient {
 
     @Shadow
-    @Final
-    private Long2ObjectMap<Chunk> chunkMapping;
+    private LongHashMap<Chunk> chunkMapping;
 
     @Override
-    public Long2ObjectMap<Chunk> loadedChunks() {
+    public LongHashMap<Chunk> loadedChunks() {
         return this.chunkMapping;
     }
 
 	@Override
 	public boolean isChunkGeneratedAt(int x, int z) {
-		return this.chunkMapping.containsKey(ChunkCoordIntPair.chunkXZ2Int(x, z));
+		return this.chunkMapping.containsItem(ChunkCoordIntPair.chunkXZ2Int(x, z));
 	}
 }

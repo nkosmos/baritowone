@@ -34,6 +34,7 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
@@ -73,7 +74,7 @@ public final class ChunkPacker {
                     for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
                             int index = CachedChunk.getPositionIndex(x, y, z);
-                            IBlockState state = extendedblockstorage.get(x, y, z);
+                            IBlockState state = extendedblockstorage.get(x, y1, z);
                             boolean[] bits = getPathingBlockType(state, chunk, x, y, z).getBits();
                             bitSet.set(index, bits[0]);
                             bitSet.set(index + 1, bits[1]);
@@ -129,9 +130,13 @@ public final class ChunkPacker {
                 return PathingBlockType.AVOID;
             }
             if (x == 0 || x == 15 || z == 0 || z == 15) {
-                if (BlockLiquid.getFlowDirection(chunk.getWorld(), new BlockPos(x + (chunk.xPosition << 4), y, z + (chunk.zPosition << 4)), state.getBlock().getMaterial()) == -1000.0F) {
-                    return PathingBlockType.WATER;
-                }
+            	World world = chunk.getWorld();
+        		BlockPos bp = new BlockPos(x + chunk.xPosition << 4, y, z + chunk.zPosition << 4);
+        		if(world.getBlockState(bp).getProperties().containsKey(BlockLiquid.LEVEL)) {
+        			if (BlockLiquid.getFlowDirection(world, bp, state.getBlock().getMaterial()) == -1000.0F) {
+        				return PathingBlockType.WATER;
+        			}
+        		}
                 return PathingBlockType.AVOID;
             }
             return PathingBlockType.WATER;

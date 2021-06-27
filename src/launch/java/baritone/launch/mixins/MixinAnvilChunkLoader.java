@@ -44,7 +44,6 @@ public class MixinAnvilChunkLoader implements IAnvilChunkLoader {
     private File chunkSaveLocation;
     
     @Shadow
-    @Final
     private Map<ChunkCoordIntPair, NBTTagCompound> chunksToRemove;
 
     @Override

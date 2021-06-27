@@ -70,6 +70,9 @@ public class MixinEntityPlayerSP {
         IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityPlayerSP) (Object) this);
         if (baritone != null) {
             baritone.getGameEventHandler().onPlayerUpdate(new PlayerUpdateEvent(EventState.PRE));
+            if (baritone != null) {
+                ((LookBehavior) baritone.getLookBehavior()).pig();
+            }
         }
     }
 
@@ -126,18 +129,5 @@ public class MixinEntityPlayerSP {
             return false;
         }
         return keyBinding.isKeyDown();
-    }
-
-    @Inject(
-            method = "updateRidden",
-            at = @At(
-                    value = "HEAD"
-            )
-    )
-    private void updateRidden(CallbackInfo cb) {
-        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityPlayerSP) (Object) this);
-        if (baritone != null) {
-            ((LookBehavior) baritone.getLookBehavior()).pig();
-        }
     }
 }

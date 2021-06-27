@@ -33,8 +33,6 @@ public class PlayerMovementInput extends MovementInput {
         this.moveStrafe = 0.0F;
         this.moveForward = 0.0F;
         
-        // MovementInputFromOptions
-
         jump = handler.isInputForcedDown(Input.JUMP); // oppa gangnam style
 
         if (handler.isInputForcedDown(Input.MOVE_FORWARD)) {
