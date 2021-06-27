@@ -37,7 +37,6 @@ import net.minecraft.world.gen.ChunkProviderServer;
 public class MixinChunkProviderServer implements IChunkProviderServer {
 
     @Shadow
-    @Final
     private IChunkLoader chunkLoader;
 
     @Shadow
