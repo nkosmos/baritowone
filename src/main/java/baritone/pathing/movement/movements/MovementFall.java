@@ -94,7 +94,7 @@ public class MovementFall extends Movement {
         Block destBlock = ctx.world().getBlockState(dest).getBlock();
         boolean isWater = destBlock == Blocks.water || destBlock == Blocks.flowing_water;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
-            if (!XHelper.isHotbar(XHelper.getSlotFor(ctx.player(), STACK_BUCKET_WATER)) || ctx.world().provider.doesWaterVaporize()) {
+            if (!XHelper.isHotbar(XHelper.getSlotFor(ctx.player(), STACK_BUCKET_WATER)) || ctx.world().provider.isHellWorld) {
                 return state.setStatus(MovementStatus.UNREACHABLE);
             }
 
