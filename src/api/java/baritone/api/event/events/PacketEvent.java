@@ -47,12 +47,12 @@ public final class PacketEvent {
         return this.state;
     }
 
-    public final Packet<?> getPacket() {
+    public final Packet getPacket() {
         return this.packet;
     }
 
     @SuppressWarnings("unchecked")
-    public final <T extends Packet<?>> T cast() {
+    public final <T extends Packet> T cast() {
         return (T) this.packet;
     }
 }
