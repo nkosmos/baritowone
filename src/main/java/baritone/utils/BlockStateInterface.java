@@ -40,7 +40,7 @@ import net.minecraft.world.chunk.Chunk;
  */
 public class BlockStateInterface {
 
-    private final LongHashMap<Chunk> loadedChunks;
+    private final LongHashMap loadedChunks;
     private final WorldData worldData;
     protected final IBlockAccess world;
     public final BlockPos.MutableBlockPos isPassableBlockPos;
@@ -64,7 +64,7 @@ public class BlockStateInterface {
     public BlockStateInterface(World world, WorldData worldData, boolean copyLoadedChunks) {
         this.world = world;
         this.worldData = worldData;
-        LongHashMap<Chunk> worldLoaded = ((IChunkProviderClient) world.getChunkProvider()).loadedChunks();
+        LongHashMap worldLoaded = ((IChunkProviderClient) world.getChunkProvider()).loadedChunks();
         if (copyLoadedChunks) {
             this.loadedChunks = clone(worldLoaded); // make a copy that we can safely access from another thread
         } else {
@@ -78,11 +78,10 @@ public class BlockStateInterface {
         this.access = new BlockStateInterfaceAccessWrapper(this);
     }
     
-    private <T> LongHashMap<T> clone(LongHashMap<T> original){
-    	LongHashMap<T> coolMap = new LongHashMap();
+    private LongHashMap clone(LongHashMap original){
+    	LongHashMap coolMap = new LongHashMap();
     	coolMap.capacity = original.capacity;
     	coolMap.hashArray = original.hashArray;
-    	coolMap.mask = original.mask;
     	coolMap.modCount = original.modCount;
     	coolMap.numHashElements = original.numHashElements;
     	coolMap.percentUseable = original.percentUseable; 
