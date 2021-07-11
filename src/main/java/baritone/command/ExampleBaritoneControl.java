@@ -107,7 +107,7 @@ public class ExampleBaritoneControl implements Helper, AbstractGameEventListener
         if (msg.isEmpty()) {
             return this.runCommand("help");
         }
-        Tuple<String, List<ICommandArgument>> pair = CommandManager.expand(msg);
+        XTuple<String, List<ICommandArgument>> pair = CommandManager.expand(msg);
         String command = pair.getFirst();
         String rest = msg.substring(pair.getFirst().length());
         ArgConsumer argc = new ArgConsumer(this.manager, pair.getSecond());

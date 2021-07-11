@@ -17,14 +17,14 @@
 
 package baritone.api.command.manager;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import baritone.api.IBaritone;
 import baritone.api.command.ICommand;
 import baritone.api.command.argument.ICommandArgument;
 import baritone.api.command.registry.Registry;
-import net.minecraft.util.Tuple;
-
-import java.util.List;
-import java.util.stream.Stream;
+import baritonex.utils.XTuple;
 
 /**
  * @author Brady
@@ -44,9 +44,9 @@ public interface ICommandManager {
 
     boolean execute(String string);
 
-    boolean execute(Tuple<String, List<ICommandArgument>> expanded);
+    boolean execute(XTuple<String, List<ICommandArgument>> expanded);
 
-    Stream<String> tabComplete(Tuple<String, List<ICommandArgument>> expanded);
+    Stream<String> tabComplete(XTuple<String, List<ICommandArgument>> expanded);
 
     Stream<String> tabComplete(String prefix);
 }

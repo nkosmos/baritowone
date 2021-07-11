@@ -50,6 +50,7 @@ import baritone.pathing.movement.movements.MovementDiagonal;
 import baritone.pathing.movement.movements.MovementFall;
 import baritone.pathing.movement.movements.MovementTraverse;
 import baritone.utils.BlockStateInterface;
+import baritonex.utils.XTuple;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Tuple;
@@ -268,7 +269,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         return canCancel; // movement is in progress, but if it reports cancellable, PathingBehavior is good to cut onto the next path
     }
 
-    private Tuple<Double, BlockPos> closestPathPos(IPath path) {
+    private XTuple<Double, BlockPos> closestPathPos(IPath path) {
         double best = -1;
         BlockPos bestPos = null;
         for (IMovement movement : path.movements()) {
@@ -280,7 +281,7 @@ public class PathExecutor implements IPathExecutor, Helper {
                 }
             }
         }
-        return new Tuple<>(best, bestPos);
+        return new XTuple<>(best, bestPos);
     }
 
     private boolean shouldPause() {
@@ -438,7 +439,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             }
         }
         if (current instanceof MovementFall) {
-            Tuple<Vec3, BlockPos> data = overrideFall((MovementFall) current);
+        	XTuple<Vec3, BlockPos> data = overrideFall((MovementFall) current);
             if (data != null) {
                 BetterBlockPos fallDest = new BetterBlockPos(data.getSecond());
                 if (!path.positions().contains(fallDest)) {
@@ -459,7 +460,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         return false;
     }
 
-    private Tuple<Vec3, BlockPos> overrideFall(MovementFall movement) {
+    private XTuple<Vec3, BlockPos> overrideFall(MovementFall movement) {
         Vec3i dir = movement.getDirection();
         if (dir.getY() < -3) {
             return null;
@@ -493,7 +494,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             return null; // no valid extension exists
         }
         double len = i - pathPosition - 0.4;
-        return new Tuple<>(
+        return new XTuple<>(
                 new Vec3(flatDir.getX() * len + movement.getDest().x + 0.5, movement.getDest().y, flatDir.getZ() * len + movement.getDest().z + 0.5),
                 movement.getDest().add(flatDir.getX() * (i - pathPosition), 0, flatDir.getZ() * (i - pathPosition)));
     }
