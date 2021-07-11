@@ -24,16 +24,15 @@ import baritone.utils.accessor.IChunkProviderClient;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.chunk.Chunk;
 
 @Mixin(ChunkProviderClient.class)
 public class MixinChunkProviderClient implements IChunkProviderClient {
 
     @Shadow
-    private LongHashMap<Chunk> chunkMapping;
+    private LongHashMap chunkMapping;
 
     @Override
-    public LongHashMap<Chunk> loadedChunks() {
+    public LongHashMap loadedChunks() {
         return this.chunkMapping;
     }
 

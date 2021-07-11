@@ -56,7 +56,6 @@ public final class CachedChunk {
             Blocks.end_portal,
             Blocks.end_portal_frame,
             Blocks.mob_spawner,
-            Blocks.barrier,
             Blocks.portal,
             Blocks.hopper,
             Blocks.beacon,
