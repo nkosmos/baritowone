@@ -147,21 +147,21 @@ public final class MemoryBehavior extends Behavior {
                 // Remove any entries that were created over a second ago, this should make up for INSANE latency
                 futureInventories.removeIf(i -> System.nanoTime() / 1000000L - i.time > 1000);
 
-                System.out.println("Received packet " + packet.getGuiId() + " " + packet.getEntityId() + " " + packet.getSlotCount() + " " + packet.getWindowId());
-                System.out.println(packet.getWindowTitle());
-                if (packet.getWindowTitle() instanceof ChatComponentTranslation && ((ChatComponentTranslation) packet.getWindowTitle()).getKey().equals("container.enderchest")) {
+                System.out.println("Received packet " + packet.func_148899_d() + " " + packet.func_148897_h() + " " + packet.func_148898_f() + " " + packet.func_148901_c());
+                System.out.println(packet.func_148902_e());
+                if (packet.func_148902_e().contains("container.enderchest")) {
                     // title is not customized (i.e. this isn't just a renamed shulker)
-                    enderChestWindowId = packet.getWindowId();
+                    enderChestWindowId = packet.func_148901_c();
                     return;
                 }
                 futureInventories.stream()
-                        .filter(i -> i.type.equals(packet.getGuiId()) && i.slots == packet.getSlotCount())
+                        .filter(i -> i.type.equals(packet.func_148899_d()) && i.slots == packet.func_148898_f())
                         .findFirst().ifPresent(matched -> {
                     // Remove the future inventory
                     futureInventories.remove(matched);
 
                     // Setup the remembered inventory
-                    getCurrentContainer().setup(matched.pos, packet.getWindowId(), packet.getSlotCount());
+                    getCurrentContainer().setup(matched.pos, packet.func_148901_c(), packet.func_148898_f());
                 });
             }
 
