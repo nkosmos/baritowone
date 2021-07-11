@@ -51,12 +51,12 @@ public final class RotationUtils {
      * Offsets from the root block position to the center of each side.
      */
     private static final Vec3[] BLOCK_SIDE_MULTIPLIERS = new Vec3[]{
-            new Vec3(0.5, 0, 0.5), // Down
-            new Vec3(0.5, 1, 0.5), // Up
-            new Vec3(0.5, 0.5, 0), // North
-            new Vec3(0.5, 0.5, 1), // South
-            new Vec3(0, 0.5, 0.5), // West
-            new Vec3(1, 0.5, 0.5)  // East
+    		Vec3.createVectorHelper(0.5, 0, 0.5), // Down
+            Vec3.createVectorHelper(0.5, 1, 0.5), // Up
+            Vec3.createVectorHelper(0.5, 0.5, 0), // North
+            Vec3.createVectorHelper(0.5, 0.5, 1), // South
+            Vec3.createVectorHelper(0, 0.5, 0.5), // West
+            Vec3.createVectorHelper(1, 0.5, 0.5)  // East
     };
 
     private RotationUtils() {}
@@ -131,7 +131,7 @@ public final class RotationUtils {
         float f1 = MathHelper.sin(-rotation.getYaw() * (float) DEG_TO_RAD - (float) Math.PI);
         float f2 = -MathHelper.cos(-rotation.getPitch() * (float) DEG_TO_RAD);
         float f3 = MathHelper.sin(-rotation.getPitch() * (float) DEG_TO_RAD);
-        return new Vec3((double) (f1 * f2), (double) f3, (double) (f * f2));
+        return Vec3.createVectorHelper((double) (f1 * f2), (double) f3, (double) (f * f2));
     }
 
     /**

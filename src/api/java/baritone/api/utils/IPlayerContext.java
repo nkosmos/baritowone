@@ -66,11 +66,11 @@ public interface IPlayerContext {
     }
 
     default Vec3 playerFeetAsVec() {
-        return new Vec3(player().posX, player().posY, player().posZ);
+        return Vec3.createVectorHelper(player().posX, player().posY, player().posZ);
     }
 
     default Vec3 playerHead() {
-        return new Vec3(player().posX, player().posY + player().getEyeHeight(), player().posZ);
+        return Vec3.createVectorHelper(player().posX, player().posY + player().getEyeHeight(), player().posZ);
     }
 
     default Rotation playerRotations() {

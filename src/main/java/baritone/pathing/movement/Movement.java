@@ -166,7 +166,7 @@ public abstract class Movement implements IMovement, MovementHelper {
         }
         boolean somethingInTheWay = false;
         for (BetterBlockPos blockPos : positionsToBreak) {
-            if (!ctx.world().getEntitiesWithinAABB(EntityFallingBlock.class, new AxisAlignedBB(0, 0, 0, 1, 1.1, 1).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ())).isEmpty() && Baritone.settings().pauseMiningForFallingBlocks.value) {
+            if (!ctx.world().getEntitiesWithinAABB(EntityFallingBlock.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1.1, 1).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ())).isEmpty() && Baritone.settings().pauseMiningForFallingBlocks.value) {
                 return false;
             }
             if (!MovementHelper.canWalkThrough(ctx, blockPos) && !(BlockStateInterface.getBlock(ctx, blockPos) instanceof BlockLiquid)) { // can't break liquid, so don't try

@@ -323,7 +323,7 @@ public class MovementTraverse extends Movement {
                 // faceX, faceY, faceZ is the middle of the face between from and to
                 BlockPos goalLook = src.down(); // this is the block we were just standing on, and the one we want to place against
 
-                Rotation backToFace = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), new Vec3(faceX, faceY, faceZ), ctx.playerRotations());
+                Rotation backToFace = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), Vec3.createVectorHelper(faceX, faceY, faceZ), ctx.playerRotations());
                 float pitch = backToFace.getPitch();
                 double dist2 = Math.max(Math.abs(ctx.player().posX - faceX), Math.abs(ctx.player().posZ - faceZ));
                 if (dist2 < 0.29) { // see issue #208

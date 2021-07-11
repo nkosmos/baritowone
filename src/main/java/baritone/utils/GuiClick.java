@@ -134,7 +134,7 @@ public class GuiClick extends GuiScreen {
                 GL11.glDisable(GL11.GL_DEPTH_TEST); // GlStateManager.disableDepth();
                 BetterBlockPos a = new BetterBlockPos(currentMouseOver);
                 BetterBlockPos b = new BetterBlockPos(clickStart);
-                IRenderer.drawAABB(new AxisAlignedBB(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z), Math.max(a.x, b.x) + 1, Math.max(a.y, b.y) + 1, Math.max(a.z, b.z) + 1));
+                IRenderer.drawAABB(AxisAlignedBB.getBoundingBox(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z), Math.max(a.x, b.x) + 1, Math.max(a.y, b.y) + 1, Math.max(a.z, b.z) + 1));
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
 
                 GL11.glDepthMask(true);
@@ -147,7 +147,7 @@ public class GuiClick extends GuiScreen {
     private Vec3 toWorld(double x, double y, double z) {
         boolean result = GLU.gluUnProject((float) x, (float) y, (float) z, MODELVIEW, PROJECTION, VIEWPORT, (FloatBuffer) TO_WORLD_BUFFER.clear());
         if (result) {
-            return new Vec3(TO_WORLD_BUFFER.get(0), TO_WORLD_BUFFER.get(1), TO_WORLD_BUFFER.get(2));
+            return Vec3.createVectorHelper(TO_WORLD_BUFFER.get(0), TO_WORLD_BUFFER.get(1), TO_WORLD_BUFFER.get(2));
         }
         return null;
     }
