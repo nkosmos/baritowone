@@ -127,6 +127,7 @@ public class XHelper {
 		double d14 = -1.0D + d2;
 		double d15 = (double) height * textureScale * (0.5D / beamRadius) + d14;
 		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_F(f, f1, f2);
 		tessellator.addVertexWithUV(x + d4, y + (double) i, z + d5, 1.0D, d15);
 		tessellator.addVertexWithUV(x + d4, y + (double) yOffset, z + d5, 1.0D, d14);
 		tessellator.addVertexWithUV(x + d6, y + (double) yOffset, z + d7, 0.0D, d14);
@@ -143,7 +144,6 @@ public class XHelper {
 		tessellator.addVertexWithUV(x + d8, y + (double) yOffset, z + d9, 1.0D, d14);
 		tessellator.addVertexWithUV(x + d4, y + (double) yOffset, z + d5, 0.0D, d14);
 		tessellator.addVertexWithUV(x + d4, y + (double) i, z + d5, 0.0D, d15);
-		tessellator.setColorOpaque_F(f, f1, f2);
 		tessellator.draw();
 		GL11.glEnable(GL11.GL_BLEND);
 		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -160,6 +160,7 @@ public class XHelper {
 		d13 = -1.0D + d2;
 		d14 = (double) height * textureScale + d13;
 		tessellator.startDrawingQuads();
+		tessellator.setColorOpaque_F(f, f1, f2);
 		tessellator.addVertexWithUV(x + d3, y + (double) i, z + d4, 1.0D, d14);
 		tessellator.addVertexWithUV(x + d3, y + (double) yOffset, z + d4, 1.0D, d13);
 		tessellator.addVertexWithUV(x + d5, y + (double) yOffset, z + d6, 0.0D, d13);
@@ -176,7 +177,6 @@ public class XHelper {
 		tessellator.addVertexWithUV(x + d7, y + (double) yOffset, z + d8, 1.0D, d13);
 		tessellator.addVertexWithUV(x + d3, y + (double) yOffset, z + d4, 0.0D, d13);
 		tessellator.addVertexWithUV(x + d3, y + (double) i, z + d4, 0.0D, d14);
-		tessellator.setColorOpaque_F(f, f1, f2);
 		tessellator.draw();
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
