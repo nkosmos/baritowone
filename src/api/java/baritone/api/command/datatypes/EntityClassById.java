@@ -17,7 +17,11 @@
 
 package baritone.api.command.datatypes;
 
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
+
+import com.google.common.collect.Lists;
 
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.helpers.TabCompleteHelper;
@@ -29,7 +33,7 @@ public enum EntityClassById implements IDatatypeFor<Class<? extends Entity>> {
 
     @Override
     public Class<? extends Entity> get(IDatatypeContext ctx) throws CommandException {
-        Class<? extends Entity> entity = EntityList.stringToClassMapping.get(ctx.getConsumer().getString());
+        Class<? extends Entity> entity = (Class<? extends Entity>) EntityList.stringToClassMapping.get(ctx.getConsumer().getString());
         if (entity == null) {
             throw new IllegalArgumentException("no entity found by that id");
         }
@@ -39,9 +43,24 @@ public enum EntityClassById implements IDatatypeFor<Class<? extends Entity>> {
     @Override
     public Stream<String> tabComplete(IDatatypeContext ctx) throws CommandException {
         return new TabCompleteHelper()
-                .append(EntityList.getEntityNameList().stream().map(Object::toString))
+                .append(getEntityNameList().stream().map(Object::toString))
                 .filterPrefixNamespaced(ctx.getConsumer().getString())
                 .sortAlphabetically()
                 .stream();
+    }
+    
+    private List<String> getEntityNameList() {
+        Set<String> set = EntityList.stringToClassMapping.keySet();
+        List<String> list = Lists.<String>newArrayList();
+
+        for (String s : set) {
+            Class <? extends Entity > oclass = (Class)EntityList.stringToClassMapping.get(s);
+
+            if ((oclass.getModifiers() & 1024) != 1024) {
+                list.add(s);
+            }
+        }
+
+        return list;
     }
 }
