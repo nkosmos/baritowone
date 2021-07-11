@@ -31,9 +31,9 @@ public final class PacketEvent {
 
     private final EventState state;
 
-    private final Packet<?> packet;
+    private final Packet packet;
 
-    public PacketEvent(NetworkManager networkManager, EventState state, Packet<?> packet) {
+    public PacketEvent(NetworkManager networkManager, EventState state, Packet packet) {
         this.networkManager = networkManager;
         this.state = state;
         this.packet = packet;
