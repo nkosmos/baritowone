@@ -48,7 +48,6 @@ import baritone.behavior.PathingBehavior;
 import baritone.pathing.path.PathExecutor;
 import baritonex.utils.XHelper;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;

@@ -29,7 +29,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import baritone.Baritone;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderList;
 
