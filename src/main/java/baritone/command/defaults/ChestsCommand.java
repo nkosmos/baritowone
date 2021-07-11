@@ -54,7 +54,7 @@ public class ChestsCommand extends Command {
             IRememberedInventory inv = entry.getValue();
             logDirect(pos.toString());
             for (ItemStack item : inv.getContents()) {
-                IChatComponent component = item.getChatComponent();
+                IChatComponent component = item.func_151000_E();
                 component.appendText(String.format(" x %d", item.stackSize));
                 logDirect(component);
             }
