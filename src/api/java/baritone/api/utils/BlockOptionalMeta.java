@@ -98,7 +98,6 @@ public final class BlockOptionalMeta {
         put.accept(BlockBed.EnumPartType.HEAD);
         put.accept(BlockRailBase.EnumRailDirection.NORTH_SOUTH);
         put.accept(BlockTrapDoor.DoorHalf.BOTTOM);
-        _normalizations.put(BlockBanner.ROTATION, 0);
         _normalizations.put(BlockBed.OCCUPIED, false);
         _normalizations.put(BlockBrewingStand.HAS_BOTTLE[0], false);
         _normalizations.put(BlockBrewingStand.HAS_BOTTLE[1], false);

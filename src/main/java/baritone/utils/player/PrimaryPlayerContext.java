@@ -24,7 +24,6 @@ import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.IPlayerController;
 import baritone.api.utils.RayTraceUtils;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
