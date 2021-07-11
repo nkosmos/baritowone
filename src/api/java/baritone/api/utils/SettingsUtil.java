@@ -250,7 +250,19 @@ public class SettingsUtil {
         ),
         ITEM(
                 Item.class,
-                str -> Item.getByNameOrId(str.trim()),
+                str -> {
+                	Item item = (Item)Item.itemRegistry.getObject(str.trim());
+
+                    if (item == null) {
+                        try {
+                            return Item.getItemById(Integer.parseInt(str.trim()));
+                        } catch (NumberFormatException var3) {
+                            ;
+                        }
+                    }
+
+                    return item;
+                },
                 item -> Item.itemRegistry.getNameForObject(item).toString()
         ),
         LIST() {
