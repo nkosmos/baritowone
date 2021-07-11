@@ -103,7 +103,7 @@ public final class MemoryBehavior extends Behavior {
         Packet p = event.getPacket();
 
         if (event.getState() == EventState.PRE) {
-            if (p instanceof C08PacketPlayerBlockPlacement ) {
+            if (p instanceof C08PacketPlayerBlockPlacement) {
             	C08PacketPlayerBlockPlacement packet = event.cast();
 
                 TileEntity tileEntity = ctx.world().getTileEntity(packet.getPosition());

@@ -106,7 +106,7 @@ public final class SpongeSchematic extends StaticSchematic {
 
         private IBlockState deserialize() {
             if (this.blockState == null) {
-                Block block = Block.blockRegistry.getObject(this.resourceLocation);
+                Block block = (Block) Block.blockRegistry.getObject(this.resourceLocation.getResourcePath());
                 this.blockState = block.getDefaultState();
 
                 this.properties.keySet().stream().sorted(String::compareTo).forEachOrdered(key -> {

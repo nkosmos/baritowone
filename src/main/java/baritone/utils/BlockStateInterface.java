@@ -124,9 +124,9 @@ public class BlockStateInterface {
             if (cached != null && cached.xPosition == x >> 4 && cached.zPosition == z >> 4) {
                 return cached.getBlockState(new BlockPos(x, y, z));
             }
-            Chunk chunk = loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
+            Chunk chunk = (Chunk)loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 
-            if (chunk != null && chunk.isLoaded()) {
+            if (chunk != null && chunk.isChunkLoaded) {
                 prev = chunk;
                 return chunk.getBlockState(new BlockPos(x, y, z));
             }
@@ -157,8 +157,8 @@ public class BlockStateInterface {
         if (prevChunk != null && prevChunk.xPosition == x >> 4 && prevChunk.zPosition == z >> 4) {
             return true;
         }
-        prevChunk = loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
-        if (prevChunk != null && prevChunk.isLoaded()) {
+        prevChunk = (Chunk)loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
+        if (prevChunk != null && prevChunk.isChunkLoaded) {
             prev = prevChunk;
             return true;
         }

@@ -18,7 +18,6 @@
 package baritone.api.utils;
 
 import net.minecraft.block.Block;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +28,6 @@ public class BlockUtils {
 
     public static String blockToString(Block block) {
         String loc = Block.blockRegistry.getNameForObject(block);
-//        String name = loc.getResourcePath(); // normally, only write the part after the minecraft:
-//        if (!loc.getResourceDomain().equals("minecraft")) {
-//            // Baritone is running on top of forge with mods installed, perhaps?
-//            name = loc.toString(); // include the namespace with the colon
-//        }
         String name = loc;
         if(loc.contains("minecraft:")) {
         	name = loc.substring(loc.indexOf(':'));

@@ -69,13 +69,13 @@ public final class BlockOptionalMeta {
         MatchResult matchResult = matcher.toMatchResult();
         noMeta = matchResult.group(2) == null;
 
-        ResourceLocation id = new ResourceLocation(matchResult.group(1));
+        String id = matchResult.group(1);
 
         if (!Block.blockRegistry.containsKey(id)) {
             throw new IllegalArgumentException("Invalid block ID");
         }
 
-        block = Block.blockRegistry.getObject(id);
+        block = (Block)Block.blockRegistry.getObject(id);
         meta = noMeta ? 0 : Integer.parseInt(matchResult.group(2));
         blockstates = getStates(block, getMeta());
         stateHashes = getStateHashes(blockstates);
