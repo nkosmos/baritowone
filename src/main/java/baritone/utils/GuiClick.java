@@ -43,6 +43,7 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.AxisAlignedBB;
@@ -116,8 +117,8 @@ public class GuiClick extends GuiScreen {
     }
 
     public void onRender() {
-        GlStateManager.getFloat(GL_MODELVIEW_MATRIX, (FloatBuffer) MODELVIEW.clear());
-        GlStateManager.getFloat(GL_PROJECTION_MATRIX, (FloatBuffer) PROJECTION.clear());
+        GL11.glGetFloat(GL_MODELVIEW_MATRIX, (FloatBuffer) MODELVIEW.clear());
+        GL11.glGetFloat(GL_PROJECTION_MATRIX, (FloatBuffer) PROJECTION.clear());
         GL11.glGetInteger(GL_VIEWPORT, (IntBuffer) VIEWPORT.clear());
 
         if (currentMouseOver != null) {
@@ -125,21 +126,21 @@ public class GuiClick extends GuiScreen {
             // drawSingleSelectionBox WHEN?
             PathRenderer.drawManySelectionBoxes(e, Collections.singletonList(currentMouseOver), Color.CYAN);
             if (clickStart != null && !clickStart.equals(currentMouseOver)) {
-                GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-                GlStateManager.color(Color.RED.getColorComponents(null)[0], Color.RED.getColorComponents(null)[1], Color.RED.getColorComponents(null)[2], 0.4F);
+                GL11.glEnable(GL11.GL_BLEND); // GlStateManager.enableBlend();
+                OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+                GL11.glColor4f(Color.RED.getColorComponents(null)[0], Color.RED.getColorComponents(null)[1], Color.RED.getColorComponents(null)[2], 0.4F);
                 GL11.glLineWidth(Baritone.settings().pathRenderLineWidthPixels.value);
-                GlStateManager.disableTexture2D();
-                GlStateManager.depthMask(false);
-                GlStateManager.disableDepth();
+                GL11.glDisable(GL11.GL_TEXTURE_2D); // GlStateManager.disableTexture2D();
+                GL11.glDepthMask(false);
+                GL11.glDisable(GL11.GL_DEPTH_TEST); // GlStateManager.disableDepth();
                 BetterBlockPos a = new BetterBlockPos(currentMouseOver);
                 BetterBlockPos b = new BetterBlockPos(clickStart);
                 IRenderer.drawAABB(new AxisAlignedBB(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z), Math.max(a.x, b.x) + 1, Math.max(a.y, b.y) + 1, Math.max(a.z, b.z) + 1));
-                GlStateManager.enableDepth();
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
 
-                GlStateManager.depthMask(true);
-                GlStateManager.enableTexture2D();
-                GlStateManager.disableBlend();
+                GL11.glDepthMask(true);
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
+                GL11.glDisable(GL11.GL_BLEND);
             }
         }
     }

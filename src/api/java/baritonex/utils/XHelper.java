@@ -15,6 +15,7 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -101,11 +102,11 @@ public class XHelper {
 		int i = yOffset + height;
 		GL11.glTexParameteri(3553, 10242, 10497);
 		GL11.glTexParameteri(3553, 10243, 10497);
-		GlStateManager.disableLighting();
-		GlStateManager.disableCull();
-		GlStateManager.disableBlend();
-		GlStateManager.depthMask(true);
-		GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDepthMask(true);
+		OpenGlHelper.glBlendFunc(770, 1, 1, 0);
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer vertexbuffer = tessellator.getWorldRenderer();
 		double d0 = totalWorldTime + partialTicks;
@@ -144,9 +145,9 @@ public class XHelper {
 		vertexbuffer.pos(x + d4, y + (double) yOffset, z + d5).tex(0.0D, d14).color(f, f1, f2, 1.0F).endVertex();
 		vertexbuffer.pos(x + d4, y + (double) i, z + d5).tex(0.0D, d15).color(f, f1, f2, 1.0F).endVertex();
 		tessellator.draw();
-		GlStateManager.enableBlend();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.depthMask(false);
+		GL11.glEnable(GL11.GL_BLEND);
+		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+		GL11.glDepthMask(false);
 		d3 = 0.5D - glowRadius;
 		d4 = 0.5D - glowRadius;
 		d5 = 0.5D + glowRadius;
@@ -176,9 +177,9 @@ public class XHelper {
 		vertexbuffer.pos(x + d3, y + (double) yOffset, z + d4).tex(0.0D, d13).color(f, f1, f2, 0.125F).endVertex();
 		vertexbuffer.pos(x + d3, y + (double) i, z + d4).tex(0.0D, d14).color(f, f1, f2, 0.125F).endVertex();
 		tessellator.draw();
-		GlStateManager.enableLighting();
-		GlStateManager.enableTexture2D();
-		GlStateManager.depthMask(true);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDepthMask(true);
 	}
 
 }

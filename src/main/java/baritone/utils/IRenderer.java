@@ -31,6 +31,7 @@ import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import baritone.api.utils.Helper;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -46,19 +47,19 @@ public interface IRenderer {
 
     static void glColor(Color color, float alpha) {
         float[] colorComponents = color.getColorComponents(null);
-        GlStateManager.color(colorComponents[0], colorComponents[1], colorComponents[2], alpha);
+        GL11.glColor4f(colorComponents[0], colorComponents[1], colorComponents[2], alpha);
     }
 
     static void startLines(Color color, float alpha, float lineWidth, boolean ignoreDepth) {
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        GL11.glEnable(GL11.GL_BLEND);
+        OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
         glColor(color, alpha);
         GL11.glLineWidth(lineWidth);
-        GlStateManager.disableTexture2D();
-        GlStateManager.depthMask(false);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDepthMask(false);
 
         if (ignoreDepth) {
-            GlStateManager.disableDepth();
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
         }
     }
 
@@ -68,12 +69,12 @@ public interface IRenderer {
 
     static void endLines(boolean ignoredDepth) {
         if (ignoredDepth) {
-            GlStateManager.enableDepth();
+        	GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
 
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
+        GL11.glDepthMask(true);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     static void drawAABB(AxisAlignedBB aabb) {

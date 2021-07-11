@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import baritone.api.BaritoneAPI;
 import baritone.api.event.events.RenderEvent;
 import baritone.api.pathing.calc.IPath;
@@ -256,7 +258,7 @@ public final class PathRenderer implements IRenderer {
                 Helper.mc.getTextureManager().bindTexture(beaconBeam);
 
                 if (settings.renderGoalIgnoreDepth.value) {
-                    GlStateManager.disableDepth();
+                    GL11.glDisable(GL11.GL_DEPTH_TEST);
                 }
 
                 XHelper.renderBeamSegment(
@@ -274,7 +276,7 @@ public final class PathRenderer implements IRenderer {
                 );
 
                 if (settings.renderGoalIgnoreDepth.value) {
-                    GlStateManager.enableDepth();
+                	GL11.glEnable(GL11.GL_DEPTH_TEST);
                 }
 
                 glPopAttrib();
