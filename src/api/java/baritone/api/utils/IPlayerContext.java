@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import baritone.api.cache.IWorldData;
 import net.minecraft.block.BlockSlab;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
@@ -33,7 +34,7 @@ import net.minecraft.world.World;
  */
 public interface IPlayerContext {
 
-    EntityPlayerSP player();
+    EntityClientPlayerMP player();
 
     IPlayerController playerController();
 
