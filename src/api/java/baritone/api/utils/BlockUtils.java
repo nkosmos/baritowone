@@ -28,11 +28,15 @@ public class BlockUtils {
     private static transient Map<String, Block> resourceCache = new HashMap<>();
 
     public static String blockToString(Block block) {
-        ResourceLocation loc = Block.blockRegistry.getNameForObject(block);
-        String name = loc.getResourcePath(); // normally, only write the part after the minecraft:
-        if (!loc.getResourceDomain().equals("minecraft")) {
-            // Baritone is running on top of forge with mods installed, perhaps?
-            name = loc.toString(); // include the namespace with the colon
+        String loc = Block.blockRegistry.getNameForObject(block);
+//        String name = loc.getResourcePath(); // normally, only write the part after the minecraft:
+//        if (!loc.getResourceDomain().equals("minecraft")) {
+//            // Baritone is running on top of forge with mods installed, perhaps?
+//            name = loc.toString(); // include the namespace with the colon
+//        }
+        String name = loc;
+        if(loc.contains("minecraft:")) {
+        	name = loc.substring(loc.indexOf(':'));
         }
         return name;
     }

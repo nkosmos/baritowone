@@ -32,6 +32,7 @@ import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 
 /**
@@ -81,7 +82,7 @@ public final class FollowProcess extends BaritoneProcessHelper implements IFollo
     }
 
     private void scanWorld() {
-        cache = Stream.of(ctx.world().loadedEntityList, ctx.world().playerEntities)
+        cache = Stream.of((List<Entity>)ctx.world().loadedEntityList, (List<EntityPlayer>)ctx.world().playerEntities)
                 .flatMap(List::stream)
                 .filter(this::followable)
                 .filter(this.filter)

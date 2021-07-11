@@ -29,19 +29,15 @@ import org.lwjgl.opengl.GL11;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
-import baritone.api.utils.Helper;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.AxisAlignedBB;
 
 public interface IRenderer {
 
-    Tessellator tessellator = Tessellator.getInstance();
-    WorldRenderer buffer = tessellator.getWorldRenderer();
-    RenderManager renderManager = Helper.mc.getRenderManager();
+    Tessellator tessellator = Tessellator.instance;
+    RenderManager renderManager = RenderManager.instance;
     Settings settings = BaritoneAPI.getSettings();
 
     static void glColor(Color color, float alpha) {
@@ -79,34 +75,34 @@ public interface IRenderer {
     static void drawAABB(AxisAlignedBB aabb) {
         AxisAlignedBB toDraw = aabb.offset(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ);
 
-        buffer.begin(GL_LINES, DefaultVertexFormats.POSITION);
+        tessellator.startDrawing(GL_LINES);
         // bottom
-        buffer.pos(toDraw.minX, toDraw.minY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.minY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.minY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.minY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.minY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.minY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.minY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.minY, toDraw.minZ).endVertex();
+        tessellator.addVertex(toDraw.minX, toDraw.minY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.minY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.minY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.minY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.minY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.minX, toDraw.minY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.minX, toDraw.minY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.minX, toDraw.minY, toDraw.minZ);
         // top
-        buffer.pos(toDraw.minX, toDraw.maxY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.maxY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.maxY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.maxY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.maxY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.maxY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.maxY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.maxY, toDraw.minZ).endVertex();
+        tessellator.addVertex(toDraw.minX, toDraw.maxY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.maxY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.maxY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.maxY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.maxY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.minX, toDraw.maxY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.minX, toDraw.maxY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.minX, toDraw.maxY, toDraw.minZ);
         // corners
-        buffer.pos(toDraw.minX, toDraw.minY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.maxY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.minY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.maxY, toDraw.minZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.minY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.maxX, toDraw.maxY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.minY, toDraw.maxZ).endVertex();
-        buffer.pos(toDraw.minX, toDraw.maxY, toDraw.maxZ).endVertex();
+        tessellator.addVertex(toDraw.minX, toDraw.minY, toDraw.minZ);
+        tessellator.addVertex(toDraw.minX, toDraw.maxY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.minY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.maxY, toDraw.minZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.minY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.maxX, toDraw.maxY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.minX, toDraw.minY, toDraw.maxZ);
+        tessellator.addVertex(toDraw.minX, toDraw.maxY, toDraw.maxZ);
         tessellator.draw();
     }
 

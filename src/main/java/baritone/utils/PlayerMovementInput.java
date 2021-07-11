@@ -19,7 +19,6 @@ package baritone.utils;
 
 import baritone.api.utils.input.Input;
 import net.minecraft.util.MovementInput;
-import net.minecraft.util.MovementInputFromOptions;
 
 public class PlayerMovementInput extends MovementInput {
 
