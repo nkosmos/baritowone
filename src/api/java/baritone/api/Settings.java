@@ -33,6 +33,7 @@ import java.util.function.Consumer;
 import baritone.api.utils.NotificationHelper;
 import baritone.api.utils.SettingsUtil;
 import baritone.api.utils.TypeUtils;
+import baritonex.utils.XVec3i;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
@@ -872,7 +873,7 @@ public final class Settings {
     /**
      * How far to move before repeating the build. 0 to disable repeating on a certain axis, 0,0,0 to disable entirely
      */
-    public final Setting<Vec3i> buildRepeat = new Setting<>(new Vec3i(0, 0, 0));
+    public final Setting<XVec3i> buildRepeat = new Setting<>(new XVec3i(0, 0, 0));
 
     /**
      * How many times to buildrepeat. -1 for infinite.

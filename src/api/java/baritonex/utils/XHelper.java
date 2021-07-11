@@ -7,6 +7,7 @@ import java.util.Map;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 import baritone.api.utils.accessor.IItemStack;
 import net.minecraft.block.properties.IProperty;
@@ -16,9 +17,8 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.MathHelper;
 
@@ -92,6 +92,35 @@ public class XHelper {
     
 	public static boolean isEmpty(ItemStack itemStack) {
 		return itemStack == null ? true : ((IItemStack) (Object) itemStack).isEmpty();
+	}
+	
+	// ENUMFACING
+	
+	private static final Map<Integer, EnumFacing> HIT_LOOKUP = Maps.newHashMap();
+	private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.newHashMap();
+	
+	public static EnumFacing getEnumFacingByName(String name){
+        return name == null ? null : NAME_LOOKUP.get(name.toLowerCase());
+    }
+	
+	public static EnumFacing sideToFacing(int sidehit) {
+		return sidehit == -1 ? null : HIT_LOOKUP.get(sidehit);
+	}
+	
+	static {
+		HIT_LOOKUP.put(0, EnumFacing.DOWN);
+		HIT_LOOKUP.put(1, EnumFacing.UP);
+		HIT_LOOKUP.put(2, EnumFacing.EAST);
+		HIT_LOOKUP.put(3, EnumFacing.WEST);
+		HIT_LOOKUP.put(4, EnumFacing.NORTH);
+		HIT_LOOKUP.put(5, EnumFacing.SOUTH);
+		
+		NAME_LOOKUP.put("north", EnumFacing.NORTH);
+		NAME_LOOKUP.put("south", EnumFacing.SOUTH);
+		NAME_LOOKUP.put("east", EnumFacing.EAST);
+		NAME_LOOKUP.put("west", EnumFacing.WEST);
+		NAME_LOOKUP.put("up", EnumFacing.UP);
+		NAME_LOOKUP.put("down", EnumFacing.DOWN);
 	}
 
 	// RENDERER

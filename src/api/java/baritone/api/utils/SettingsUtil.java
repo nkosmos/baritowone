@@ -41,10 +41,11 @@ import java.util.stream.Stream;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
+import baritonex.utils.XHelper;
+import baritonex.utils.XVec3i;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3i;
 
 public class SettingsUtil {
 
@@ -232,15 +233,15 @@ public class SettingsUtil {
         FLOAT(Float.class, Float::parseFloat),
         LONG(Long.class, Long::parseLong),
         STRING(String.class, String::new),
-        ENUMFACING(EnumFacing.class, EnumFacing::byName),
+        ENUMFACING(EnumFacing.class, XHelper::getEnumFacingByName),
         COLOR(
                 Color.class,
                 str -> new Color(Integer.parseInt(str.split(",")[0]), Integer.parseInt(str.split(",")[1]), Integer.parseInt(str.split(",")[2])),
                 color -> color.getRed() + "," + color.getGreen() + "," + color.getBlue()
         ),
         VEC3I(
-                Vec3i.class,
-                str -> new Vec3i(Integer.parseInt(str.split(",")[0]), Integer.parseInt(str.split(",")[1]), Integer.parseInt(str.split(",")[2])),
+        		XVec3i.class,
+                str -> new XVec3i(Integer.parseInt(str.split(",")[0]), Integer.parseInt(str.split(",")[1]), Integer.parseInt(str.split(",")[2])),
                 vec -> vec.getX() + "," + vec.getY() + "," + vec.getZ()
         ),
         BLOCK(

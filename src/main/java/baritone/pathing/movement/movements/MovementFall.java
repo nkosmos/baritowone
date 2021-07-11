@@ -35,6 +35,7 @@ import baritone.pathing.movement.MovementState;
 import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.pathing.MutableMoveResult;
 import baritonex.utils.XHelper;
+import baritonex.utils.XVec3i;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.state.IBlockState;
@@ -44,7 +45,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
-import net.minecraft.util.Vec3i;
 
 public class MovementFall extends Movement {
 
@@ -138,7 +138,7 @@ public class MovementFall extends Movement {
             }
             state.setInput(Input.MOVE_FORWARD, true);
         }
-        Vec3i avoid = Optional.ofNullable(avoid()).map(EnumFacing::getDirectionVec).orElse(null);
+        XVec3i avoid = Optional.ofNullable(avoid()).map(EnumFacing::getDirectionVec).orElse(null);
         if (avoid == null) {
             avoid = src.subtract(dest);
         } else {

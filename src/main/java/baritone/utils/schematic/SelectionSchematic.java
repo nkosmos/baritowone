@@ -22,15 +22,15 @@ import java.util.stream.Stream;
 import baritone.api.schematic.ISchematic;
 import baritone.api.schematic.MaskSchematic;
 import baritone.api.selection.ISelection;
+import baritonex.utils.XVec3i;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3i;
 
 public class SelectionSchematic extends MaskSchematic {
 
     private final ISelection[] selections;
 
-    public SelectionSchematic(ISchematic schematic, Vec3i origin, ISelection[] selections) {
+    public SelectionSchematic(ISchematic schematic, XVec3i origin, ISelection[] selections) {
         super(schematic);
         this.selections = Stream.of(selections).map(
                 sel -> sel

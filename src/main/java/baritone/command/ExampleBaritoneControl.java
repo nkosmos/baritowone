@@ -42,12 +42,12 @@ import baritone.command.argument.ArgConsumer;
 import baritone.command.argument.CommandArguments;
 import baritone.command.manager.CommandManager;
 import baritone.utils.accessor.IGuiScreen;
+import baritonex.utils.XTuple;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.Tuple;
 
 public class ExampleBaritoneControl implements Helper, AbstractGameEventListener {
 

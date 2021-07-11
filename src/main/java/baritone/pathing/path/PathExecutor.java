@@ -51,11 +51,11 @@ import baritone.pathing.movement.movements.MovementFall;
 import baritone.pathing.movement.movements.MovementTraverse;
 import baritone.utils.BlockStateInterface;
 import baritonex.utils.XTuple;
+import baritonex.utils.XVec3i;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
-import net.minecraft.util.Vec3i;
 
 /**
  * Behavior to execute a precomputed path
@@ -461,14 +461,14 @@ public class PathExecutor implements IPathExecutor, Helper {
     }
 
     private XTuple<Vec3, BlockPos> overrideFall(MovementFall movement) {
-        Vec3i dir = movement.getDirection();
+    	XVec3i dir = movement.getDirection();
         if (dir.getY() < -3) {
             return null;
         }
         if (!movement.toBreakCached.isEmpty()) {
             return null; // it's breaking
         }
-        Vec3i flatDir = new Vec3i(dir.getX(), 0, dir.getZ());
+        XVec3i flatDir = new XVec3i(dir.getX(), 0, dir.getZ());
         int i;
         outer:
         for (i = pathPosition + 1; i < path.length() - 1 && i < pathPosition + 3; i++) {

@@ -19,10 +19,10 @@ package baritone.api.utils;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.util.BlockPos;
+import baritonex.utils.XVec3i;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3i;
 
 /**
  * A better BlockPos that has fewer hash collisions (and slightly more performant offsets)
@@ -33,7 +33,7 @@ import net.minecraft.util.Vec3i;
  *
  * @author leijurv
  */
-public final class BetterBlockPos extends BlockPos {
+public final class BetterBlockPos extends XVec3i {
 
     public static final BetterBlockPos ORIGIN = new BetterBlockPos(0, 0, 0);
 
@@ -52,17 +52,21 @@ public final class BetterBlockPos extends BlockPos {
         this(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
     }
 
-    public BetterBlockPos(BlockPos pos) {
-        this(pos.getX(), pos.getY(), pos.getZ());
+    public BetterBlockPos(XVec3i vec3i) {
+    	this(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+    }
+    
+    public BetterBlockPos(Entity entity) {
+        this(entity.posX, entity.posY, entity.posZ);
     }
 
     /**
      * Like constructor but returns null if pos is null, good if you just need to possibly censor coordinates
      *
-     * @param pos The BlockPos, possibly null, to convert
+     * @param pos The XVec3i, possibly null, to convert
      * @return A BetterBlockPos or null if pos was null
      */
-    public static BetterBlockPos from(BlockPos pos) {
+    public static BetterBlockPos from(XVec3i pos) {
         if (pos == null) {
             return null;
         }
@@ -111,11 +115,10 @@ public final class BetterBlockPos extends BlockPos {
         }
         // during path execution, like "if (whereShouldIBe.equals(whereAmI)) {"
         // sometimes we compare a BlockPos to a BetterBlockPos
-        BlockPos oth = (BlockPos) o;
+        XVec3i oth = (XVec3i) o;
         return oth.getX() == x && oth.getY() == y && oth.getZ() == z;
     }
 
-    @Override
     public BetterBlockPos up() {
         // this is unimaginably faster than blockpos.up
         // that literally calls
@@ -129,75 +132,60 @@ public final class BetterBlockPos extends BlockPos {
         return new BetterBlockPos(x, y + 1, z);
     }
 
-    @Override
     public BetterBlockPos up(int amt) {
         // see comment in up()
         return amt == 0 ? this : new BetterBlockPos(x, y + amt, z);
     }
 
-    @Override
     public BetterBlockPos down() {
         // see comment in up()
         return new BetterBlockPos(x, y - 1, z);
     }
 
-    @Override
     public BetterBlockPos down(int amt) {
         // see comment in up()
         return amt == 0 ? this : new BetterBlockPos(x, y - amt, z);
     }
 
-    @Override
     public BetterBlockPos offset(EnumFacing dir) {
-        Vec3i vec = dir.getDirectionVec();
-        return new BetterBlockPos(x + vec.getX(), y + vec.getY(), z + vec.getZ());
+        return new BetterBlockPos(x + dir.getFrontOffsetX(), y + dir.getFrontOffsetY(), z + dir.getFrontOffsetZ());
     }
 
-    @Override
     public BetterBlockPos offset(EnumFacing dir, int dist) {
         if (dist == 0) {
             return this;
         }
-        Vec3i vec = dir.getDirectionVec();
-        return new BetterBlockPos(x + vec.getX() * dist, y + vec.getY() * dist, z + vec.getZ() * dist);
+        return new BetterBlockPos(x + dir.getFrontOffsetX() * dist, y + dir.getFrontOffsetY() * dist, z + dir.getFrontOffsetZ() * dist);
     }
 
-    @Override
     public BetterBlockPos north() {
         return new BetterBlockPos(x, y, z - 1);
     }
 
-    @Override
     public BetterBlockPos north(int amt) {
         return amt == 0 ? this : new BetterBlockPos(x, y, z - amt);
     }
 
-    @Override
     public BetterBlockPos south() {
         return new BetterBlockPos(x, y, z + 1);
     }
 
-    @Override
     public BetterBlockPos south(int amt) {
         return amt == 0 ? this : new BetterBlockPos(x, y, z + amt);
     }
 
-    @Override
     public BetterBlockPos east() {
         return new BetterBlockPos(x + 1, y, z);
     }
 
-    @Override
     public BetterBlockPos east(int amt) {
         return amt == 0 ? this : new BetterBlockPos(x + amt, y, z);
     }
 
-    @Override
     public BetterBlockPos west() {
         return new BetterBlockPos(x - 1, y, z);
     }
 
-    @Override
     public BetterBlockPos west(int amt) {
         return amt == 0 ? this : new BetterBlockPos(x - amt, y, z);
     }

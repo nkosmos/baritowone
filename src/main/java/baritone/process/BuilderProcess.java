@@ -60,6 +60,7 @@ import baritone.utils.schematic.SchematicSystem;
 import baritone.utils.schematic.SelectionSchematic;
 import baritone.utils.schematic.schematica.SchematicaHelper;
 import baritonex.utils.XHelper;
+import baritonex.utils.XVec3i;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
@@ -73,7 +74,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
-import net.minecraft.util.Vec3i;
 
 public final class BuilderProcess extends BaritoneProcessHelper implements IBuilderProcess {
 
@@ -82,7 +82,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     private String name;
     private ISchematic realSchematic;
     private ISchematic schematic;
-    private Vec3i origin;
+    private XVec3i origin;
     private int ticks;
     private boolean paused;
     private int layer;
@@ -94,7 +94,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     }
 
     @Override
-    public void build(String name, ISchematic schematic, Vec3i origin) {
+    public void build(String name, ISchematic schematic, XVec3i origin) {
         this.name = name;
         this.schematic = schematic;
         this.realSchematic = null;
@@ -113,7 +113,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         if (Baritone.settings().schematicOrientationZ.value) {
             z += schematic.lengthZ();
         }
-        this.origin = new Vec3i(x, y, z);
+        this.origin = new XVec3i(x, y, z);
         this.paused = false;
         this.layer = Baritone.settings().startAtLayer.value;
         this.numRepeats = 0;
@@ -134,7 +134,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     }
 
     @Override
-    public boolean build(String name, File schematic, Vec3i origin) {
+    public boolean build(String name, File schematic, XVec3i origin) {
         Optional<ISchematicFormat> format = SchematicSystem.INSTANCE.getByFile(schematic);
         if (!format.isPresent()) {
             return false;
@@ -441,10 +441,10 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 layer++;
                 return onTick(calcFailed, isSafeToCancel, recursions + 1);
             }
-            Vec3i repeat = Baritone.settings().buildRepeat.value;
+            XVec3i repeat = Baritone.settings().buildRepeat.value;
             int max = Baritone.settings().buildRepeatCount.value;
             numRepeats++;
-            if (repeat.equals(new Vec3i(0, 0, 0)) || (max != -1 && numRepeats >= max)) {
+            if (repeat.equals(new XVec3i(0, 0, 0)) || (max != -1 && numRepeats >= max)) {
                 logDirect("Done building");
                 if (Baritone.settings().notificationOnBuildFinished.value) {
                     logNotification("Done building", false);

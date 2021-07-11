@@ -18,9 +18,9 @@
 package baritone.api.selection;
 
 import baritone.api.utils.BetterBlockPos;
+import baritonex.utils.XVec3i;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3i;
 
 /**
  * A selection is an immutable object representing the current selection. The selection is commonly used for certain
@@ -51,7 +51,7 @@ public interface ISelection {
     /**
      * @return The size of this ISelection.
      */
-    Vec3i size();
+    XVec3i size();
 
     /**
      * @return An {@link AxisAlignedBB} encompassing all blocks in this selection.

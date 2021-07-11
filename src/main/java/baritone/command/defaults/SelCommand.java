@@ -53,19 +53,19 @@ import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.IRenderer;
 import baritone.utils.schematic.StaticSchematic;
+import baritonex.utils.XVec3i;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3i;
 
 public class SelCommand extends Command {
 
     private ISelectionManager manager = baritone.getSelectionManager();
     private BetterBlockPos pos1 = null;
     private ISchematic clipboard = null;
-    private Vec3i clipboardOffset = null;
+    private XVec3i clipboardOffset = null;
 
     public SelCommand(IBaritone baritone) {
         super(baritone, "sel", "selection", "s");
@@ -157,7 +157,7 @@ public class SelCommand extends Command {
                 );
             }
             for (ISelection selection : selections) {
-                Vec3i size = selection.size();
+            	XVec3i size = selection.size();
                 BetterBlockPos min = selection.min();
                 ISchematic schematic = new FillSchematic(size.getX(), size.getY(), size.getZ(), type);
                 if (action == Action.WALLS) {
@@ -191,7 +191,7 @@ public class SelCommand extends Command {
                 );
             }
             for (ISelection selection : selections) {
-                Vec3i size = selection.size();
+            	XVec3i size = selection.size();
                 BetterBlockPos min = selection.min();
                 IBlockState[][][] blockstates = new IBlockState[size.getX()][size.getZ()][size.getY()];
                 for (int x = 0; x < size.getX(); x++) {
