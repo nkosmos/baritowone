@@ -21,6 +21,7 @@ import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
 import baritone.Baritone;
 import baritone.api.IBaritone;
+import baritone.api.Settings;
 import baritone.api.pathing.movement.ActionCosts;
 import baritone.cache.WorldData;
 import baritone.utils.BlockStateInterface;
@@ -100,12 +101,7 @@ public class CalculationContext {
         this.allowDownward = Baritone.settings().allowDownward.value;
         this.maxFallHeightNoWater = Baritone.settings().maxFallHeightNoWater.value;
         this.maxFallHeightBucket = Baritone.settings().maxFallHeightBucket.value;
-        int depth = EnchantmentHelper.getDepthStriderModifier(player);
-        if (depth > 3) {
-            depth = 3;
-        }
-        float mult = depth / 3.0F;
-        this.waterWalkSpeed = ActionCosts.WALK_ONE_IN_WATER_COST * (1 - mult) + ActionCosts.WALK_ONE_BLOCK_COST * mult;
+        this.waterWalkSpeed = ActionCosts.WALK_ONE_IN_WATER_COST * (1) + ActionCosts.WALK_ONE_BLOCK_COST;
         this.breakBlockAdditionalCost = Baritone.settings().blockBreakAdditionalPenalty.value;
         this.backtrackCostFavoringCoefficient = Baritone.settings().backtrackCostFavoringCoefficient.value;
         this.jumpPenalty = Baritone.settings().jumpPenalty.value;
@@ -113,7 +109,7 @@ public class CalculationContext {
         // why cache these things here, why not let the movements just get directly from settings?
         // because if some movements are calculated one way and others are calculated another way,
         // then you get a wildly inconsistent path that isn't optimal for either scenario.
-        this.worldBorder = new BetterWorldBorder(world.getWorldBorder());
+        this.worldBorder = new BetterWorldBorder();
     }
 
     public final IBaritone getBaritone() {

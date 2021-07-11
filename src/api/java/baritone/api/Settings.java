@@ -47,6 +47,11 @@ import net.minecraft.util.Vec3i;
  */
 public final class Settings {
 
+	public final Setting<Double> worldBorderMinX = new Setting<>(-29_999_980D);
+	public final Setting<Double> worldBorderMaxX = new Setting<>(29_999_980D);
+	public final Setting<Double> worldBorderMinZ = new Setting<>(-29_999_980D);
+	public final Setting<Double> worldBorderMaxZ = new Setting<>(29_999_980D);
+	
     /**
      * Allow Baritone to break blocks
      */
