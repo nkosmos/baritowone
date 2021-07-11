@@ -171,7 +171,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
     }
 
     private boolean isBoneMeal(ItemStack stack) {
-        return !XHelper.isEmpty(stack) && stack.getItem() instanceof ItemDye && EnumDyeColor.byDyeDamage(stack.getMetadata()) == EnumDyeColor.WHITE;
+        return !XHelper.isEmpty(stack) && stack.getItem() instanceof ItemDye && stack.getMetadata() == 15;
     }
 
     private boolean isNetherWart(ItemStack stack) {
