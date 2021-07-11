@@ -306,7 +306,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 double placeX = placeAgainstPos.x + aabb.minX * placementMultiplier.xCoord + aabb.maxX * (1 - placementMultiplier.xCoord);
                 double placeY = placeAgainstPos.y + aabb.minY * placementMultiplier.yCoord + aabb.maxY * (1 - placementMultiplier.yCoord);
                 double placeZ = placeAgainstPos.z + aabb.minZ * placementMultiplier.zCoord + aabb.maxZ * (1 - placementMultiplier.zCoord);
-                Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), new Vec3(placeX, placeY, placeZ), ctx.playerRotations());
+                Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), Vec3.createVectorHelper(placeX, placeY, placeZ), ctx.playerRotations());
                 MovingObjectPosition result = RayTraceUtils.rayTraceTowards(ctx.player(), rot, ctx.playerController().getBlockReachDistance(), true);
                 if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && result.getBlockPos().equals(placeAgainstPos) && result.sideHit == against.getOpposite()) {
                     OptionalInt hotbar = hasAnyItemThatWouldPlace(toPlace, result, rot);
@@ -352,16 +352,16 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     private static Vec3[] aabbSideMultipliers(EnumFacing side) {
         switch (side) {
             case UP:
-                return new Vec3[]{new Vec3(0.5, 1, 0.5), new Vec3(0.1, 1, 0.5), new Vec3(0.9, 1, 0.5), new Vec3(0.5, 1, 0.1), new Vec3(0.5, 1, 0.9)};
+                return new Vec3[]{Vec3.createVectorHelper(0.5, 1, 0.5), Vec3.createVectorHelper(0.1, 1, 0.5), Vec3.createVectorHelper(0.9, 1, 0.5), Vec3.createVectorHelper(0.5, 1, 0.1), Vec3.createVectorHelper(0.5, 1, 0.9)};
             case DOWN:
-                return new Vec3[]{new Vec3(0.5, 0, 0.5), new Vec3(0.1, 0, 0.5), new Vec3(0.9, 0, 0.5), new Vec3(0.5, 0, 0.1), new Vec3(0.5, 0, 0.9)};
+                return new Vec3[]{Vec3.createVectorHelper(0.5, 0, 0.5), Vec3.createVectorHelper(0.1, 0, 0.5), Vec3.createVectorHelper(0.9, 0, 0.5), Vec3.createVectorHelper(0.5, 0, 0.1), Vec3.createVectorHelper(0.5, 0, 0.9)};
             case NORTH:
             case SOUTH:
             case EAST:
             case WEST:
                 double x = side.getFrontOffsetX() == 0 ? 0.5 : (1 + side.getFrontOffsetX()) / 2D;
                 double z = side.getFrontOffsetZ() == 0 ? 0.5 : (1 + side.getFrontOffsetZ()) / 2D;
-                return new Vec3[]{new Vec3(x, 0.25, z), new Vec3(x, 0.75, z)};
+                return new Vec3[]{Vec3.createVectorHelper(x, 0.25, z), Vec3.createVectorHelper(x, 0.75, z)};
             default: // null
                 throw new IllegalStateException();
         }
