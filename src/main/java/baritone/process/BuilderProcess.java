@@ -60,6 +60,7 @@ import baritone.utils.schematic.SchematicSystem;
 import baritone.utils.schematic.SelectionSchematic;
 import baritone.utils.schematic.schematica.SchematicaHelper;
 import baritonex.utils.XHelper;
+import baritonex.utils.XTuple;
 import baritonex.utils.XVec3i;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.BlockAir;
@@ -69,7 +70,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Tuple;
@@ -164,10 +164,10 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     @Override
     public void buildOpenSchematic() {
         if (SchematicaHelper.isSchematicaPresent()) {
-            Optional<Tuple<IStaticSchematic, BlockPos>> schematic = SchematicaHelper.getOpenSchematic();
+            Optional<XTuple<IStaticSchematic, BetterBlockPos>> schematic = SchematicaHelper.getOpenSchematic();
             if (schematic.isPresent()) {
                 IStaticSchematic s = schematic.get().getFirst();
-                BlockPos origin = schematic.get().getSecond();
+                BetterBlockPos origin = schematic.get().getSecond();
                 ISchematic schem = Baritone.settings().mapArtMode.value ? new MapArtSchematic(s) : s;
                 if (Baritone.settings().buildOnlySelection.value) {
                     schem = new SelectionSchematic(schem, origin, baritone.getSelectionManager().getSelections());
@@ -185,8 +185,8 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         }
     }
 
-    public void clearArea(BlockPos corner1, BlockPos corner2) {
-        BlockPos origin = new BlockPos(Math.min(corner1.getX(), corner2.getX()), Math.min(corner1.getY(), corner2.getY()), Math.min(corner1.getZ(), corner2.getZ()));
+    public void clearArea(BetterBlockPos corner1, BetterBlockPos corner2) {
+    	BetterBlockPos origin = new BetterBlockPos(Math.min(corner1.getX(), corner2.getX()), Math.min(corner1.getY(), corner2.getY()), Math.min(corner1.getZ(), corner2.getZ()));
         int widthX = Math.abs(corner1.getX() - corner2.getX()) + 1;
         int heightY = Math.abs(corner1.getY() - corner2.getY()) + 1;
         int lengthZ = Math.abs(corner1.getZ() - corner2.getZ()) + 1;
@@ -217,7 +217,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         return state;
     }
 
-    private Optional<Tuple<BetterBlockPos, Rotation>> toBreakNearPlayer(BuilderCalculationContext bcc) {
+    private Optional<XTuple<BetterBlockPos, Rotation>> toBreakNearPlayer(BuilderCalculationContext bcc) {
         BetterBlockPos center = ctx.playerFeet();
         BetterBlockPos pathStart = baritone.getPathingBehavior().pathStart();
         for (int dx = -5; dx <= 5; dx++) {
@@ -238,7 +238,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                         BetterBlockPos pos = new BetterBlockPos(x, y, z);
                         Optional<Rotation> rot = RotationUtils.reachable(ctx.player(), pos, ctx.playerController().getBlockReachDistance());
                         if (rot.isPresent()) {
-                            return Optional.of(new Tuple<>(pos, rot.get()));
+                            return Optional.of(new XTuple<>(pos, rot.get()));
                         }
                     }
                 }
@@ -250,11 +250,11 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     public static class Placement {
 
         private final int hotbarSelection;
-        private final BlockPos placeAgainst;
+        private final BetterBlockPos placeAgainst;
         private final EnumFacing side;
         private final Rotation rot;
 
-        public Placement(int hotbarSelection, BlockPos placeAgainst, EnumFacing side, Rotation rot) {
+        public Placement(int hotbarSelection, BetterBlockPos placeAgainst, EnumFacing side, Rotation rot) {
             this.hotbarSelection = hotbarSelection;
             this.placeAgainst = placeAgainst;
             this.side = side;
@@ -454,7 +454,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             }
             // build repeat time
             layer = 0;
-            origin = new BlockPos(origin).add(repeat);
+            origin = new BetterBlockPos(origin).add(repeat);
             if (!Baritone.settings().buildRepeatSneaky.value) {
                 schematic.reset();
             }
@@ -465,7 +465,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             trim();
         }
 
-        Optional<Tuple<BetterBlockPos, Rotation>> toBreak = toBreakNearPlayer(bcc);
+        Optional<XTuple<BetterBlockPos, Rotation>> toBreak = toBreakNearPlayer(bcc);
         if (toBreak.isPresent() && isSafeToCancel && ctx.player().onGround) {
             // we'd like to pause to break this block
             // only change look direction if it's safe (don't want to fuck up an in progress parkour for example
@@ -722,7 +722,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
 
     public static class GoalBreak extends GoalGetToBlock {
 
-        public GoalBreak(BlockPos pos) {
+        public GoalBreak(BetterBlockPos pos) {
             super(pos);
         }
 
@@ -737,7 +737,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         }
     }
 
-    private Goal placementGoal(BlockPos pos, BuilderCalculationContext bcc) {
+    private Goal placementGoal(BetterBlockPos pos, BuilderCalculationContext bcc) {
         if (ctx.world().getBlockState(pos).getBlock() != Blocks.air) { // TODO can this even happen?
             return new GoalPlace(pos);
         }
@@ -752,7 +752,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         return new GoalPlace(pos);
     }
 
-    private Goal breakGoal(BlockPos pos, BuilderCalculationContext bcc) {
+    private Goal breakGoal(BetterBlockPos pos, BuilderCalculationContext bcc) {
         if (Baritone.settings().goalBreakFromAbove.value && bcc.bsi.get0(pos.up()).getBlock() instanceof BlockAir && bcc.bsi.get0(pos.up(2)).getBlock() instanceof BlockAir) { // TODO maybe possible without the up(2) check?
             return new JankyGoalComposite(new GoalBreak(pos), new GoalGetToBlock(pos.up()) {
                 @Override
@@ -770,9 +770,9 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     public static class GoalAdjacent extends GoalGetToBlock {
 
         private boolean allowSameLevel;
-        private BlockPos no;
+        private BetterBlockPos no;
 
-        public GoalAdjacent(BlockPos pos, BlockPos no, boolean allowSameLevel) {
+        public GoalAdjacent(BetterBlockPos pos, BetterBlockPos no, boolean allowSameLevel) {
             super(pos);
             this.no = no;
             this.allowSameLevel = allowSameLevel;
@@ -802,7 +802,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
 
     public static class GoalPlace extends GoalBlock {
 
-        public GoalPlace(BlockPos placeAt) {
+        public GoalPlace(BetterBlockPos placeAt) {
             super(placeAt.up());
         }
 

@@ -86,7 +86,7 @@ public interface IPlayerContext {
      *
      * @return The position of the highlighted block
      */
-    default Optional<BlockPos> getSelectedBlock() {
+    default Optional<BetterBlockPos> getSelectedBlock() {
     	MovingObjectPosition result = objectMouseOver();
         if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             return Optional.of(result.getBlockPos());
@@ -94,7 +94,7 @@ public interface IPlayerContext {
         return Optional.empty();
     }
 
-    default boolean isLookingAt(BlockPos pos) {
+    default boolean isLookingAt(BetterBlockPos pos) {
         return getSelectedBlock().equals(Optional.of(pos));
     }
 }

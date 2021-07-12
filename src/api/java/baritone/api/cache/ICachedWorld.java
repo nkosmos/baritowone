@@ -19,7 +19,7 @@ package baritone.api.cache;
 
 import java.util.ArrayList;
 
-import net.minecraft.util.BlockPos;
+import baritone.api.utils.BetterBlockPos;
 import net.minecraft.world.chunk.Chunk;
 
 /**
@@ -68,7 +68,7 @@ public interface ICachedWorld {
      * @param maxRegionDistanceSq The maximum region distance, squared
      * @return The locations found that match the special block
      */
-    ArrayList<BlockPos> getLocationsOf(String block, int maximum, int centerX, int centerZ, int maxRegionDistanceSq);
+    ArrayList<BetterBlockPos> getLocationsOf(String block, int maximum, int centerX, int centerZ, int maxRegionDistanceSq);
 
     /**
      * Reloads all of the cached regions in this world from disk. Anything that is not saved

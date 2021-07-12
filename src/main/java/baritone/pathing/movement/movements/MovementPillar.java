@@ -149,7 +149,7 @@ public class MovementPillar extends Movement {
                 context.get(x, y, z - 1).getBlock().isBlockNormalCube();
     }
 
-    public static BlockPos getAgainst(CalculationContext context, BetterBlockPos vine) {
+    public static BetterBlockPos getAgainst(CalculationContext context, BetterBlockPos vine) {
         if (context.get(vine.north()).getBlock().isBlockNormalCube()) {
             return vine.north();
         }
@@ -200,7 +200,7 @@ public class MovementPillar extends Movement {
 
         boolean blockIsThere = MovementHelper.canWalkOn(ctx, src) || ladder;
         if (ladder) {
-            BlockPos against = vine ? getAgainst(new CalculationContext(baritone), src) : src.offset(fromDown.getValue(BlockLadder.FACING).getOpposite());
+        	BetterBlockPos against = vine ? getAgainst(new CalculationContext(baritone), src) : src.offset(fromDown.getValue(BlockLadder.FACING).getOpposite());
             if (against == null) {
                 logDirect("Unable to climb vines. Consider disabling allowVines.");
                 return state.setStatus(MovementStatus.UNREACHABLE);

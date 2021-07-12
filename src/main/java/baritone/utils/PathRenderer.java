@@ -192,7 +192,7 @@ public final class PathRenderer implements IRenderer {
         }
     }
 
-    public static void drawManySelectionBoxes(Entity player, Collection<BlockPos> positions, Color color) {
+    public static void drawManySelectionBoxes(Entity player, Collection<BetterBlockPos> positions, Color color) {
         IRenderer.startLines(color, settings.pathRenderLineWidthPixels.value, settings.renderSelectionBoxesIgnoreDepth.value);
 
         //BlockPos blockpos = movingObjectPositionIn.getBlockPos();
@@ -203,7 +203,7 @@ public final class PathRenderer implements IRenderer {
             AxisAlignedBB toDraw;
 
             if (state.getBlock().equals(Blocks.air)) {
-                toDraw = Blocks.dirt.getSelectedBoundingBox(player.worldObj, pos);
+                toDraw = Blocks.dirt.getSelectedBoundingBoxFromPool(player.worldObj, pos.x, pos.y, pos.z);
             } else {
                 toDraw = state.getBlock().getSelectedBoundingBox(player.worldObj, pos);
             }
@@ -230,7 +230,7 @@ public final class PathRenderer implements IRenderer {
             y = MathHelper.cos((float) (((float) ((System.nanoTime() / 100000L) % 20000L)) / 20000F * Math.PI * 2));
         }
         if (goal instanceof IGoalRenderPos) {
-            BlockPos goalPos = ((IGoalRenderPos) goal).getGoalPos();
+        	BetterBlockPos goalPos = ((IGoalRenderPos) goal).getGoalPos();
             minX = goalPos.getX() + 0.002 - renderPosX;
             maxX = goalPos.getX() + 1 - 0.002 - renderPosX;
             minZ = goalPos.getZ() + 0.002 - renderPosZ;

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import baritone.Baritone;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.input.Input;
 import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
@@ -35,13 +36,12 @@ import baritone.pathing.path.PathExecutor;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.chunk.EmptyChunk;
 
 public final class BackfillProcess extends BaritoneProcessHelper {
 
-    public HashMap<BlockPos, IBlockState> blocksToReplace = new HashMap<>();
+    public HashMap<BetterBlockPos, IBlockState> blocksToReplace = new HashMap<>();
 
     public BackfillProcess(Baritone baritone) {
         super(baritone);
@@ -61,7 +61,7 @@ public final class BackfillProcess extends BaritoneProcessHelper {
             return false;
         }
         amIBreakingABlockHMMMMMMM();
-        for (BlockPos pos : new ArrayList<>(blocksToReplace.keySet())) {
+        for (BetterBlockPos pos : new ArrayList<>(blocksToReplace.keySet())) {
             if (ctx.world().getChunkFromBlockCoords(pos) instanceof EmptyChunk) {
                 blocksToReplace.remove(pos);
             }
@@ -77,7 +77,7 @@ public final class BackfillProcess extends BaritoneProcessHelper {
             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
         }
         baritone.getInputOverrideHandler().clearAllKeys();
-        for (BlockPos toPlace : toFillIn()) {
+        for (BetterBlockPos toPlace : toFillIn()) {
             MovementState fake = new MovementState();
             switch (MovementHelper.attemptToPlaceABlock(fake, baritone, toPlace, false, false)) {
                 case NO_OPTION:
@@ -103,18 +103,18 @@ public final class BackfillProcess extends BaritoneProcessHelper {
         blocksToReplace.put(ctx.getSelectedBlock().get(), ctx.world().getBlockState(ctx.getSelectedBlock().get()));
     }
 
-    public List<BlockPos> toFillIn() {
+    public List<BetterBlockPos> toFillIn() {
         return blocksToReplace
                 .keySet()
                 .stream()
                 .filter(pos -> ctx.world().getBlockState(pos).getBlock() == Blocks.air)
                 .filter(pos -> ctx.world().canBlockBePlaced(Blocks.dirt, pos, false, EnumFacing.UP, null, null))
                 .filter(pos -> !partOfCurrentMovement(pos))
-                .sorted(Comparator.<BlockPos>comparingDouble(ctx.player()::getDistanceSq).reversed())
+                .sorted(Comparator.<BetterBlockPos>comparingDouble(ctx.player()::getDistanceSq).reversed())
                 .collect(Collectors.toList());
     }
 
-    private boolean partOfCurrentMovement(BlockPos pos) {
+    private boolean partOfCurrentMovement(BetterBlockPos pos) {
         PathExecutor exec = baritone.getPathingBehavior().getCurrent();
         if (exec == null || exec.finished() || exec.failed()) {
             return false;

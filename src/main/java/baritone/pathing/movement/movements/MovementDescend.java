@@ -211,8 +211,8 @@ public class MovementDescend extends Movement {
             return state;
         }
 
-        BlockPos playerFeet = ctx.playerFeet();
-        BlockPos fakeDest = new BlockPos(dest.getX() * 2 - src.getX(), dest.getY(), dest.getZ() * 2 - src.getZ());
+        BetterBlockPos playerFeet = ctx.playerFeet();
+        BetterBlockPos fakeDest = new BetterBlockPos(dest.getX() * 2 - src.getX(), dest.getY(), dest.getZ() * 2 - src.getZ());
         if ((playerFeet.equals(dest) || playerFeet.equals(fakeDest)) && (MovementHelper.isLiquid(ctx, dest) || ctx.player().posY - dest.getY() < 0.5)) { // lilypads
             // Wait until we're actually on the ground before saying we're done because sometimes we continue to fall if the next action starts immediately
             return state.setStatus(MovementStatus.SUCCESS);
@@ -226,7 +226,7 @@ public class MovementDescend extends Movement {
             EntityPlayerSP player = ctx.player();
             state.setTarget(new MovementState.MovementTarget(
                     new Rotation(RotationUtils.calcRotationFromVec3d(ctx.playerHead(),
-                            new Vec3(destX, dest.getY(), destZ),
+                            Vec3.createVectorHelper(destX, dest.getY(), destZ),
                             new Rotation(player.rotationYaw, player.rotationPitch)).getYaw(), player.rotationPitch),
                     false
             )).setInput(Input.MOVE_FORWARD, true);
@@ -251,7 +251,7 @@ public class MovementDescend extends Movement {
     public boolean safeMode() {
         // (dest - src) + dest is offset 1 more in the same direction
         // so it's the block we'd need to worry about running into if we decide to sprint straight through this descend
-        BlockPos into = dest.subtract(src.down()).add(dest);
+    	BetterBlockPos into = dest.subtract(src.down()).add(dest);
         if (skipToAscend()) {
             // if dest extends into can't walk through, but the two above are can walk through, then we can overshoot and glitch in that weird way
             return true;
@@ -265,7 +265,7 @@ public class MovementDescend extends Movement {
     }
 
     public boolean skipToAscend() {
-        BlockPos into = dest.subtract(src.down()).add(dest);
+    	BetterBlockPos into = dest.subtract(src.down()).add(dest);
         return !MovementHelper.canWalkThrough(ctx, new BetterBlockPos(into)) && MovementHelper.canWalkThrough(ctx, new BetterBlockPos(into).up()) && MovementHelper.canWalkThrough(ctx, new BetterBlockPos(into).up(2));
     }
 }

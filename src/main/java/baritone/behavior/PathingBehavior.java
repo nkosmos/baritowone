@@ -386,10 +386,6 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         resetEstimatedTicksToGoal(expectedSegmentStart);
     }
 
-    private void resetEstimatedTicksToGoal(BlockPos start) {
-        resetEstimatedTicksToGoal(new BetterBlockPos(start));
-    }
-
     private void resetEstimatedTicksToGoal(BetterBlockPos start) {
         ticksElapsedSoFar = 0;
         startPosition = start;
@@ -446,7 +442,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
      * @param start
      * @param talkAboutIt
      */
-    private void findPathInNewThread(final BlockPos start, final boolean talkAboutIt, CalculationContext context) {
+    private void findPathInNewThread(final BetterBlockPos start, final boolean talkAboutIt, CalculationContext context) {
         // this must be called with synchronization on pathCalcLock!
         // actually, we can check this, muahaha
         if (!Thread.holdsLock(pathCalcLock)) {
@@ -533,10 +529,10 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         });
     }
 
-    private static AbstractNodeCostSearch createPathfinder(BlockPos start, Goal goal, IPath previous, CalculationContext context) {
+    private static AbstractNodeCostSearch createPathfinder(BetterBlockPos start, Goal goal, IPath previous, CalculationContext context) {
         Goal transformed = goal;
         if (Baritone.settings().simplifyUnloadedYCoord.value && goal instanceof IGoalRenderPos) {
-            BlockPos pos = ((IGoalRenderPos) goal).getGoalPos();
+        	BetterBlockPos pos = ((IGoalRenderPos) goal).getGoalPos();
             if (!context.bsi.worldContainsLoadedChunk(pos.getX(), pos.getZ())) {
                 transformed = new GoalXZ(pos.getX(), pos.getZ());
             }

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockUtils;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.pathing.PathingBlockType;
@@ -49,7 +50,7 @@ public final class ChunkPacker {
     public static CachedChunk pack(Chunk chunk) {
         //long start = System.nanoTime() / 1000000L;
 
-        Map<String, List<BlockPos>> specialBlocks = new HashMap<>();
+        Map<String, List<BetterBlockPos>> specialBlocks = new HashMap<>();
         BitSet bitSet = new BitSet(CachedChunk.SIZE);
         try {
             ExtendedBlockStorage[] chunkInternalStorageArray = chunk.getBlockStorageArray();
@@ -81,7 +82,7 @@ public final class ChunkPacker {
                             Block block = state.getBlock();
                             if (CachedChunk.BLOCKS_TO_KEEP_TRACK_OF.contains(block)) {
                                 String name = BlockUtils.blockToString(block);
-                                specialBlocks.computeIfAbsent(name, b -> new ArrayList<>()).add(new BlockPos(x, y, z));
+                                specialBlocks.computeIfAbsent(name, b -> new ArrayList<>()).add(new BetterBlockPos(x, y, z));
                             }
                         }
                     }
@@ -101,7 +102,7 @@ public final class ChunkPacker {
                 for (int y = 255; y >= 0; y--) {
                     int index = CachedChunk.getPositionIndex(x, y, z);
                     if (bitSet.get(index) || bitSet.get(index + 1)) {
-                        blocks[z << 4 | x] = chunk.getBlockState(new BlockPos(x, y, z));
+                        blocks[z << 4 | x] = chunk.getBlockState(new BetterBlockPos(x, y, z));
                         continue https;
                     }
                 }
@@ -122,16 +123,16 @@ public final class ChunkPacker {
                 return PathingBlockType.AVOID;
             }
             if (
-                    (x != 15 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BlockPos(x + 1, y, z))))
-                            || (x != 0 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BlockPos(x - 1, y, z))))
-                            || (z != 15 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BlockPos(x, y, z + 1))))
-                            || (z != 0 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BlockPos(x, y, z - 1))))
+                    (x != 15 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BetterBlockPos(x + 1, y, z))))
+                            || (x != 0 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BetterBlockPos(x - 1, y, z))))
+                            || (z != 15 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BetterBlockPos(x, y, z + 1))))
+                            || (z != 0 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BetterBlockPos(x, y, z - 1))))
             ) {
                 return PathingBlockType.AVOID;
             }
             if (x == 0 || x == 15 || z == 0 || z == 15) {
             	World world = chunk.getWorld();
-        		BlockPos bp = new BlockPos(x + chunk.xPosition << 4, y, z + chunk.zPosition << 4);
+            	BetterBlockPos bp = new BetterBlockPos(x + chunk.xPosition << 4, y, z + chunk.zPosition << 4);
         		if(world.getBlockState(bp).getProperties().containsKey(BlockLiquid.LEVEL)) {
         			if (BlockLiquid.getFlowDirection(world, bp, state.getBlock().getMaterial()) == -1000.0F) {
         				return PathingBlockType.WATER;

@@ -40,7 +40,7 @@ public class Avoidance {
     private final int radius;
     private final int radiusSq;
 
-    public Avoidance(BlockPos center, double coefficient, int radius) {
+    public Avoidance(BetterBlockPos center, double coefficient, int radius) {
         this(center.getX(), center.getY(), center.getZ(), coefficient, radius);
     }
 
@@ -77,7 +77,7 @@ public class Avoidance {
                     .filter(entity -> (!(entity instanceof EntitySpider)) || ctx.player().getBrightness(1F) < 0.5)
                     .filter(entity -> !(entity instanceof EntityPigZombie) || ((EntityPigZombie) entity).isAngry())
                     .filter(entity -> !(entity instanceof EntityEnderman) || ((EntityEnderman) entity).isScreaming())
-                    .forEach(entity -> res.add(new Avoidance(new BlockPos(entity), mobCoeff, Baritone.settings().mobAvoidanceRadius.value)));
+                    .forEach(entity -> res.add(new Avoidance(new BetterBlockPos(entity), mobCoeff, Baritone.settings().mobAvoidanceRadius.value)));
         }
         return res;
     }

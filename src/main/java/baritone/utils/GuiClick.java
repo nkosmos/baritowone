@@ -61,8 +61,8 @@ public class GuiClick extends GuiScreen {
     private final IntBuffer VIEWPORT = BufferUtils.createIntBuffer(16);
     private final FloatBuffer TO_WORLD_BUFFER = BufferUtils.createFloatBuffer(3);
 
-    private BlockPos clickStart;
-    private BlockPos currentMouseOver;
+    private BetterBlockPos clickStart;
+    private BetterBlockPos currentMouseOver;
 
     @Override
     public boolean doesGuiPauseGame() {

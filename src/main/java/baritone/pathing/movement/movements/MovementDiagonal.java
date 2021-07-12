@@ -72,8 +72,8 @@ public class MovementDiagonal extends Movement {
             return true;
         }
         //both corners are walkable
-        if (MovementHelper.canWalkOn(ctx, new BlockPos(src.x, src.y - 1, dest.z))
-                && MovementHelper.canWalkOn(ctx, new BlockPos(dest.x, src.y - 1, src.z))) {
+        if (MovementHelper.canWalkOn(ctx, new BetterBlockPos(src.x, src.y - 1, dest.z))
+                && MovementHelper.canWalkOn(ctx, new BetterBlockPos(dest.x, src.y - 1, src.z))) {
             return true;
         }
         //we are in a likely unwalkable corner, check for a supporting block
@@ -284,11 +284,11 @@ public class MovementDiagonal extends Movement {
     }
 
     @Override
-    public List<BlockPos> toBreak(BlockStateInterface bsi) {
+    public List<BetterBlockPos> toBreak(BlockStateInterface bsi) {
         if (toBreakCached != null) {
             return toBreakCached;
         }
-        List<BlockPos> result = new ArrayList<>();
+        List<BetterBlockPos> result = new ArrayList<>();
         for (int i = 4; i < 6; i++) {
             if (!MovementHelper.canWalkThrough(bsi, positionsToBreak[i].x, positionsToBreak[i].y, positionsToBreak[i].z)) {
                 result.add(positionsToBreak[i]);
@@ -299,11 +299,11 @@ public class MovementDiagonal extends Movement {
     }
 
     @Override
-    public List<BlockPos> toWalkInto(BlockStateInterface bsi) {
+    public List<BetterBlockPos> toWalkInto(BlockStateInterface bsi) {
         if (toWalkIntoCached == null) {
             toWalkIntoCached = new ArrayList<>();
         }
-        List<BlockPos> result = new ArrayList<>();
+        List<BetterBlockPos> result = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             if (!MovementHelper.canWalkThrough(bsi, positionsToBreak[i].x, positionsToBreak[i].y, positionsToBreak[i].z)) {
                 result.add(positionsToBreak[i]);

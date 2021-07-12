@@ -24,13 +24,13 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableSet;
 
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockUtils;
 import baritone.utils.pathing.PathingBlockType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 
 /**
  * @author Brady
@@ -112,11 +112,11 @@ public final class CachedChunk {
 
     private final int[] heightMap;
 
-    private final Map<String, List<BlockPos>> specialBlockLocations;
+    private final Map<String, List<BetterBlockPos>> specialBlockLocations;
 
     public final long cacheTimestamp;
 
-    CachedChunk(int x, int z, BitSet data, IBlockState[] overview, Map<String, List<BlockPos>> specialBlockLocations, long cacheTimestamp) {
+    CachedChunk(int x, int z, BitSet data, IBlockState[] overview, Map<String, List<BetterBlockPos>> specialBlockLocations, long cacheTimestamp) {
         validateSize(data);
 
         this.x = x;
@@ -136,8 +136,8 @@ public final class CachedChunk {
     }
 
     private final void setSpecial() {
-        for (Map.Entry<String, List<BlockPos>> entry : specialBlockLocations.entrySet()) {
-            for (BlockPos pos : entry.getValue()) {
+        for (Map.Entry<String, List<BetterBlockPos>> entry : specialBlockLocations.entrySet()) {
+            for (BetterBlockPos pos : entry.getValue()) {
                 special.put(getPositionIndex(pos.getX(), pos.getY(), pos.getZ()), entry.getKey());
             }
         }
@@ -203,17 +203,17 @@ public final class CachedChunk {
         return overview;
     }
 
-    public final Map<String, List<BlockPos>> getRelativeBlocks() {
+    public final Map<String, List<BetterBlockPos>> getRelativeBlocks() {
         return specialBlockLocations;
     }
 
-    public final ArrayList<BlockPos> getAbsoluteBlocks(String blockType) {
+    public final ArrayList<BetterBlockPos> getAbsoluteBlocks(String blockType) {
         if (specialBlockLocations.get(blockType) == null) {
             return null;
         }
-        ArrayList<BlockPos> res = new ArrayList<>();
-        for (BlockPos pos : specialBlockLocations.get(blockType)) {
-            res.add(new BlockPos(pos.getX() + x * 16, pos.getY(), pos.getZ() + z * 16));
+        ArrayList<BetterBlockPos> res = new ArrayList<>();
+        for (BetterBlockPos pos : specialBlockLocations.get(blockType)) {
+            res.add(new BetterBlockPos(pos.getX() + x * 16, pos.getY(), pos.getZ() + z * 16));
         }
         return res;
     }

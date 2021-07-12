@@ -26,7 +26,7 @@ import java.util.List;
 import org.junit.Test;
 
 import baritone.api.pathing.goals.GoalGetToBlock;
-import net.minecraft.util.BlockPos;
+import baritone.api.utils.BetterBlockPos;
 
 public class GoalGetToBlockTest {
 
@@ -36,7 +36,7 @@ public class GoalGetToBlockTest {
         for (int x = -10; x <= 10; x++) {
             for (int y = -10; y <= 10; y++) {
                 for (int z = -10; z <= 10; z++) {
-                    boolean inGoal = new GoalGetToBlock(new BlockPos(0, 0, 0)).isInGoal(new BlockPos(x, y, z));
+                    boolean inGoal = new GoalGetToBlock(new BetterBlockPos(0, 0, 0)).isInGoal(new BetterBlockPos(x, y, z));
                     String repr = x + "," + y + "," + z;
                     System.out.println(repr + " " + inGoal);
                     if (inGoal) {

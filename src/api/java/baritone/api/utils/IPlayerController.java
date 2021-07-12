@@ -37,7 +37,7 @@ public interface IPlayerController {
 
     boolean hasBrokenBlock();
 
-    boolean onPlayerDamageBlock(BlockPos pos, EnumFacing side);
+    boolean onPlayerDamageBlock(BetterBlockPos pos, EnumFacing side);
 
     void resetBlockRemoving();
 
@@ -45,11 +45,11 @@ public interface IPlayerController {
 
     GameType getGameType();
 
-    boolean processRightClickBlock(EntityPlayerSP player, World world, BlockPos pos, EnumFacing direction, Vec3 vec);
+    boolean processRightClickBlock(EntityPlayerSP player, World world, BetterBlockPos pos, EnumFacing direction, Vec3 vec);
 
     boolean processRightClick(EntityPlayerSP player, World world);
 
-    boolean clickBlock(BlockPos loc, EnumFacing face);
+    boolean clickBlock(BetterBlockPos loc, EnumFacing face);
 
     void setHittingBlock(boolean hittingBlock);
 

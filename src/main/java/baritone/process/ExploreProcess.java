@@ -35,6 +35,7 @@ import baritone.api.pathing.goals.GoalYLevel;
 import baritone.api.process.IExploreProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.MyChunkPos;
 import baritone.cache.CachedWorld;
 import baritone.utils.BaritoneProcessHelper;
@@ -44,7 +45,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 
 public final class ExploreProcess extends BaritoneProcessHelper implements IExploreProcess {
 
-    private BlockPos explorationOrigin;
+    private BetterBlockPos explorationOrigin;
 
     private IChunkFilter filter;
 
@@ -61,7 +62,7 @@ public final class ExploreProcess extends BaritoneProcessHelper implements IExpl
 
     @Override
     public void explore(int centerX, int centerZ) {
-        explorationOrigin = new BlockPos(centerX, 0, centerZ);
+        explorationOrigin = new BetterBlockPos(centerX, 0, centerZ);
         distanceCompleted = 0;
     }
 
@@ -107,11 +108,11 @@ public final class ExploreProcess extends BaritoneProcessHelper implements IExpl
         return new PathingCommand(new GoalComposite(closestUncached), PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
     }
 
-    private Goal[] closestUncachedChunks(BlockPos center, IChunkFilter filter) {
+    private Goal[] closestUncachedChunks(BetterBlockPos center, IChunkFilter filter) {
         int chunkX = center.getX() >> 4;
         int chunkZ = center.getZ() >> 4;
         int count = Math.min(filter.countRemain(), Baritone.settings().exploreChunkSetMinimumSize.value);
-        List<BlockPos> centers = new ArrayList<>();
+        List<BetterBlockPos> centers = new ArrayList<>();
         int renderDistance = Baritone.settings().worldExploringChunkOffset.value;
         for (int dist = distanceCompleted; ; dist++) {
             for (int dx = -dist; dx <= dist; dx++) {
@@ -144,7 +145,7 @@ public final class ExploreProcess extends BaritoneProcessHelper implements IExpl
                     } else {
                         centerZ += offset;
                     }
-                    centers.add(new BlockPos(centerX, 0, centerZ));
+                    centers.add(new BetterBlockPos(centerX, 0, centerZ));
                 }
             }
             if (dist % 10 == 0) {

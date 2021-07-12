@@ -31,10 +31,10 @@ import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.cache.ICachedWorld;
 import baritone.api.cache.IWorldData;
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 
@@ -121,8 +121,8 @@ public final class CachedWorld implements ICachedWorld, Helper {
     }
 
     @Override
-    public final ArrayList<BlockPos> getLocationsOf(String block, int maximum, int centerX, int centerZ, int maxRegionDistanceSq) {
-        ArrayList<BlockPos> res = new ArrayList<>();
+    public final ArrayList<BetterBlockPos> getLocationsOf(String block, int maximum, int centerX, int centerZ, int maxRegionDistanceSq) {
+        ArrayList<BetterBlockPos> res = new ArrayList<>();
         int centerRegionX = centerX >> 9;
         int centerRegionZ = centerZ >> 9;
 
@@ -186,7 +186,7 @@ public final class CachedWorld implements ICachedWorld, Helper {
         if (!Baritone.settings().pruneRegionsFromRAM.value) {
             return;
         }
-        BlockPos pruneCenter = guessPosition();
+        BetterBlockPos pruneCenter = guessPosition();
         for (CachedRegion region : allRegions()) {
             if (region == null) {
                 continue;
@@ -206,7 +206,7 @@ public final class CachedWorld implements ICachedWorld, Helper {
     /**
      * If we are still in this world and dimension, return player feet, otherwise return most recently modified chunk
      */
-    private BlockPos guessPosition() {
+    private BetterBlockPos guessPosition() {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
             IWorldData data = ibaritone.getWorldProvider().getCurrentWorld();
             if (data != null && data.getCachedWorld() == this) {
@@ -227,9 +227,9 @@ public final class CachedWorld implements ICachedWorld, Helper {
             }
         }
         if (mostRecentlyModified == null) {
-            return new BlockPos(0, 0, 0);
+            return new BetterBlockPos(0, 0, 0);
         }
-        return new BlockPos((mostRecentlyModified.x << 4) + 8, 0, (mostRecentlyModified.z << 4) + 8);
+        return new BetterBlockPos((mostRecentlyModified.x << 4) + 8, 0, (mostRecentlyModified.z << 4) + 8);
     }
 
     private synchronized List<CachedRegion> allRegions() {

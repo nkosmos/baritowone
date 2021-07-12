@@ -221,7 +221,7 @@ public class MovementTraverse extends Movement {
         }
 
         if (pb0.getBlock() instanceof BlockFenceGate || pb1.getBlock() instanceof BlockFenceGate) {
-            BlockPos blocked = !MovementHelper.isGatePassable(ctx, positionsToBreak[0], src.up()) ? positionsToBreak[0]
+        	BetterBlockPos blocked = !MovementHelper.isGatePassable(ctx, positionsToBreak[0], src.up()) ? positionsToBreak[0]
                     : !MovementHelper.isGatePassable(ctx, positionsToBreak[1], src) ? positionsToBreak[1]
                     : null;
             if (blocked != null) {
@@ -233,7 +233,7 @@ public class MovementTraverse extends Movement {
         }
 
         boolean isTheBridgeBlockThere = MovementHelper.canWalkOn(ctx, positionToPlace) || ladder;
-        BlockPos feet = ctx.playerFeet();
+        BetterBlockPos feet = ctx.playerFeet();
         if (feet.getY() != dest.getY() && !ladder) {
             logDebug("Wrong Y coordinate");
             if (feet.getY() < dest.getY()) {
@@ -256,7 +256,7 @@ public class MovementTraverse extends Movement {
                 // wait until we're on the ground
                 return state;
             }
-            BlockPos into = dest.subtract(src).add(dest);
+            BetterBlockPos into = dest.subtract(src).add(dest);
             Block intoBelow = BlockStateInterface.get(ctx, into).getBlock();
             Block intoAbove = BlockStateInterface.get(ctx, into.up()).getBlock();
             if (wasTheBridgeBlockAlwaysThere && (!MovementHelper.isLiquid(ctx, feet) || Baritone.settings().sprintInWater.value) && (!MovementHelper.avoidWalkingInto(intoBelow) || MovementHelper.isWater(intoBelow)) && !MovementHelper.avoidWalkingInto(intoAbove)) {
@@ -264,7 +264,7 @@ public class MovementTraverse extends Movement {
             }
 
             IBlockState destDown = BlockStateInterface.get(ctx, dest.down());
-            BlockPos against = positionsToBreak[0];
+            BetterBlockPos against = positionsToBreak[0];
             if (feet.getY() != dest.getY() && ladder && (destDown.getBlock() == Blocks.vine || destDown.getBlock() == Blocks.ladder)) {
                 against = destDown.getBlock() == Blocks.vine ? MovementPillar.getAgainst(new CalculationContext(baritone), dest.down()) : dest.offset(destDown.getValue(BlockLadder.FACING).getOpposite());
                 if (against == null) {
@@ -321,7 +321,7 @@ public class MovementTraverse extends Movement {
                 double faceY = (dest.getY() + src.getY() - 1.0D) * 0.5D;
                 double faceZ = (dest.getZ() + src.getZ() + 1.0D) * 0.5D;
                 // faceX, faceY, faceZ is the middle of the face between from and to
-                BlockPos goalLook = src.down(); // this is the block we were just standing on, and the one we want to place against
+                BetterBlockPos goalLook = src.down(); // this is the block we were just standing on, and the one we want to place against
 
                 Rotation backToFace = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), Vec3.createVectorHelper(faceX, faceY, faceZ), ctx.playerRotations());
                 float pitch = backToFace.getPitch();

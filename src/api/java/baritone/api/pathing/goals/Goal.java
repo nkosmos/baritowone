@@ -17,7 +17,7 @@
 
 package baritone.api.pathing.goals;
 
-import net.minecraft.util.BlockPos;
+import baritone.api.utils.BetterBlockPos;
 
 /**
  * An abstract Goal for pathing, can be anything from a specific block to just a Y coordinate.
@@ -47,11 +47,11 @@ public interface Goal {
      */
     double heuristic(int x, int y, int z);
 
-    default boolean isInGoal(BlockPos pos) {
+    default boolean isInGoal(BetterBlockPos pos) {
         return isInGoal(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    default double heuristic(BlockPos pos) {
+    default double heuristic(BetterBlockPos pos) {
         return heuristic(pos.getX(), pos.getY(), pos.getZ());
     }
 

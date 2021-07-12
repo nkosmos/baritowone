@@ -31,6 +31,7 @@ import java.util.Optional;
 import baritone.Baritone;
 import baritone.api.cache.IContainerMemory;
 import baritone.api.cache.IRememberedInventory;
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.IPlayerContext;
 import baritone.cache.ContainerMemory.RememberedInventory;
 import io.netty.buffer.ByteBuf;
@@ -45,7 +46,7 @@ public class ContainerMemory implements IContainerMemory {
     /**
      * The current remembered inventories
      */
-    private final Map<BlockPos, RememberedInventory> inventories = new HashMap<>();
+    private final Map<BetterBlockPos, RememberedInventory> inventories = new HashMap<>();
 
 
     public ContainerMemory(Path saveTo) {
@@ -74,7 +75,7 @@ public class ContainerMemory implements IContainerMemory {
             if (rem.items.isEmpty()) {
                 continue; // this only happens if the list has no elements, not if the list has elements that are all empty item stacks
             }
-            inventories.put(new BlockPos(x, y, z), rem);
+            inventories.put(new BetterBlockPos(x, y, z), rem);
         }
     }
 
@@ -85,7 +86,7 @@ public class ContainerMemory implements IContainerMemory {
         ByteBuf buf = Unpooled.buffer(0, Integer.MAX_VALUE);
         PacketBuffer out = new PacketBuffer(buf);
         out.writeInt(inventories.size());
-        for (Map.Entry<BlockPos, RememberedInventory> entry : inventories.entrySet()) {
+        for (Map.Entry<BetterBlockPos, RememberedInventory> entry : inventories.entrySet()) {
             out = new PacketBuffer(out.writeInt(entry.getKey().getX()));
             out = new PacketBuffer(out.writeInt(entry.getKey().getY()));
             out = new PacketBuffer(out.writeInt(entry.getKey().getZ()));
@@ -94,7 +95,7 @@ public class ContainerMemory implements IContainerMemory {
         Files.write(saveTo, out.array());
     }
 
-    public synchronized void setup(BlockPos pos, int windowId, int slotCount) {
+    public synchronized void setup(BetterBlockPos pos, int windowId, int slotCount) {
         RememberedInventory inventory = inventories.computeIfAbsent(pos, x -> new RememberedInventory());
         inventory.windowId = windowId;
         inventory.size = slotCount;
@@ -105,12 +106,12 @@ public class ContainerMemory implements IContainerMemory {
     }
 
     @Override
-    public final synchronized RememberedInventory getInventoryByPos(BlockPos pos) {
+    public final synchronized RememberedInventory getInventoryByPos(BetterBlockPos pos) {
         return inventories.get(pos);
     }
 
     @Override
-    public final synchronized Map<BlockPos, IRememberedInventory> getRememberedInventories() {
+    public final synchronized Map<BetterBlockPos, IRememberedInventory> getRememberedInventories() {
         // make a copy since this map is modified from the packet thread
         return new HashMap<>(inventories);
     }

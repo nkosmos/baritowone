@@ -17,13 +17,13 @@
 
 package baritone.utils.accessor;
 
-import net.minecraft.util.BlockPos;
+import baritone.api.utils.BetterBlockPos;
 
 public interface IPlayerControllerMP {
 
     void setIsHittingBlock(boolean isHittingBlock);
 
-    BlockPos getCurrentBlock();
+    BetterBlockPos getCurrentBlock();
 
     void callSyncCurrentPlayItem();
 }

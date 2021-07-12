@@ -17,6 +17,7 @@
 
 package baritone.api.event.events;
 
+import baritone.api.utils.BetterBlockPos;
 import net.minecraft.util.BlockPos;
 
 /**
@@ -30,14 +31,14 @@ public final class BlockInteractEvent {
     /**
      * The position of the block interacted with
      */
-    private final BlockPos pos;
+    private final BetterBlockPos pos;
 
     /**
      * The type of interaction that occurred
      */
     private final Type type;
 
-    public BlockInteractEvent(BlockPos pos, Type type) {
+    public BlockInteractEvent(BetterBlockPos pos, Type type) {
         this.pos = pos;
         this.type = type;
     }
@@ -45,7 +46,7 @@ public final class BlockInteractEvent {
     /**
      * @return The position of the block interacted with
      */
-    public final BlockPos getPos() {
+    public final BetterBlockPos getPos() {
         return this.pos;
     }
 

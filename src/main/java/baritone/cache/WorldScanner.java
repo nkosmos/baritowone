@@ -31,7 +31,6 @@ import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
@@ -45,8 +44,8 @@ public enum WorldScanner implements IWorldScanner {
     private static final int[] DEFAULT_COORDINATE_ITERATION_ORDER = IntStream.range(0, 16).toArray();
 
     @Override
-    public List<BlockPos> scanChunkRadius(IPlayerContext ctx, BlockOptionalMetaLookup filter, int max, int yLevelThreshold, int maxSearchRadius) {
-        ArrayList<BlockPos> res = new ArrayList<>();
+    public List<BetterBlockPos> scanChunkRadius(IPlayerContext ctx, BlockOptionalMetaLookup filter, int max, int yLevelThreshold, int maxSearchRadius) {
+        ArrayList<BetterBlockPos> res = new ArrayList<>();
 
         if (filter.blocks().isEmpty()) {
             return res;
@@ -97,7 +96,7 @@ public enum WorldScanner implements IWorldScanner {
     }
 
     @Override
-    public List<BlockPos> scanChunk(IPlayerContext ctx, BlockOptionalMetaLookup filter, ChunkCoordIntPair pos, int max, int yLevelThreshold) {
+    public List<BetterBlockPos> scanChunk(IPlayerContext ctx, BlockOptionalMetaLookup filter, ChunkCoordIntPair pos, int max, int yLevelThreshold) {
         if (filter.blocks().isEmpty()) {
             return Collections.emptyList();
         }
@@ -110,7 +109,7 @@ public enum WorldScanner implements IWorldScanner {
             return Collections.emptyList();
         }
 
-        ArrayList<BlockPos> res = new ArrayList<>();
+        ArrayList<BetterBlockPos> res = new ArrayList<>();
         scanChunkInto(pos.chunkXPos << 4, pos.chunkZPos << 4, chunk, filter, res, max, yLevelThreshold, playerY, DEFAULT_COORDINATE_ITERATION_ORDER);
         return res;
     }
@@ -150,7 +149,7 @@ public enum WorldScanner implements IWorldScanner {
         return queued;
     }
 
-    private boolean scanChunkInto(int chunkX, int chunkZ, Chunk chunk, BlockOptionalMetaLookup filter, Collection<BlockPos> result, int max, int yLevelThreshold, int playerY, int[] coordinateIterationOrder) {
+    private boolean scanChunkInto(int chunkX, int chunkZ, Chunk chunk, BlockOptionalMetaLookup filter, Collection<BetterBlockPos> result, int max, int yLevelThreshold, int playerY, int[] coordinateIterationOrder) {
         ExtendedBlockStorage[] chunkInternalStorageArray = chunk.getBlockStorageArray();
         boolean foundWithinY = false;
         for (int yIndex = 0; yIndex < 16; yIndex++) {
@@ -179,7 +178,7 @@ public enum WorldScanner implements IWorldScanner {
                                     }
                                 }
                             }
-                            result.add(new BlockPos(chunkX | x, yy, chunkZ | z));
+                            result.add(new BetterBlockPos(chunkX | x, yy, chunkZ | z));
                         }
                     }
                 }

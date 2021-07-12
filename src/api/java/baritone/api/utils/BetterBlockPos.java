@@ -190,6 +190,20 @@ public final class BetterBlockPos extends XVec3i {
         return amt == 0 ? this : new BetterBlockPos(x - amt, y, z);
     }
 
+    /**
+     * Add the given Vector to this BlockPos
+     */
+    public BetterBlockPos add(XVec3i vec) {
+        return vec.getX() == 0 && vec.getY() == 0 && vec.getZ() == 0 ? this : new BetterBlockPos(this.getX() + vec.getX(), this.getY() + vec.getY(), this.getZ() + vec.getZ());
+    }
+
+    /**
+     * Subtract the given Vector from this BlockPos
+     */
+    public BetterBlockPos subtract(XVec3i vec) {
+        return vec.getX() == 0 && vec.getY() == 0 && vec.getZ() == 0 ? this : new BetterBlockPos(this.getX() - vec.getX(), this.getY() - vec.getY(), this.getZ() - vec.getZ());
+    }
+    
     @Override
     @Nonnull
     public String toString() {

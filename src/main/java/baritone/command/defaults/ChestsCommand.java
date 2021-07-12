@@ -31,7 +31,6 @@ import baritone.api.command.exception.CommandException;
 import baritone.api.command.exception.CommandInvalidStateException;
 import baritone.api.utils.BetterBlockPos;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.IChatComponent;
 
 public class ChestsCommand extends Command {
@@ -43,12 +42,12 @@ public class ChestsCommand extends Command {
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
-        Set<Map.Entry<BlockPos, IRememberedInventory>> entries =
+        Set<Map.Entry<BetterBlockPos, IRememberedInventory>> entries =
                 ctx.worldData().getContainerMemory().getRememberedInventories().entrySet();
         if (entries.isEmpty()) {
             throw new CommandInvalidStateException("No remembered inventories");
         }
-        for (Map.Entry<BlockPos, IRememberedInventory> entry : entries) {
+        for (Map.Entry<BetterBlockPos, IRememberedInventory> entry : entries) {
             // betterblockpos has censoring
             BetterBlockPos pos = new BetterBlockPos(entry.getKey());
             IRememberedInventory inv = entry.getValue();

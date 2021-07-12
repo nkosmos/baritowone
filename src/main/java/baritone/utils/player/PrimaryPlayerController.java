@@ -17,6 +17,7 @@
 
 package baritone.utils.player;
 
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerController;
 import baritone.utils.accessor.IPlayerControllerMP;
@@ -51,7 +52,7 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
     }
 
     @Override
-    public boolean onPlayerDamageBlock(BlockPos pos, EnumFacing side) {
+    public boolean onPlayerDamageBlock(BetterBlockPos pos, EnumFacing side) {
         return mc.playerController.onPlayerDamageBlock(pos, side);
     }
 
@@ -71,7 +72,7 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
     }
 
     @Override
-    public boolean processRightClickBlock(EntityPlayerSP player, World world, BlockPos pos, EnumFacing direction, Vec3 vec) {
+    public boolean processRightClickBlock(EntityPlayerSP player, World world, BetterBlockPos pos, EnumFacing direction, Vec3 vec) {
         return mc.playerController.onPlayerRightClick(player, (WorldClient) world, player.getHeldItem(), pos, direction, vec);
     }
 
@@ -81,7 +82,7 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
     }
 
     @Override
-    public boolean clickBlock(BlockPos loc, EnumFacing face) {
+    public boolean clickBlock(BetterBlockPos loc, EnumFacing face) {
         return mc.playerController.clickBlock(loc, face);
     }
 

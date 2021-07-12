@@ -17,11 +17,10 @@
 
 package baritone.api.utils;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -41,16 +40,16 @@ public final class VecUtils {
      * @return The center of the block's bounding box
      * @see #getBlockPosCenter(BlockPos)
      */
-    public static Vec3 calculateBlockCenter(World world, BlockPos pos) {
-        IBlockState b = world.getBlockState(pos);
-        AxisAlignedBB bbox = b.getBlock().getSelectedBoundingBox(world, pos);
+    public static Vec3 calculateBlockCenter(World world, BetterBlockPos pos) {
+        Block b = world.getBlock(pos.x, pos.y, pos.z);
+        AxisAlignedBB bbox = b.getSelectedBoundingBoxFromPool(world, pos.x, pos.y, pos.z);
         double xDiff = (bbox.maxX - bbox.minX) / 2;
         double yDiff = (bbox.maxY - bbox.minY) / 2;
         double zDiff = (bbox.maxZ - bbox.minZ) / 2;
-        if (b.getBlock() instanceof BlockFire) {//look at bottom of fire when putting it out
+        if (b instanceof BlockFire) {//look at bottom of fire when putting it out
             yDiff = 0;
         }
-        return new Vec3(
+        return Vec3.createVectorHelper(
                 pos.getX() + xDiff,
                 pos.getY() + yDiff,
                 pos.getZ() + zDiff
@@ -67,8 +66,8 @@ public final class VecUtils {
      * @return The assumed center of the position
      * @see #calculateBlockCenter(World, BlockPos)
      */
-    public static Vec3 getBlockPosCenter(BlockPos pos) {
-        return new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+    public static Vec3 getBlockPosCenter(BetterBlockPos pos) {
+        return Vec3.createVectorHelper(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
     /**
@@ -81,7 +80,7 @@ public final class VecUtils {
      * @return The distance from the assumed block center to the position
      * @see #getBlockPosCenter(BlockPos)
      */
-    public static double distanceToCenter(BlockPos pos, double x, double y, double z) {
+    public static double distanceToCenter(BetterBlockPos pos, double x, double y, double z) {
         double xdiff = pos.getX() + 0.5 - x;
         double ydiff = pos.getY() + 0.5 - y;
         double zdiff = pos.getZ() + 0.5 - z;
@@ -97,7 +96,7 @@ public final class VecUtils {
      * @return The distance from the entity to the block's assumed center
      * @see #getBlockPosCenter(BlockPos)
      */
-    public static double entityDistanceToCenter(Entity entity, BlockPos pos) {
+    public static double entityDistanceToCenter(Entity entity, BetterBlockPos pos) {
         return distanceToCenter(pos, entity.posX, entity.posY, entity.posZ);
     }
 
@@ -110,7 +109,7 @@ public final class VecUtils {
      * @return The horizontal distance from the entity to the block's assumed center
      * @see #getBlockPosCenter(BlockPos)
      */
-    public static double entityFlatDistanceToCenter(Entity entity, BlockPos pos) {
+    public static double entityFlatDistanceToCenter(Entity entity, BetterBlockPos pos) {
         return distanceToCenter(pos, entity.posX, pos.getY() + 0.5, entity.posZ);
     }
 }

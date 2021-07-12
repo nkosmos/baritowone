@@ -35,9 +35,9 @@ import java.util.zip.GZIPOutputStream;
 
 import baritone.Baritone;
 import baritone.api.cache.ICachedRegion;
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockUtils;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
 
 /**
  * @author Brady
@@ -96,14 +96,14 @@ public final class CachedRegion implements ICachedRegion {
         return chunks[x >> 4][z >> 4] != null;
     }
 
-    public final ArrayList<BlockPos> getLocationsOf(String block) {
-        ArrayList<BlockPos> res = new ArrayList<>();
+    public final ArrayList<BetterBlockPos> getLocationsOf(String block) {
+        ArrayList<BetterBlockPos> res = new ArrayList<>();
         for (int chunkX = 0; chunkX < 32; chunkX++) {
             for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
                 if (chunks[chunkX][chunkZ] == null) {
                     continue;
                 }
-                ArrayList<BlockPos> locs = chunks[chunkX][chunkZ].getAbsoluteBlocks(block);
+                ArrayList<BetterBlockPos> locs = chunks[chunkX][chunkZ].getAbsoluteBlocks(block);
                 if (locs != null) {
                     res.addAll(locs);
                 }
@@ -166,12 +166,12 @@ public final class CachedRegion implements ICachedRegion {
                 for (int x = 0; x < 32; x++) {
                     for (int z = 0; z < 32; z++) {
                         if (chunks[x][z] != null) {
-                            Map<String, List<BlockPos>> locs = chunks[x][z].getRelativeBlocks();
+                            Map<String, List<BetterBlockPos>> locs = chunks[x][z].getRelativeBlocks();
                             out.writeShort(locs.entrySet().size());
-                            for (Map.Entry<String, List<BlockPos>> entry : locs.entrySet()) {
+                            for (Map.Entry<String, List<BetterBlockPos>> entry : locs.entrySet()) {
                                 out.writeUTF(entry.getKey());
                                 out.writeShort(entry.getValue().size());
-                                for (BlockPos pos : entry.getValue()) {
+                                for (BetterBlockPos pos : entry.getValue()) {
                                     out.writeByte((byte) (pos.getZ() << 4 | pos.getX()));
                                     out.writeByte((byte) (pos.getY()));
                                 }
@@ -223,7 +223,7 @@ public final class CachedRegion implements ICachedRegion {
                 }
                 boolean[][] present = new boolean[32][32];
                 BitSet[][] bitSets = new BitSet[32][32];
-                Map<String, List<BlockPos>>[][] location = new Map[32][32];
+                Map<String, List<BetterBlockPos>>[][] location = new Map[32][32];
                 IBlockState[][][] overview = new IBlockState[32][32][];
                 long[][] cacheTimestamp = new long[32][32];
                 for (int x = 0; x < 32; x++) {
@@ -265,7 +265,7 @@ public final class CachedRegion implements ICachedRegion {
                             for (int i = 0; i < numSpecialBlockTypes; i++) {
                                 String blockName = in.readUTF();
                                 BlockUtils.stringToBlockRequired(blockName);
-                                List<BlockPos> locs = new ArrayList<>();
+                                List<BetterBlockPos> locs = new ArrayList<>();
                                 location[x][z].put(blockName, locs);
                                 int numLocations = in.readShort() & 0xffff;
                                 if (numLocations == 0) {
@@ -277,7 +277,7 @@ public final class CachedRegion implements ICachedRegion {
                                     int X = xz & 0x0f;
                                     int Z = (xz >>> 4) & 0x0f;
                                     int Y = in.readByte() & 0xff;
-                                    locs.add(new BlockPos(X, Y, Z));
+                                    locs.add(new BetterBlockPos(X, Y, Z));
                                 }
                             }
                         }

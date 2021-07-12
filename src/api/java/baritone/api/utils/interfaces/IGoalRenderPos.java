@@ -17,9 +17,9 @@
 
 package baritone.api.utils.interfaces;
 
-import net.minecraft.util.BlockPos;
+import baritone.api.utils.BetterBlockPos;
 
 public interface IGoalRenderPos {
 
-    BlockPos getGoalPos();
+	BetterBlockPos getGoalPos();
 }

@@ -53,8 +53,6 @@ import baritone.utils.BlockStateInterface;
 import baritonex.utils.XTuple;
 import baritonex.utils.XVec3i;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
 
 /**
@@ -84,9 +82,9 @@ public class PathExecutor implements IPathExecutor, Helper {
     private Integer costEstimateIndex;
     private boolean failed;
     private boolean recalcBP = true;
-    private HashSet<BlockPos> toBreak = new HashSet<>();
-    private HashSet<BlockPos> toPlace = new HashSet<>();
-    private HashSet<BlockPos> toWalkInto = new HashSet<>();
+    private HashSet<BetterBlockPos> toBreak = new HashSet<>();
+    private HashSet<BetterBlockPos> toPlace = new HashSet<>();
+    private HashSet<BetterBlockPos> toWalkInto = new HashSet<>();
 
     private PathingBehavior behavior;
     private IPlayerContext ctx;
@@ -142,7 +140,7 @@ public class PathExecutor implements IPathExecutor, Helper {
                 }
             }
         }
-        Tuple<Double, BlockPos> status = closestPathPos(path);
+        XTuple<Double, BetterBlockPos> status = closestPathPos(path);
         if (possiblyOffPath(status, MAX_DIST_FROM_PATH)) {
             ticksAway++;
             System.out.println("FAR AWAY FROM PATH FOR " + ticksAway + " TICKS. Current distance: " + status.getFirst() + ". Threshold: " + MAX_DIST_FROM_PATH);
@@ -166,9 +164,9 @@ public class PathExecutor implements IPathExecutor, Helper {
                 continue;
             }
             Movement m = (Movement) path.movements().get(i);
-            List<BlockPos> prevBreak = m.toBreak(bsi);
-            List<BlockPos> prevPlace = m.toPlace(bsi);
-            List<BlockPos> prevWalkInto = m.toWalkInto(bsi);
+            List<BetterBlockPos> prevBreak = m.toBreak(bsi);
+            List<BetterBlockPos> prevPlace = m.toPlace(bsi);
+            List<BetterBlockPos> prevWalkInto = m.toWalkInto(bsi);
             m.resetBlockCache();
             if (!prevBreak.equals(m.toBreak(bsi))) {
                 recalcBP = true;
@@ -181,9 +179,9 @@ public class PathExecutor implements IPathExecutor, Helper {
             }
         }
         if (recalcBP) {
-            HashSet<BlockPos> newBreak = new HashSet<>();
-            HashSet<BlockPos> newPlace = new HashSet<>();
-            HashSet<BlockPos> newWalkInto = new HashSet<>();
+            HashSet<BetterBlockPos> newBreak = new HashSet<>();
+            HashSet<BetterBlockPos> newPlace = new HashSet<>();
+            HashSet<BetterBlockPos> newWalkInto = new HashSet<>();
             for (int i = pathPosition; i < path.movements().size(); i++) {
                 Movement m = (Movement) path.movements().get(i);
                 newBreak.addAll(m.toBreak(bsi));
@@ -269,11 +267,11 @@ public class PathExecutor implements IPathExecutor, Helper {
         return canCancel; // movement is in progress, but if it reports cancellable, PathingBehavior is good to cut onto the next path
     }
 
-    private XTuple<Double, BlockPos> closestPathPos(IPath path) {
+    private XTuple<Double, BetterBlockPos> closestPathPos(IPath path) {
         double best = -1;
-        BlockPos bestPos = null;
+        BetterBlockPos bestPos = null;
         for (IMovement movement : path.movements()) {
-            for (BlockPos pos : ((Movement) movement).getValidPositions()) {
+            for (BetterBlockPos pos : ((Movement) movement).getValidPositions()) {
                 double dist = VecUtils.entityDistanceToCenter(ctx.player(), pos);
                 if (dist < best || best == -1) {
                     best = dist;
@@ -317,12 +315,12 @@ public class PathExecutor implements IPathExecutor, Helper {
         return positions.contains(ctx.playerFeet());
     }
 
-    private boolean possiblyOffPath(Tuple<Double, BlockPos> status, double leniency) {
+    private boolean possiblyOffPath(XTuple<Double, BetterBlockPos> status, double leniency) {
         double distanceFromPath = status.getFirst();
         if (distanceFromPath > leniency) {
             // when we're midair in the middle of a fall, we're very far from both the beginning and the end, but we aren't actually off path
             if (path.movements().get(pathPosition) instanceof MovementFall) {
-                BlockPos fallDest = path.positions().get(pathPosition + 1); // .get(pathPosition) is the block we fell off of
+            	BetterBlockPos fallDest = path.positions().get(pathPosition + 1); // .get(pathPosition) is the block we fell off of
                 return VecUtils.entityFlatDistanceToCenter(ctx.player(), fallDest) >= leniency; // ignore Y by using flat distance
             } else {
                 return true;
@@ -425,7 +423,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         if (current instanceof MovementAscend && pathPosition != 0) {
             IMovement prev = path.movements().get(pathPosition - 1);
             if (prev instanceof MovementDescend && prev.getDirection().up().equals(current.getDirection().down())) {
-                BlockPos center = current.getSrc().up();
+            	BetterBlockPos center = current.getSrc().up();
                 // playerFeet adds 0.1251 to account for soul sand
                 // farmland is 0.9375
                 // 0.07 is to account for farmland
@@ -439,7 +437,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             }
         }
         if (current instanceof MovementFall) {
-        	XTuple<Vec3, BlockPos> data = overrideFall((MovementFall) current);
+        	XTuple<Vec3, BetterBlockPos> data = overrideFall((MovementFall) current);
             if (data != null) {
                 BetterBlockPos fallDest = new BetterBlockPos(data.getSecond());
                 if (!path.positions().contains(fallDest)) {
@@ -460,7 +458,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         return false;
     }
 
-    private XTuple<Vec3, BlockPos> overrideFall(MovementFall movement) {
+    private XTuple<Vec3, BetterBlockPos> overrideFall(MovementFall movement) {
     	XVec3i dir = movement.getDirection();
         if (dir.getY() < -3) {
             return null;
@@ -480,7 +478,7 @@ public class PathExecutor implements IPathExecutor, Helper {
                 break;
             }
             for (int y = next.getDest().y; y <= movement.getSrc().y + 1; y++) {
-                BlockPos chk = new BlockPos(next.getDest().x, y, next.getDest().z);
+            	BetterBlockPos chk = new BetterBlockPos(next.getDest().x, y, next.getDest().z);
                 if (!MovementHelper.fullyPassable(ctx, chk)) {
                     break outer;
                 }
@@ -495,7 +493,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         }
         double len = i - pathPosition - 0.4;
         return new XTuple<>(
-                new Vec3(flatDir.getX() * len + movement.getDest().x + 0.5, movement.getDest().y, flatDir.getZ() * len + movement.getDest().z + 0.5),
+                Vec3.createVectorHelper(flatDir.getX() * len + movement.getDest().x + 0.5, movement.getDest().y, flatDir.getZ() * len + movement.getDest().z + 0.5),
                 movement.getDest().add(flatDir.getX() * (i - pathPosition), 0, flatDir.getZ() * (i - pathPosition)));
     }
 
@@ -505,7 +503,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             return false;
         }
         // we are centered
-        BlockPos headBonk = current.getSrc().subtract(current.getDirection()).up(2);
+        BetterBlockPos headBonk = current.getSrc().subtract(current.getDirection()).up(2);
         if (MovementHelper.fullyPassable(ctx, headBonk)) {
             return true;
         }
@@ -535,7 +533,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         }
         for (int x = 0; x < 2; x++) {
             for (int y = 0; y < 3; y++) {
-                BlockPos chk = current.getSrc().up(y);
+            	BetterBlockPos chk = current.getSrc().up(y);
                 if (x == 1) {
                     chk = chk.add(current.getDirection());
                 }
@@ -635,15 +633,15 @@ public class PathExecutor implements IPathExecutor, Helper {
         return pathPosition >= path.length();
     }
 
-    public Set<BlockPos> toBreak() {
+    public Set<BetterBlockPos> toBreak() {
         return Collections.unmodifiableSet(toBreak);
     }
 
-    public Set<BlockPos> toPlace() {
+    public Set<BetterBlockPos> toPlace() {
         return Collections.unmodifiableSet(toPlace);
     }
 
-    public Set<BlockPos> toWalkInto() {
+    public Set<BetterBlockPos> toWalkInto() {
         return Collections.unmodifiableSet(toWalkInto);
     }
 

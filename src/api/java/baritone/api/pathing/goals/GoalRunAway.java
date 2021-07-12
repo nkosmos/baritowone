@@ -19,10 +19,10 @@ package baritone.api.pathing.goals;
 
 import java.util.Arrays;
 
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.SettingsUtil;
 import it.unimi.dsi.fastutil.doubles.DoubleIterator;
 import it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet;
-import net.minecraft.util.BlockPos;
 
 /**
  * Useful for automated combat (retreating specifically)
@@ -31,17 +31,17 @@ import net.minecraft.util.BlockPos;
  */
 public class GoalRunAway implements Goal {
 
-    private final BlockPos[] from;
+    private final BetterBlockPos[] from;
 
     private final int distanceSq;
 
     private final Integer maintainY;
 
-    public GoalRunAway(double distance, BlockPos... from) {
+    public GoalRunAway(double distance, BetterBlockPos... from) {
         this(distance, null, from);
     }
 
-    public GoalRunAway(double distance, Integer maintainY, BlockPos... from) {
+    public GoalRunAway(double distance, Integer maintainY, BetterBlockPos... from) {
         if (from.length == 0) {
             throw new IllegalArgumentException();
         }
@@ -55,7 +55,7 @@ public class GoalRunAway implements Goal {
         if (maintainY != null && maintainY != y) {
             return false;
         }
-        for (BlockPos p : from) {
+        for (BetterBlockPos p : from) {
             int diffX = x - p.getX();
             int diffZ = z - p.getZ();
             int distSq = diffX * diffX + diffZ * diffZ;
@@ -69,7 +69,7 @@ public class GoalRunAway implements Goal {
     @Override
     public double heuristic(int x, int y, int z) {// mostly copied from GoalBlock
         double min = Double.MAX_VALUE;
-        for (BlockPos p : from) {
+        for (BetterBlockPos p : from) {
             double h = GoalXZ.calculate(p.getX() - x, p.getZ() - z);
             if (h < min) {
                 min = h;
@@ -91,7 +91,7 @@ public class GoalRunAway implements Goal {
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
         int maxZ = Integer.MIN_VALUE;
-        for (BlockPos p : from) {
+        for (BetterBlockPos p : from) {
             minX = Math.min(minX, p.getX() - distance);
             minY = Math.min(minY, p.getY() - distance);
             minZ = Math.min(minZ, p.getZ() - distance);

@@ -18,6 +18,7 @@
 package baritone.utils;
 
 import baritone.Baritone;
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.IPlayerContext;
 import baritone.cache.CachedRegion;
 import baritone.cache.WorldData;
@@ -43,7 +44,7 @@ public class BlockStateInterface {
     private final LongHashMap loadedChunks;
     private final WorldData worldData;
     protected final IBlockAccess world;
-    public final BlockPos.MutableBlockPos isPassableBlockPos;
+    public final BetterBlockPos isPassableBlockPos;
     public final IBlockAccess access;
 
     private Chunk prev = null;
@@ -74,7 +75,7 @@ public class BlockStateInterface {
         if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
             throw new IllegalStateException();
         }
-        this.isPassableBlockPos = new BlockPos.MutableBlockPos();
+        this.isPassableBlockPos = new BetterBlockPos(0, 0, 0);
         this.access = new BlockStateInterfaceAccessWrapper(this);
     }
     
@@ -92,17 +93,17 @@ public class BlockStateInterface {
         return loadedChunks.containsItem(ChunkCoordIntPair.chunkXZ2Int(blockX >> 4, blockZ >> 4));
     }
 
-    public static Block getBlock(IPlayerContext ctx, BlockPos pos) { // won't be called from the pathing thread because the pathing thread doesn't make a single blockpos pog
+    public static Block getBlock(IPlayerContext ctx, BetterBlockPos pos) { // won't be called from the pathing thread because the pathing thread doesn't make a single blockpos pog
         return get(ctx, pos).getBlock();
     }
 
-    public static IBlockState get(IPlayerContext ctx, BlockPos pos) {
+    public static IBlockState get(IPlayerContext ctx, BetterBlockPos pos) {
         return new BlockStateInterface(ctx).get0(pos.getX(), pos.getY(), pos.getZ()); // immense iq
         // can't just do world().get because that doesn't work for out of bounds
         // and toBreak and stuff fails when the movement is instantiated out of load range but it's not able to BlockStateInterface.get what it's going to walk on
     }
 
-    public IBlockState get0(BlockPos pos) {
+    public IBlockState get0(BetterBlockPos pos) {
         return get0(pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -122,13 +123,13 @@ public class BlockStateInterface {
             // which is a Long2ObjectOpenHashMap.get
             // see issue #113
             if (cached != null && cached.xPosition == x >> 4 && cached.zPosition == z >> 4) {
-                return cached.getBlockState(new BlockPos(x, y, z));
+                return cached.getBlockState(new BetterBlockPos(x, y, z));
             }
             Chunk chunk = (Chunk)loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 
             if (chunk != null && chunk.isChunkLoaded) {
                 prev = chunk;
-                return chunk.getBlockState(new BlockPos(x, y, z));
+                return chunk.getBlockState(new BetterBlockPos(x, y, z));
             }
         }
         // same idea here, skip the Long2ObjectOpenHashMap.get if at all possible

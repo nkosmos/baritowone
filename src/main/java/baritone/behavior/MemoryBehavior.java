@@ -228,14 +228,14 @@ public final class MemoryBehavior extends Behavior {
         return (ContainerMemory) baritone.getWorldProvider().getCurrentWorld().getContainerMemory();
     }
 
-    private BlockPos neighboringConnectedBlock(BlockPos in) {
+    private BetterBlockPos neighboringConnectedBlock(BetterBlockPos in) {
         BlockStateInterface bsi = baritone.bsi;
         Block block = bsi.get0(in).getBlock();
         if (block != Blocks.trapped_chest && block != Blocks.chest) {
             return null; // other things that have contents, but can be placed adjacent without combining
         }
         for (int i = 0; i < 4; i++) {
-            BlockPos adj = in.offset(EnumFacing.getHorizontal(i));
+        	BetterBlockPos adj = in.offset(EnumFacing.getHorizontal(i));
             if (bsi.get0(adj).getBlock() == block) {
                 return adj;
             }
@@ -266,9 +266,9 @@ public final class MemoryBehavior extends Behavior {
         /**
          * The position of the inventory container
          */
-        private final BlockPos pos;
+        private final BetterBlockPos pos;
 
-        private FutureInventory(long time, int slots, String type, BlockPos pos) {
+        private FutureInventory(long time, int slots, String type, BetterBlockPos pos) {
             this.time = time;
             this.slots = slots;
             this.type = type;

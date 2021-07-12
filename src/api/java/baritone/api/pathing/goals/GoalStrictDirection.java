@@ -17,8 +17,8 @@
 
 package baritone.api.pathing.goals;
 
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.SettingsUtil;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
 /**
@@ -32,7 +32,7 @@ public class GoalStrictDirection implements Goal {
     public final int dx;
     public final int dz;
 
-    public GoalStrictDirection(BlockPos origin, EnumFacing direction) {
+    public GoalStrictDirection(BetterBlockPos origin, EnumFacing direction) {
         x = origin.getX();
         y = origin.getY();
         z = origin.getZ();

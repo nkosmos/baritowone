@@ -88,7 +88,7 @@ public class MovementFall extends Movement {
             return state;
         }
 
-        BlockPos playerFeet = ctx.playerFeet();
+        BetterBlockPos playerFeet = ctx.playerFeet();
         Rotation toDest = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations());
         Rotation targetRotation = null;
         Block destBlock = ctx.world().getBlockState(dest).getBlock();
@@ -150,7 +150,7 @@ public class MovementFall extends Movement {
             }
         }
         if (targetRotation == null) {
-        	Vec3 destCenterOffset = new Vec3(destCenter.xCoord + 0.125 * avoid.getX(), destCenter.yCoord, destCenter.zCoord + 0.125 * avoid.getZ());
+        	Vec3 destCenterOffset = Vec3.createVectorHelper(destCenter.xCoord + 0.125 * avoid.getX(), destCenter.yCoord, destCenter.zCoord + 0.125 * avoid.getZ());
             state.setTarget(new MovementTarget(RotationUtils.calcRotationFromVec3d(ctx.playerHead(), destCenterOffset, ctx.playerRotations()), false));
         }
         return state;

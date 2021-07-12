@@ -21,10 +21,10 @@ import java.io.File;
 import java.util.List;
 
 import baritone.api.schematic.ISchematic;
+import baritone.api.utils.BetterBlockPos;
 import baritonex.utils.XVec3i;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.BlockPos;
 
 /**
  * @author Brady
@@ -51,7 +51,7 @@ public interface IBuilderProcess extends IBaritoneProcess {
      */
     boolean build(String name, File schematic, XVec3i origin);
 
-    default boolean build(String schematicFile, BlockPos origin) {
+    default boolean build(String schematicFile, BetterBlockPos origin) {
         File file = new File(new File(Minecraft.getMinecraft().mcDataDir, "schematics"), schematicFile);
         return build(schematicFile, file, origin);
     }
@@ -64,7 +64,7 @@ public interface IBuilderProcess extends IBaritoneProcess {
 
     void resume();
 
-    void clearArea(BlockPos corner1, BlockPos corner2);
+    void clearArea(BetterBlockPos corner1, BetterBlockPos corner2);
 
     /**
      * @return A list of block states that are estimated to be placeable by this builder process. You can use this in

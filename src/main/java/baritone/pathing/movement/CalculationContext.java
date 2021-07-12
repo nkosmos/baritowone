@@ -21,8 +21,8 @@ import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
 import baritone.Baritone;
 import baritone.api.IBaritone;
-import baritone.api.Settings;
 import baritone.api.pathing.movement.ActionCosts;
+import baritone.api.utils.BetterBlockPos;
 import baritone.cache.WorldData;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.ToolSet;
@@ -31,11 +31,8 @@ import baritonex.utils.XHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -124,7 +121,7 @@ public class CalculationContext {
         return bsi.isLoaded(x, z);
     }
 
-    public IBlockState get(BlockPos pos) {
+    public IBlockState get(BetterBlockPos pos) {
         return get(pos.getX(), pos.getY(), pos.getZ());
     }
 

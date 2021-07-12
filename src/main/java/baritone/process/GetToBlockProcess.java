@@ -33,6 +33,7 @@ import baritone.api.pathing.goals.GoalTwoBlocks;
 import baritone.api.process.IGetToBlockProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMeta;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.Rotation;
@@ -44,14 +45,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerPlayer;
-import net.minecraft.util.BlockPos;
 
 public final class GetToBlockProcess extends BaritoneProcessHelper implements IGetToBlockProcess {
 
     private BlockOptionalMeta gettingTo;
-    private List<BlockPos> knownLocations;
-    private List<BlockPos> blacklist; // locations we failed to calc to
-    private BlockPos start;
+    private List<BetterBlockPos> knownLocations;
+    private List<BetterBlockPos> blacklist; // locations we failed to calc to
+    private BetterBlockPos start;
 
     private int tickCount = 0;
     private int arrivalTickCount = 0;
@@ -116,7 +116,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         }
         int mineGoalUpdateInterval = Baritone.settings().mineGoalUpdateInterval.value;
         if (mineGoalUpdateInterval != 0 && tickCount++ % mineGoalUpdateInterval == 0) { // big brain
-            List<BlockPos> current = new ArrayList<>(knownLocations);
+            List<BetterBlockPos> current = new ArrayList<>(knownLocations);
             CalculationContext context = new GetToBlockCalculationContext(true);
             Baritone.getExecutor().execute(() -> rescan(current, context));
         }
@@ -137,12 +137,12 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
 
     // blacklist the closest block and its adjacent blocks
     public synchronized boolean blacklistClosest() {
-        List<BlockPos> newBlacklist = new ArrayList<>();
+        List<BetterBlockPos> newBlacklist = new ArrayList<>();
         knownLocations.stream().min(Comparator.comparingDouble(ctx.player()::getDistanceSq)).ifPresent(newBlacklist::add);
         outer:
         while (true) {
-            for (BlockPos known : knownLocations) {
-                for (BlockPos blacklist : newBlacklist) {
+            for (BetterBlockPos known : knownLocations) {
+                for (BetterBlockPos blacklist : newBlacklist) {
                     if (areAdjacent(known, blacklist)) { // directly adjacent
                         newBlacklist.add(known);
                         knownLocations.remove(known);
@@ -177,7 +177,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
     }
 
     // safer than direct double comparison from distanceSq
-    private boolean areAdjacent(BlockPos posA, BlockPos posB) {
+    private boolean areAdjacent(BetterBlockPos posA, BetterBlockPos posB) {
         int diffX = Math.abs(posA.getX() - posB.getX());
         int diffY = Math.abs(posA.getY() - posB.getY());
         int diffZ = Math.abs(posA.getZ() - posB.getZ());
@@ -201,13 +201,13 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         return "Get To " + gettingTo + ", " + knownLocations.size() + " known locations";
     }
 
-    private synchronized void rescan(List<BlockPos> known, CalculationContext context) {
-        List<BlockPos> positions = MineProcess.searchWorld(context, new BlockOptionalMetaLookup(gettingTo), 64, known, blacklist, Collections.emptyList());
+    private synchronized void rescan(List<BetterBlockPos> known, CalculationContext context) {
+        List<BetterBlockPos> positions = MineProcess.searchWorld(context, new BlockOptionalMetaLookup(gettingTo), 64, known, blacklist, Collections.emptyList());
         positions.removeIf(blacklist::contains);
         knownLocations = positions;
     }
 
-    private Goal createGoal(BlockPos pos) {
+    private Goal createGoal(BetterBlockPos pos) {
         if (walkIntoInsteadOfAdjacent(gettingTo.getBlock())) {
             return new GoalTwoBlocks(pos);
         }
@@ -218,7 +218,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
     }
 
     private boolean rightClick() {
-        for (BlockPos pos : knownLocations) {
+        for (BetterBlockPos pos : knownLocations) {
             Optional<Rotation> reachable = RotationUtils.reachable(ctx.player(), pos, ctx.playerController().getBlockReachDistance());
             if (reachable.isPresent()) {
                 baritone.getLookBehavior().updateTarget(reachable.get(), true);

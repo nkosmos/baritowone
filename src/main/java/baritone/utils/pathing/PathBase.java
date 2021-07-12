@@ -21,9 +21,9 @@ import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.pathing.calc.IPath;
 import baritone.api.pathing.goals.Goal;
+import baritone.api.utils.BetterBlockPos;
 import baritone.pathing.path.CutoffPath;
 import baritone.utils.BlockStateInterface;
-import net.minecraft.util.BlockPos;
 
 public abstract class PathBase implements IPath {
 
@@ -34,7 +34,7 @@ public abstract class PathBase implements IPath {
         }
         BlockStateInterface bsi = (BlockStateInterface) bsi0;
         for (int i = 0; i < positions().size(); i++) {
-            BlockPos pos = positions().get(i);
+        	BetterBlockPos pos = positions().get(i);
             if (!bsi.worldContainsLoadedChunk(pos.getX(), pos.getZ())) {
                 return new CutoffPath(this, i);
             }

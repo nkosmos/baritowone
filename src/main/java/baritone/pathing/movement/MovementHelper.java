@@ -178,11 +178,11 @@ public interface MovementHelper extends ActionCosts, Helper {
         );
     }
 
-    static boolean fullyPassable(IPlayerContext ctx, BlockPos pos) {
+    static boolean fullyPassable(IPlayerContext ctx, BetterBlockPos pos) {
         return fullyPassable(ctx.world(), pos, ctx.world().getBlockState(pos));
     }
 
-    static boolean fullyPassable(IBlockAccess access, BlockPos pos, IBlockState state) {
+    static boolean fullyPassable(IBlockAccess access, BetterBlockPos pos, IBlockState state) {
         Block block = state.getBlock();
         if (block == Blocks.air) { // early return for most common case
             return true;
@@ -242,7 +242,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         return isReplaceable(x, y, z, state, bsi);
     }
 
-    static boolean isDoorPassable(IPlayerContext ctx, BlockPos doorPos, BlockPos playerPos) {
+    static boolean isDoorPassable(IPlayerContext ctx, BetterBlockPos doorPos, BetterBlockPos playerPos) {
         if (playerPos.equals(doorPos)) {
             return false;
         }
@@ -255,7 +255,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         return isHorizontalBlockPassable(doorPos, state, playerPos, BlockDoor.OPEN);
     }
 
-    static boolean isGatePassable(IPlayerContext ctx, BlockPos gatePos, BlockPos playerPos) {
+    static boolean isGatePassable(IPlayerContext ctx, BetterBlockPos gatePos, BetterBlockPos playerPos) {
         if (playerPos.equals(gatePos)) {
             return false;
         }
@@ -268,7 +268,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         return state.getValue(BlockFenceGate.OPEN);
     }
 
-    static boolean isHorizontalBlockPassable(BlockPos blockPos, IBlockState blockState, BlockPos playerPos, PropertyBool propertyOpen) {
+    static boolean isHorizontalBlockPassable(BetterBlockPos blockPos, IBlockState blockState, BetterBlockPos playerPos, PropertyBool propertyOpen) {
         if (playerPos.equals(blockPos)) {
             return false;
         }
@@ -364,10 +364,6 @@ public interface MovementHelper extends ActionCosts, Helper {
         return canWalkOn(new BlockStateInterface(ctx), pos.x, pos.y, pos.z, state);
     }
 
-    static boolean canWalkOn(IPlayerContext ctx, BlockPos pos) {
-        return canWalkOn(new BlockStateInterface(ctx), pos.getX(), pos.getY(), pos.getZ());
-    }
-
     static boolean canWalkOn(IPlayerContext ctx, BetterBlockPos pos) {
         return canWalkOn(new BlockStateInterface(ctx), pos.x, pos.y, pos.z);
     }
@@ -380,11 +376,11 @@ public interface MovementHelper extends ActionCosts, Helper {
         return canPlaceAgainst(bsi, x, y, z, bsi.get0(x, y, z));
     }
 
-    static boolean canPlaceAgainst(BlockStateInterface bsi, BlockPos pos) {
+    static boolean canPlaceAgainst(BlockStateInterface bsi, BetterBlockPos pos) {
         return canPlaceAgainst(bsi, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    static boolean canPlaceAgainst(IPlayerContext ctx, BlockPos pos) {
+    static boolean canPlaceAgainst(IPlayerContext ctx, BetterBlockPos pos) {
         return canPlaceAgainst(new BlockStateInterface(ctx), pos);
     }
 
@@ -459,7 +455,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         }
     }
 
-    static void moveTowards(IPlayerContext ctx, MovementState state, BlockPos pos) {
+    static void moveTowards(IPlayerContext ctx, MovementState state, BetterBlockPos pos) {
         state.setTarget(new MovementTarget(
                 new Rotation(RotationUtils.calcRotationFromVec3d(ctx.playerHead(),
                         VecUtils.getBlockPosCenter(pos),
@@ -487,7 +483,7 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @param bp  The block pos
      * @return Whether or not the block is water
      */
-    static boolean isWater(IPlayerContext ctx, BlockPos bp) {
+    static boolean isWater(IPlayerContext ctx, BetterBlockPos bp) {
         return isWater(BlockStateInterface.getBlock(ctx, bp));
     }
 
@@ -502,7 +498,7 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @param p   The pos
      * @return Whether or not the block is a liquid
      */
-    static boolean isLiquid(IPlayerContext ctx, BlockPos p) {
+    static boolean isLiquid(IPlayerContext ctx, BetterBlockPos p) {
         return BlockStateInterface.getBlock(ctx, p) instanceof BlockLiquid;
     }
 
@@ -526,7 +522,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
 
-    static PlaceResult attemptToPlaceABlock(MovementState state, IBaritone baritone, BlockPos placeAt, boolean preferDown, boolean wouldSneak) {
+    static PlaceResult attemptToPlaceABlock(MovementState state, IBaritone baritone, BetterBlockPos placeAt, boolean preferDown, boolean wouldSneak) {
         IPlayerContext ctx = baritone.getPlayerContext();
         Optional<Rotation> direct = RotationUtils.reachable(ctx, placeAt, wouldSneak); // we assume that if there is a block there, it must be replacable
         boolean found = false;
@@ -535,7 +531,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             found = true;
         }
         for (int i = 0; i < 5; i++) {
-            BlockPos against1 = placeAt.offset(HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i]);
+        	BetterBlockPos against1 = placeAt.offset(HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i]);
             if (MovementHelper.canPlaceAgainst(ctx, against1)) {
                 if (!((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(false, placeAt.getX(), placeAt.getY(), placeAt.getZ())) { // get ready to place a throwaway block
                     Helper.HELPER.logDebug("bb pls get me some blocks. dirt, netherrack, cobble");
@@ -560,7 +556,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             }
         }
         if (ctx.getSelectedBlock().isPresent()) {
-            BlockPos selectedBlock = ctx.getSelectedBlock().get();
+        	BetterBlockPos selectedBlock = ctx.getSelectedBlock().get();
             EnumFacing side = XHelper.sideToFacing(ctx.objectMouseOver().sideHit);
             // only way for selectedBlock.equals(placeAt) to be true is if it's replacable
             if (selectedBlock.equals(placeAt) || (MovementHelper.canPlaceAgainst(ctx, selectedBlock) && selectedBlock.offset(side).equals(placeAt))) {

@@ -68,8 +68,8 @@ public final class RotationUtils {
      * @param dest The destination position
      * @return The rotation from the origin to the destination
      */
-    public static Rotation calcRotationFromCoords(BlockPos orig, BlockPos dest) {
-        return calcRotationFromVec3d(new Vec3(orig), new Vec3(dest));
+    public static Rotation calcRotationFromCoords(BetterBlockPos orig, BetterBlockPos dest) {
+        return calcRotationFromVec3d(Vec3.createVectorHelper(orig.x, orig.y, orig.z), Vec3.createVectorHelper(dest.x, dest.y, dest.z));
     }
 
     /**
@@ -140,11 +140,11 @@ public final class RotationUtils {
      * @return The optional rotation
      * @see #reachable(EntityPlayerSP, BlockPos, double)
      */
-    public static Optional<Rotation> reachable(IPlayerContext ctx, BlockPos pos) {
+    public static Optional<Rotation> reachable(IPlayerContext ctx, BetterBlockPos pos) {
         return reachable(ctx.player(), pos, ctx.playerController().getBlockReachDistance());
     }
 
-    public static Optional<Rotation> reachable(IPlayerContext ctx, BlockPos pos, boolean wouldSneak) {
+    public static Optional<Rotation> reachable(IPlayerContext ctx, BetterBlockPos pos, boolean wouldSneak) {
         return reachable(ctx.player(), pos, ctx.playerController().getBlockReachDistance(), wouldSneak);
     }
 
@@ -160,11 +160,11 @@ public final class RotationUtils {
      * @param blockReachDistance The block reach distance of the entity
      * @return The optional rotation
      */
-    public static Optional<Rotation> reachable(EntityPlayerSP entity, BlockPos pos, double blockReachDistance) {
+    public static Optional<Rotation> reachable(EntityPlayerSP entity, BetterBlockPos pos, double blockReachDistance) {
         return reachable(entity, pos, blockReachDistance, false);
     }
 
-    public static Optional<Rotation> reachable(EntityPlayerSP entity, BlockPos pos, double blockReachDistance, boolean wouldSneak) {
+    public static Optional<Rotation> reachable(EntityPlayerSP entity, BetterBlockPos pos, double blockReachDistance, boolean wouldSneak) {
         IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer(entity);
         if (baritone.getPlayerContext().isLookingAt(pos)) {
             /*
@@ -200,7 +200,7 @@ public final class RotationUtils {
         	double xDiff = (aabb.minX - pos.getX()) * sideOffset.xCoord + (aabb.maxX - pos.getX()) * (1 - sideOffset.xCoord);
             double yDiff = (aabb.minY - pos.getY()) * sideOffset.yCoord + (aabb.maxY - pos.getY()) * (1 - sideOffset.yCoord);
             double zDiff = (aabb.minZ - pos.getZ()) * sideOffset.zCoord + (aabb.maxZ - pos.getZ()) * (1 - sideOffset.zCoord);
-            possibleRotation = reachableOffset(entity, pos, new Vec3(pos).addVector(xDiff, yDiff, zDiff), blockReachDistance, wouldSneak);
+            possibleRotation = reachableOffset(entity, pos, Vec3.createVectorHelper(pos.x, pos.y, pos.z).addVector(xDiff, yDiff, zDiff), blockReachDistance, wouldSneak);
             if (possibleRotation.isPresent()) {
                 return possibleRotation;
             }
@@ -219,7 +219,7 @@ public final class RotationUtils {
      * @param blockReachDistance The block reach distance of the entity
      * @return The optional rotation
      */
-    public static Optional<Rotation> reachableOffset(Entity entity, BlockPos pos, Vec3 offsetPos, double blockReachDistance, boolean wouldSneak) {
+    public static Optional<Rotation> reachableOffset(Entity entity, BetterBlockPos pos, Vec3 offsetPos, double blockReachDistance, boolean wouldSneak) {
     	Vec3 eyes = wouldSneak ? RayTraceUtils.inferSneakingEyePosition(entity) : entity.getPositionEyes(1.0F);
         Rotation rotation = calcRotationFromVec3d(eyes, offsetPos, new Rotation(entity.rotationYaw, entity.rotationPitch));
         MovingObjectPosition result = RayTraceUtils.rayTraceTowards(entity, rotation, blockReachDistance, wouldSneak);
@@ -244,7 +244,7 @@ public final class RotationUtils {
      * @param blockReachDistance The block reach distance of the entity
      * @return The optional rotation
      */
-    public static Optional<Rotation> reachableCenter(Entity entity, BlockPos pos, double blockReachDistance, boolean wouldSneak) {
+    public static Optional<Rotation> reachableCenter(Entity entity, BetterBlockPos pos, double blockReachDistance, boolean wouldSneak) {
         return reachableOffset(entity, pos, VecUtils.calculateBlockCenter(entity.worldObj, pos), blockReachDistance, wouldSneak);
     }
 }

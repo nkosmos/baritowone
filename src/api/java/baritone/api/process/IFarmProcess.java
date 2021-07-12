@@ -17,7 +17,7 @@
 
 package baritone.api.process;
 
-import net.minecraft.util.BlockPos;
+import baritone.api.utils.BetterBlockPos;
 
 public interface IFarmProcess extends IBaritoneProcess {
 
@@ -28,7 +28,7 @@ public interface IFarmProcess extends IBaritoneProcess {
      * @param range The distance from center to farm from
      * @param pos   The center position to base the range from
      */
-    void farm(int range, BlockPos pos);
+    void farm(int range, BetterBlockPos pos);
 
     /**
      * Begin to search for nearby crops to farm.

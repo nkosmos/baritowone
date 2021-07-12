@@ -22,8 +22,8 @@ import java.util.List;
 import com.github.lunatrius.schematica.client.world.SchematicWorld;
 
 import baritone.api.schematic.IStaticSchematic;
+import baritone.api.utils.BetterBlockPos;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
 
 public final class SchematicAdapter implements IStaticSchematic {
 
@@ -40,7 +40,7 @@ public final class SchematicAdapter implements IStaticSchematic {
 
     @Override
     public IBlockState getDirect(int x, int y, int z) {
-        return this.schematic.getSchematic().getBlockState(new BlockPos(x, y, z));
+        return this.schematic.getSchematic().getBlockState(new BetterBlockPos(x, y, z));
     }
 
     @Override

@@ -17,12 +17,12 @@
 
 package com.github.lunatrius.schematica.api;
 
+import baritone.api.utils.BetterBlockPos;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
 
 public interface ISchematic {
 
-    IBlockState getBlockState(BlockPos var1);
+    IBlockState getBlockState(BetterBlockPos var1);
 
     int getWidth();
 

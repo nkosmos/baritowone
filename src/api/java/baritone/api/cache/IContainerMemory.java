@@ -19,7 +19,7 @@ package baritone.api.cache;
 
 import java.util.Map;
 
-import net.minecraft.util.BlockPos;
+import baritone.api.utils.BetterBlockPos;
 
 /**
  * @author Brady
@@ -33,12 +33,12 @@ public interface IContainerMemory {
      * @param pos The position of the container block
      * @return The remembered inventory
      */
-    IRememberedInventory getInventoryByPos(BlockPos pos);
+    IRememberedInventory getInventoryByPos(BetterBlockPos pos);
 
     /**
      * Gets the map of all block positions to their remembered inventories.
      *
      * @return Map of block positions to their respective remembered inventories
      */
-    Map<BlockPos, IRememberedInventory> getRememberedInventories();
+    Map<BetterBlockPos, IRememberedInventory> getRememberedInventories();
 }

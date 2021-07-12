@@ -19,10 +19,10 @@ package baritone.api.cache;
 
 import java.util.List;
 
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
 import net.minecraft.block.Block;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 
 /**
@@ -42,9 +42,9 @@ public interface IWorldScanner {
      * @param maxSearchRadius The maximum chunk search radius
      * @return The matching block positions
      */
-    List<BlockPos> scanChunkRadius(IPlayerContext ctx, BlockOptionalMetaLookup filter, int max, int yLevelThreshold, int maxSearchRadius);
+    List<BetterBlockPos> scanChunkRadius(IPlayerContext ctx, BlockOptionalMetaLookup filter, int max, int yLevelThreshold, int maxSearchRadius);
 
-    default List<BlockPos> scanChunkRadius(IPlayerContext ctx, List<Block> filter, int max, int yLevelThreshold, int maxSearchRadius) {
+    default List<BetterBlockPos> scanChunkRadius(IPlayerContext ctx, List<Block> filter, int max, int yLevelThreshold, int maxSearchRadius) {
         return scanChunkRadius(ctx, new BlockOptionalMetaLookup(filter.toArray(new Block[0])), max, yLevelThreshold, maxSearchRadius);
     }
 
@@ -59,7 +59,7 @@ public interface IWorldScanner {
      *                        is negative, then this condition doesn't apply.
      * @return The matching block positions
      */
-    List<BlockPos> scanChunk(IPlayerContext ctx, BlockOptionalMetaLookup filter, ChunkCoordIntPair pos, int max, int yLevelThreshold);
+    List<BetterBlockPos> scanChunk(IPlayerContext ctx, BlockOptionalMetaLookup filter, ChunkCoordIntPair pos, int max, int yLevelThreshold);
 
     /**
      * Scans a single chunk for the specified blocks.
@@ -72,7 +72,7 @@ public interface IWorldScanner {
      *                        is negative, then this condition doesn't apply.
      * @return The matching block positions
      */
-    default List<BlockPos> scanChunk(IPlayerContext ctx, List<Block> blocks, ChunkCoordIntPair pos, int max, int yLevelThreshold) {
+    default List<BetterBlockPos> scanChunk(IPlayerContext ctx, List<Block> blocks, ChunkCoordIntPair pos, int max, int yLevelThreshold) {
         return scanChunk(ctx, new BlockOptionalMetaLookup(blocks), pos, max, yLevelThreshold);
     }
 
