@@ -40,8 +40,6 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.S21PacketChunkData;
 import net.minecraft.network.play.server.S22PacketMultiBlockChange;
 import net.minecraft.network.play.server.S23PacketBlockChange;
-import net.minecraft.network.play.server.S42PacketCombatEvent;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 
 /**
@@ -176,22 +174,6 @@ public class MixinNetHandlerPlayClient {
                                 chunkZPos                                
                         )
                 );
-            }
-        }
-    }
-
-    @Inject(
-            method = "handleCombatEvent",
-            at = @At(
-                    value = "INVOKE",
-                    target = "net/minecraft/client/Minecraft.displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"
-            )
-    )
-    private void onPlayerDeath(S42PacketCombatEvent packetIn, CallbackInfo ci) {
-    	for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-    		EntityClientPlayerMP player = ibaritone.getPlayerContext().player();
-            if (player != null && player.sendQueue == (NetHandlerPlayClient) (Object) this) {
-                ibaritone.getGameEventHandler().onPlayerDeath();
             }
         }
     }

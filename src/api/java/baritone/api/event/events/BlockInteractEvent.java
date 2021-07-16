@@ -18,7 +18,6 @@
 package baritone.api.event.events;
 
 import baritone.api.utils.BetterBlockPos;
-import net.minecraft.util.BlockPos;
 
 /**
  * Called when the local player interacts with a block, can be either {@link Type#START_BREAK} or {@link Type#USE}.

@@ -17,14 +17,31 @@
 
 package com.github.lunatrius.schematica.client.world;
 
-import com.github.lunatrius.core.util.math.MBlockPos;
-import com.github.lunatrius.schematica.api.ISchematic;
+import com.github.lunatrius.core.util.vector.Vector3i;
+
+import net.minecraft.block.Block;
 
 public class SchematicWorld {
 
-    public final MBlockPos position = (MBlockPos) (Object) "cringe";
+    public final Vector3i position = (Vector3i) (Object) "cringe";
 
-    public ISchematic getSchematic() {
-        throw new LinkageError("LOL");
+    public Block getBlock(int x, int y, int z) {
+    	throw new LinkageError("LOL");
+    }
+	
+	public int getBlockMetadata(int x, int y, int z) {
+		throw new LinkageError("LOL");
+	}
+    
+    public int getWidth() {
+    	throw new LinkageError("LOL");
+    }
+
+    public int getLength() {
+    	throw new LinkageError("LOL");
+    }
+
+    public int getHeight() {
+    	throw new LinkageError("LOL");
     }
 }

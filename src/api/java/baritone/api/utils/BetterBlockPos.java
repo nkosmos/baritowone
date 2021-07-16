@@ -21,6 +21,7 @@ import javax.annotation.Nonnull;
 
 import baritonex.utils.XVec3i;
 import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 
@@ -72,6 +73,14 @@ public final class BetterBlockPos extends XVec3i {
         }
 
         return new BetterBlockPos(pos);
+    }
+    
+    public static BetterBlockPos from(TileEntity tile) {
+        if (tile == null) {
+            return null;
+        }
+
+        return new BetterBlockPos(tile.xCoord, tile.yCoord, tile.zCoord);
     }
 
     @Override

@@ -33,12 +33,10 @@ import baritone.api.cache.IContainerMemory;
 import baritone.api.cache.IRememberedInventory;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.IPlayerContext;
-import baritone.cache.ContainerMemory.RememberedInventory;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.BlockPos;
 
 public class ContainerMemory implements IContainerMemory {
 
@@ -141,7 +139,11 @@ public class ContainerMemory implements IContainerMemory {
         PacketBuffer out = out2; // avoid reassigning an argument LOL
         out = new PacketBuffer(out.writeInt(write.size()));
         for (ItemStack stack : write) {
-            out.writeItemStackToBuffer(stack);
+            try {
+				out.writeItemStackToBuffer(stack);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
         }
         return out;
     }

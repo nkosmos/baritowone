@@ -44,14 +44,18 @@ public class FindCommand extends Command {
         }
         BetterBlockPos origin = ctx.playerFeet();
         toFind.stream()
-                .flatMap(block ->
-                        ctx.worldData().getCachedWorld().getLocationsOf(
-                                Block.blockRegistry.getNameForObject(block).getResourcePath(),
+                .flatMap(block -> {
+                	String name = Block.blockRegistry.getNameForObject(block);
+                	int index = name.indexOf(':');
+                	return ctx.worldData().getCachedWorld().getLocationsOf(
+                				(index != -1 ? name.substring(index + 1) : name),
                                 Integer.MAX_VALUE,
                                 origin.x,
                                 origin.y,
                                 4
-                        ).stream()
+                        ).stream();
+                }
+                        
                 )
                 .map(BetterBlockPos::new)
                 .map(BetterBlockPos::toString)

@@ -22,8 +22,6 @@ import java.util.Optional;
 import baritone.api.cache.IWorldData;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;

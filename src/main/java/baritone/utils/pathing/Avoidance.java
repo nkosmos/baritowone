@@ -25,11 +25,11 @@ import baritone.Baritone;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.IPlayerContext;
 import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.util.BlockPos;
 
 public class Avoidance {
 
@@ -75,9 +75,9 @@ public class Avoidance {
             ctx.world().loadedEntityList.stream()
                     .filter(entity -> entity instanceof EntityMob)
                     .filter(entity -> (!(entity instanceof EntitySpider)) || ctx.player().getBrightness(1F) < 0.5)
-                    .filter(entity -> !(entity instanceof EntityPigZombie) || ((EntityPigZombie) entity).isAngry())
+                    .filter(entity -> !(entity instanceof EntityPigZombie) || ((EntityPigZombie) entity).angerLevel > 0)
                     .filter(entity -> !(entity instanceof EntityEnderman) || ((EntityEnderman) entity).isScreaming())
-                    .forEach(entity -> res.add(new Avoidance(new BetterBlockPos(entity), mobCoeff, Baritone.settings().mobAvoidanceRadius.value)));
+                    .forEach(entity -> res.add(new Avoidance(new BetterBlockPos((Entity) entity), mobCoeff, Baritone.settings().mobAvoidanceRadius.value)));
         }
         return res;
     }

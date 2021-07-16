@@ -53,8 +53,6 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.network.play.server.S2DPacketOpenWindow;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityLockable;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
@@ -106,7 +104,7 @@ public final class MemoryBehavior extends Behavior {
             if (p instanceof C08PacketPlayerBlockPlacement) {
             	C08PacketPlayerBlockPlacement packet = event.cast();
 
-                TileEntity tileEntity = ctx.world().getTileEntity(packet.getPosition());
+                TileEntity tileEntity = ctx.world().getTileEntity(packet.getPlacedBlockX(), packet.getPlacedBlockY(), packet.getPlacedBlockZ());
                 // if tileEntity is an ender chest, we don't need to do anything. ender chests are treated the same regardless of what coordinate right clicked
 
                 // Ensure the TileEntity is a container of some sort
@@ -114,7 +112,7 @@ public final class MemoryBehavior extends Behavior {
 
                     TileEntityLockable lockable = (TileEntityLockable) tileEntity;
                     int size = lockable.getSizeInventory();
-                    BetterBlockPos position = BetterBlockPos.from(tileEntity.getPos());
+                    BetterBlockPos position = BetterBlockPos.from(tileEntity);
                     BetterBlockPos adj = BetterBlockPos.from(neighboringConnectedBlock(position));
                     System.out.println(position + " " + adj);
                     if (adj != null) {
@@ -155,7 +153,7 @@ public final class MemoryBehavior extends Behavior {
                     return;
                 }
                 futureInventories.stream()
-                        .filter(i -> i.type.equals(packet.func_148899_d()) && i.slots == packet.func_148898_f())
+                        .filter(i -> i.type == packet.func_148899_d() && i.slots == packet.func_148898_f())
                         .findFirst().ifPresent(matched -> {
                     // Remove the future inventory
                     futureInventories.remove(matched);
@@ -261,14 +259,14 @@ public final class MemoryBehavior extends Behavior {
         /**
          * The type of inventory
          */
-        private final String type;
+        private final int type;
 
         /**
          * The position of the inventory container
          */
         private final BetterBlockPos pos;
 
-        private FutureInventory(long time, int slots, String type, BetterBlockPos pos) {
+        private FutureInventory(long time, int slots, int type, BetterBlockPos pos) {
             this.time = time;
             this.slots = slots;
             this.type = type;

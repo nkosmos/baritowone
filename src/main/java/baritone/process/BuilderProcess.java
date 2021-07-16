@@ -72,7 +72,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
 
 public final class BuilderProcess extends BaritoneProcessHelper implements IBuilderProcess {
@@ -491,7 +490,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             baritone.getLookBehavior().updateTarget(rot, true);
             ctx.player().inventory.currentItem = toPlace.get().hotbarSelection;
             baritone.getInputOverrideHandler().setInputForceState(Input.SNEAK, true);
-            if ((ctx.isLookingAt(toPlace.get().placeAgainst) && ctx.objectMouseOver().sideHit.equals(toPlace.get().side)) || ctx.playerRotations().isReallyCloseTo(rot)) {
+            if ((ctx.isLookingAt(toPlace.get().placeAgainst) && XHelper.sideToFacing(ctx.objectMouseOver().sideHit).equals(toPlace.get().side)) || ctx.playerRotations().isReallyCloseTo(rot)) {
                 baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);
             }
             return new PathingCommand(null, PathingCommandType.CANCEL_AND_SET_GOAL);

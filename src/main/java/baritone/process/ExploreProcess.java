@@ -40,7 +40,6 @@ import baritone.api.utils.MyChunkPos;
 import baritone.cache.CachedWorld;
 import baritone.utils.BaritoneProcessHelper;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 
 public final class ExploreProcess extends BaritoneProcessHelper implements IExploreProcess {
