@@ -39,7 +39,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
 
 /**
  * @author Brady

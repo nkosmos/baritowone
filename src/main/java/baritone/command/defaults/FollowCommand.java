@@ -82,7 +82,7 @@ public class FollowCommand extends Command {
                 classes.stream()
                         .map(c -> EntityList.classToStringMapping.get(c))
                         .map(Objects::requireNonNull)
-                        .forEach(this::logDirect);
+                        .forEach(s -> logDirect((String) s));
             }
         }
     }

@@ -45,16 +45,16 @@ public final class SchematicAdapter implements IStaticSchematic {
 
     @Override
     public int widthX() {
-        return schematic.getSchematic().getWidth();
+        return schematic.getWidth();
     }
 
     @Override
     public int heightY() {
-        return schematic.getSchematic().getHeight();
+        return schematic.getHeight();
     }
 
     @Override
     public int lengthZ() {
-        return schematic.getSchematic().getLength();
+        return schematic.getLength();
     }
 }

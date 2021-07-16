@@ -17,6 +17,7 @@
 
 package baritone.utils;
 
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
 import net.minecraft.util.MovingObjectPosition;
@@ -53,12 +54,12 @@ public final class BlockBreakHelper implements Helper {
         if (isLeftClick && isBlockTrace) {
             if (!didBreakLastTick) {
                 ctx.playerController().syncHeldItem();
-                ctx.playerController().clickBlock(trace.getBlockPos(), trace.sideHit);
+                ctx.playerController().clickBlock(BetterBlockPos.from(trace), trace.sideHit);
                 ctx.player().swingItem();
             }
 
             // Attempt to break the block
-            if (ctx.playerController().onPlayerDamageBlock(trace.getBlockPos(), trace.sideHit)) {
+            if (ctx.playerController().onPlayerDamageBlock(BetterBlockPos.from(trace), trace.sideHit)) {
                 ctx.player().swingItem();
             }
 

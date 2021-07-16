@@ -59,7 +59,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 
 /**
  * Mine blocks of a certain type
@@ -108,7 +107,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
                 if (Baritone.settings().notificationOnMineFail.value) {
                     logNotification("Unable to find any path to " + filter + ", blacklisting presumably unreachable closest instance...", true);
                 }
-                knownOreLocations.stream().min(Comparator.comparingDouble(ctx.player()::getDistanceSq)).ifPresent(blacklist::add);
+                knownOreLocations.stream().min(Comparator.comparingDouble(b -> ctx.player().getDistanceSq(b.x, b.y, b.z))).ifPresent(blacklist::add);
                 knownOreLocations.removeIf(blacklist::contains);
             } else {
                 logDirect("Unable to find any path to " + filter + ", canceling mine");
@@ -138,7 +137,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
                 .filter(pos -> pos.getX() == ctx.playerFeet().getX() && pos.getZ() == ctx.playerFeet().getZ())
                 .filter(pos -> pos.getY() >= ctx.playerFeet().getY())
                 .filter(pos -> !(BlockStateInterface.get(ctx, pos).getBlock() instanceof BlockAir)) // after breaking a block, it takes mineGoalUpdateInterval ticks for it to actually update this list =(
-                .min(Comparator.comparingDouble(ctx.player()::getDistanceSq));
+                .min(Comparator.comparingDouble(b -> ctx.player().getDistanceSq(b.x, b.y, b.z)));
         baritone.getInputOverrideHandler().clearAllKeys();
         if (shaft.isPresent() && ctx.player().onGround) {
         	BetterBlockPos pos = shaft.get();
@@ -441,7 +440,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
 
                 .filter(pos -> !blacklist.contains(pos))
 
-                .sorted(Comparator.comparingDouble(ctx.getBaritone().getPlayerContext().player()::getDistanceSq))
+                .sorted(Comparator.comparingDouble(b -> ctx.getBaritone().getPlayerContext().player().getDistanceSq(b.x, b.y, b.z)))
                 .collect(Collectors.toList());
 
         if (locs.size() > max) {

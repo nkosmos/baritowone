@@ -43,7 +43,7 @@ public class BlockStateInterface {
     private final LongHashMap loadedChunks;
     private final WorldData worldData;
     protected final IBlockAccess world;
-    public final BetterBlockPos isPassableBlockPos;
+    public final BetterBlockPos.MutableBlockPos isPassableBlockPos;
     public final IBlockAccess access;
 
     private Chunk prev = null;
@@ -74,7 +74,7 @@ public class BlockStateInterface {
         if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
             throw new IllegalStateException();
         }
-        this.isPassableBlockPos = new BetterBlockPos(0, 0, 0);
+        this.isPassableBlockPos = new BetterBlockPos.MutableBlockPos(0, 0, 0);
         this.access = new BlockStateInterfaceAccessWrapper(this);
     }
     

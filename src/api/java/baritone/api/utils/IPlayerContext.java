@@ -87,7 +87,7 @@ public interface IPlayerContext {
     default Optional<BetterBlockPos> getSelectedBlock() {
     	MovingObjectPosition result = objectMouseOver();
         if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            return Optional.of(result.getBlockPos());
+            return Optional.of(BetterBlockPos.from(result));
         }
         return Optional.empty();
     }

@@ -107,7 +107,7 @@ public class XVec3i implements Comparable<XVec3i>
         double d2 = (double)this.getZ() + 0.5D - zIn;
         return d0 * d0 + d1 * d1 + d2 * d2;
     }
-
+    
     /**
      * Calculate squared distance to the given Vector
      */

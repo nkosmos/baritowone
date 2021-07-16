@@ -307,7 +307,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 double placeZ = placeAgainstPos.z + aabb.minZ * placementMultiplier.zCoord + aabb.maxZ * (1 - placementMultiplier.zCoord);
                 Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), Vec3.createVectorHelper(placeX, placeY, placeZ), ctx.playerRotations());
                 MovingObjectPosition result = RayTraceUtils.rayTraceTowards(ctx.player(), rot, ctx.playerController().getBlockReachDistance(), true);
-                if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && result.getBlockPos().equals(placeAgainstPos) && result.sideHit == against.getOpposite()) {
+                if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && BetterBlockPos.from(result).equals(placeAgainstPos) && result.sideHit == against.getOpposite()) {
                     OptionalInt hotbar = hasAnyItemThatWouldPlace(toPlace, result, rot);
                     if (hotbar.isPresent()) {
                         return Optional.of(new Placement(hotbar.getAsInt(), placeAgainstPos, against.getOpposite(), rot));
@@ -329,13 +329,13 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             // the state depends on the facing of the player sometimes
             ctx.player().rotationYaw = rot.getYaw();
             ctx.player().rotationPitch = rot.getPitch();
-            IBlockState wouldBePlaced = ((ItemBlock) stack.getItem()).getBlock().onBlockPlaced(
+            IBlockState wouldBePlaced = ((ItemBlock) stack.getItem()).blockInstance.onBlockPlaced(
                     ctx.world(),
-                    result.getBlockPos().offset(result.sideHit),
+                    BetterBlockPos.from(result).offset(XHelper.sideToFacing(result.sideHit)),
                     result.sideHit,
-                    (float) result.hitVec.xCoord - result.getBlockPos().getX(), // as in PlayerControllerMP
-                    (float) result.hitVec.yCoord - result.getBlockPos().getY(),
-                    (float) result.hitVec.zCoord - result.getBlockPos().getZ(),
+                    (float) result.hitVec.xCoord - result.blockX, // as in PlayerControllerMP
+                    (float) result.hitVec.yCoord - result.blockY,
+                    (float) result.hitVec.zCoord - result.blockZ,
                     stack.getItem().getMetadata(stack.getMetadata()),
                     ctx.player()
             );
@@ -837,7 +837,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 continue;
             }
             // <toxic cloud>
-            result.add(((ItemBlock) stack.getItem()).getBlock().onBlockPlaced(ctx.world(), ctx.playerFeet(), EnumFacing.UP, (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()), ctx.player()));
+            result.add(((ItemBlock) stack.getItem()).blockInstance.onBlockPlaced(ctx.world(), ctx.playerFeet(), EnumFacing.UP, (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()), ctx.player()));
             // </toxic cloud>
         }
         return result;

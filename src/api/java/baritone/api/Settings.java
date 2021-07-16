@@ -39,7 +39,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.Vec3i;
 
 /**
  * Baritone's settings. Settings apply to all Baritone instances.

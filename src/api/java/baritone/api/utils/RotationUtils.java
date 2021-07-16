@@ -21,12 +21,12 @@ import java.util.Optional;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
+import baritonex.utils.XHelper;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -111,9 +111,9 @@ public final class RotationUtils {
      */
     private static Rotation calcRotationFromVec3d(Vec3 orig, Vec3 dest) {
         double[] delta = {orig.xCoord - dest.xCoord, orig.yCoord - dest.yCoord, orig.zCoord - dest.zCoord};
-        double yaw = MathHelper.atan2(delta[0], -delta[2]);
+        double yaw = XHelper.atan2(delta[0], -delta[2]);
         double dist = Math.sqrt(delta[0] * delta[0] + delta[2] * delta[2]);
-        double pitch = MathHelper.atan2(delta[1], dist);
+        double pitch = XHelper.atan2(delta[1], dist);
         return new Rotation(
                 (float) (yaw * RAD_TO_DEG),
                 (float) (pitch * RAD_TO_DEG)
@@ -181,7 +181,7 @@ public final class RotationUtils {
             if (wouldSneak) {
                 // the concern here is: what if we're looking at it now, but as soon as we start sneaking we no longer are
             	MovingObjectPosition result = RayTraceUtils.rayTraceTowards(entity, hypothetical, blockReachDistance, true);
-                if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && result.getBlockPos().equals(pos)) {
+                if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && BetterBlockPos.from(result).equals(pos)) {
                     return Optional.of(hypothetical); // yes, if we sneaked we would still be looking at the block
                 }
             } else {
@@ -225,10 +225,11 @@ public final class RotationUtils {
         MovingObjectPosition result = RayTraceUtils.rayTraceTowards(entity, rotation, blockReachDistance, wouldSneak);
         //System.out.println(result);
         if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            if (result.getBlockPos().equals(pos)) {
+        	BetterBlockPos blockPos = BetterBlockPos.from(result);
+            if (blockPos.equals(pos)) {
                 return Optional.of(rotation);
             }
-            if (entity.worldObj.getBlockState(pos).getBlock() instanceof BlockFire && result.getBlockPos().equals(pos.down())) {
+            if (entity.worldObj.getBlockState(pos).getBlock() instanceof BlockFire && blockPos.equals(pos.down())) {
                 return Optional.of(rotation);
             }
         }

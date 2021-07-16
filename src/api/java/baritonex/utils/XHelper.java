@@ -106,22 +106,6 @@ public class XHelper {
 	public static EnumFacing sideToFacing(int sidehit) {
 		return sidehit == -1 ? null : HIT_LOOKUP.get(sidehit);
 	}
-	
-	static {
-		HIT_LOOKUP.put(0, EnumFacing.DOWN);
-		HIT_LOOKUP.put(1, EnumFacing.UP);
-		HIT_LOOKUP.put(2, EnumFacing.EAST);
-		HIT_LOOKUP.put(3, EnumFacing.WEST);
-		HIT_LOOKUP.put(4, EnumFacing.NORTH);
-		HIT_LOOKUP.put(5, EnumFacing.SOUTH);
-		
-		NAME_LOOKUP.put("north", EnumFacing.NORTH);
-		NAME_LOOKUP.put("south", EnumFacing.SOUTH);
-		NAME_LOOKUP.put("east", EnumFacing.EAST);
-		NAME_LOOKUP.put("west", EnumFacing.WEST);
-		NAME_LOOKUP.put("up", EnumFacing.UP);
-		NAME_LOOKUP.put("down", EnumFacing.DOWN);
-	}
 
 	// RENDERER
 	
@@ -211,5 +195,88 @@ public class XHelper {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDepthMask(true);
 	}
+	
+	// MATHS
+
+	private static final double field_181163_d;
+    private static final double[] field_181164_e;
+    private static final double[] field_181165_f;
+	
+	public static double atan2(double p_181159_0_, double p_181159_2_) {
+        final double d0 = p_181159_2_ * p_181159_2_ + p_181159_0_ * p_181159_0_;
+        if (Double.isNaN(d0)) {
+            return Double.NaN;
+        }
+        final boolean flag = p_181159_0_ < 0.0;
+        if (flag) {
+            p_181159_0_ = -p_181159_0_;
+        }
+        final boolean flag2 = p_181159_2_ < 0.0;
+        if (flag2) {
+            p_181159_2_ = -p_181159_2_;
+        }
+        final boolean flag3 = p_181159_0_ > p_181159_2_;
+        if (flag3) {
+            final double d2 = p_181159_2_;
+            p_181159_2_ = p_181159_0_;
+            p_181159_0_ = d2;
+        }
+        final double d3 = func_181161_i(d0);
+        p_181159_2_ *= d3;
+        p_181159_0_ *= d3;
+        final double d4 = field_181163_d + p_181159_0_;
+        final int i = (int)Double.doubleToRawLongBits(d4);
+        final double d5 = field_181164_e[i];
+        final double d6 = field_181165_f[i];
+        final double d7 = d4 - field_181163_d;
+        final double d8 = p_181159_0_ * d6 - p_181159_2_ * d7;
+        final double d9 = (6.0 + d8 * d8) * d8 * 0.16666666666666666;
+        double d10 = d5 + d9;
+        if (flag3) {
+            d10 = 1.5707963267948966 - d10;
+        }
+        if (flag2) {
+            d10 = 3.141592653589793 - d10;
+        }
+        if (flag) {
+            d10 = -d10;
+        }
+        return d10;
+    }
+	
+	public static double func_181161_i(double p_181161_0_) {
+        final double d0 = 0.5 * p_181161_0_;
+        long i = Double.doubleToRawLongBits(p_181161_0_);
+        i = 6910469410427058090L - (i >> 1);
+        p_181161_0_ = Double.longBitsToDouble(i);
+        p_181161_0_ *= 1.5 - d0 * p_181161_0_ * p_181161_0_;
+        return p_181161_0_;
+    }
+	
+	static {
+		HIT_LOOKUP.put(0, EnumFacing.DOWN);
+		HIT_LOOKUP.put(1, EnumFacing.UP);
+		HIT_LOOKUP.put(2, EnumFacing.EAST);
+		HIT_LOOKUP.put(3, EnumFacing.WEST);
+		HIT_LOOKUP.put(4, EnumFacing.NORTH);
+		HIT_LOOKUP.put(5, EnumFacing.SOUTH);
+		
+		NAME_LOOKUP.put("north", EnumFacing.NORTH);
+		NAME_LOOKUP.put("south", EnumFacing.SOUTH);
+		NAME_LOOKUP.put("east", EnumFacing.EAST);
+		NAME_LOOKUP.put("west", EnumFacing.WEST);
+		NAME_LOOKUP.put("up", EnumFacing.UP);
+		NAME_LOOKUP.put("down", EnumFacing.DOWN);
+		
+		field_181163_d = Double.longBitsToDouble(4805340802404319232L);
+        field_181164_e = new double[257];
+        field_181165_f = new double[257];
+        for (int j = 0; j < 257; ++j) {
+            final double d0 = j / 256.0;
+            final double d2 = Math.asin(d0);
+            field_181165_f[j] = Math.cos(d2);
+            field_181164_e[j] = d2;
+        }
+    }
 
 }

@@ -24,6 +24,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 
 /**
  * A better BlockPos that has fewer hash collisions (and slightly more performant offsets)
@@ -34,7 +35,7 @@ import net.minecraft.util.MathHelper;
  *
  * @author leijurv
  */
-public final class BetterBlockPos extends XVec3i {
+public class BetterBlockPos extends XVec3i {
 
     public static final BetterBlockPos ORIGIN = new BetterBlockPos(0, 0, 0);
 
@@ -73,6 +74,14 @@ public final class BetterBlockPos extends XVec3i {
         }
 
         return new BetterBlockPos(pos);
+    }
+    
+    public static BetterBlockPos from(MovingObjectPosition mop) {
+    	if(mop == null) {
+    		return null;
+    	}
+    	
+    	return new BetterBlockPos(mop.blockX, mop.blockY, mop.blockZ);
     }
     
     public static BetterBlockPos from(TileEntity tile) {
@@ -205,6 +214,10 @@ public final class BetterBlockPos extends XVec3i {
     public BetterBlockPos add(XVec3i vec) {
         return vec.getX() == 0 && vec.getY() == 0 && vec.getZ() == 0 ? this : new BetterBlockPos(this.getX() + vec.getX(), this.getY() + vec.getY(), this.getZ() + vec.getZ());
     }
+    
+    public BetterBlockPos add(int x, int y, int z) {
+        return x == 0 && y == 0 && z == 0 ? this : new BetterBlockPos(this.getX() + x, this.getY() + y, this.getZ() + z);
+    } 
 
     /**
      * Subtract the given Vector from this BlockPos
@@ -222,5 +235,45 @@ public final class BetterBlockPos extends XVec3i {
                 SettingsUtil.maybeCensor(y),
                 SettingsUtil.maybeCensor(z)
         );
+    }
+
+    public static final class MutableBlockPos extends BetterBlockPos
+    {
+        private int x;
+        private int y;
+        private int z;
+        
+        public MutableBlockPos() {
+            this(0, 0, 0);
+        }
+        
+        public MutableBlockPos(final int x_, final int y_, final int z_) {
+            super(0, 0, 0);
+            this.x = x_;
+            this.y = y_;
+            this.z = z_;
+        }
+        
+        @Override
+        public int getX() {
+            return this.x;
+        }
+        
+        @Override
+        public int getY() {
+            return this.y;
+        }
+        
+        @Override
+        public int getZ() {
+            return this.z;
+        }
+        
+        public MutableBlockPos set(final int xIn, final int yIn, final int zIn) {
+            this.x = xIn;
+            this.y = yIn;
+            this.z = zIn;
+            return this;
+        }
     }
 }

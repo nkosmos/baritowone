@@ -138,7 +138,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
     // blacklist the closest block and its adjacent blocks
     public synchronized boolean blacklistClosest() {
         List<BetterBlockPos> newBlacklist = new ArrayList<>();
-        knownLocations.stream().min(Comparator.comparingDouble(ctx.player()::getDistanceSq)).ifPresent(newBlacklist::add);
+        knownLocations.stream().min(Comparator.comparingDouble(b -> ctx.player().getDistanceSq(b.x, b.y, b.z))).ifPresent(newBlacklist::add);
         outer:
         while (true) {
             for (BetterBlockPos known : knownLocations) {

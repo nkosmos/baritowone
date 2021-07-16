@@ -43,7 +43,6 @@ import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
 public class MovementTraverse extends Movement {

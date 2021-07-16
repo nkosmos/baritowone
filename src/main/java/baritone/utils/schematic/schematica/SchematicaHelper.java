@@ -40,7 +40,7 @@ public enum SchematicaHelper {
 
     public static Optional<XTuple<IStaticSchematic, BetterBlockPos>> getOpenSchematic() {
         return Optional.ofNullable(ClientProxy.schematic)
-                .map(world -> new XTuple<>(new SchematicAdapter(world), world.position));
+                .map(world -> new XTuple<>(new SchematicAdapter(world), new BetterBlockPos(world.position.x, world.position.y, world.position.z)));
     }
 
 }

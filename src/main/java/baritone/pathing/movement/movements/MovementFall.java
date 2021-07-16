@@ -42,7 +42,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 
@@ -138,7 +137,7 @@ public class MovementFall extends Movement {
             }
             state.setInput(Input.MOVE_FORWARD, true);
         }
-        XVec3i avoid = Optional.ofNullable(avoid()).map(EnumFacing::getDirectionVec).orElse(null);
+        XVec3i avoid = Optional.ofNullable(avoid()).map(e -> new XVec3i(e.getFrontOffsetX(), e.getFrontOffsetY(), e.getFrontOffsetZ())).orElse(null);
         if (avoid == null) {
             avoid = src.subtract(dest);
         } else {

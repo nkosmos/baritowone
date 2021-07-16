@@ -57,7 +57,6 @@ import baritonex.utils.XVec3i;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
 public class SelCommand extends Command {
@@ -80,7 +79,7 @@ public class SelCommand extends Command {
                 float lineWidth = Baritone.settings().selectionLineWidth.value;
                 boolean ignoreDepth = Baritone.settings().renderSelectionIgnoreDepth.value;
                 IRenderer.startLines(color, opacity, lineWidth, ignoreDepth);
-                IRenderer.drawAABB(new AxisAlignedBB(pos1, pos1.add(1, 1, 1)));
+                IRenderer.drawAABB(AxisAlignedBB.getBoundingBox(pos1.x, pos1.y, pos1.z, pos1.x + 1, pos1.y + 1, pos1.z + 1));
                 IRenderer.endLines(ignoreDepth);
             }
         });
@@ -172,7 +171,7 @@ public class SelCommand extends Command {
             baritone.getBuilderProcess().build("Fill", composite, origin);
             logDirect("Filling now");
         } else if (action == Action.COPY) {
-            BetterBlockPos playerPos = mc.getRenderViewEntity() != null ? BetterBlockPos.from(new BetterBlockPos(mc.renderViewEntity)) : ctx.playerFeet();
+            BetterBlockPos playerPos = mc.renderViewEntity != null ? BetterBlockPos.from(new BetterBlockPos(mc.renderViewEntity)) : ctx.playerFeet();
             BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
             args.requireMax(0);
             ISelection[] selections = manager.getSelections();
@@ -213,7 +212,7 @@ public class SelCommand extends Command {
             clipboardOffset = origin.subtract(pos);
             logDirect("Selection copied");
         } else if (action == Action.PASTE) {
-            BetterBlockPos playerPos = mc.getRenderViewEntity() != null ? BetterBlockPos.from(new BetterBlockPos(mc.renderViewEntity)) : ctx.playerFeet();
+            BetterBlockPos playerPos = mc.renderViewEntity != null ? BetterBlockPos.from(new BetterBlockPos(mc.renderViewEntity)) : ctx.playerFeet();
             BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
             args.requireMax(0);
             if (clipboard == null) {

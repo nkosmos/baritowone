@@ -43,6 +43,7 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.AxisAlignedBB;
@@ -75,10 +76,10 @@ public class GuiClick extends GuiScreen {
         Vec3 near = toWorld(mx, my, 0);
         Vec3 far = toWorld(mx, my, 1); // "Use 0.945 that's what stack overflow says" - leijurv
         if (near != null && far != null) {
-        	Vec3 viewerPos = new Vec3(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);
-            MovingObjectPosition result = mc.theWorld.rayTraceBlocks(near.add(viewerPos), far.add(viewerPos), false, false, true);
+        	Vec3 viewerPos = Vec3.createVectorHelper(RenderManager.instance.viewerPosX, RenderManager.instance.viewerPosY, RenderManager.instance.viewerPosZ);
+            MovingObjectPosition result = mc.theWorld.rayTraceBlocks(near.addVector(viewerPos.xCoord, viewerPos.yCoord, viewerPos.zCoord), far.addVector(viewerPos.xCoord, viewerPos.yCoord, viewerPos.zCoord), false, false, true);
             if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                currentMouseOver = result.getBlockPos();
+                currentMouseOver = BetterBlockPos.from(result);
             }
         }
     }
@@ -120,7 +121,7 @@ public class GuiClick extends GuiScreen {
         GL11.glGetInteger(GL_VIEWPORT, (IntBuffer) VIEWPORT.clear());
 
         if (currentMouseOver != null) {
-            Entity e = mc.getRenderViewEntity();
+            Entity e = mc.renderViewEntity;
             // drawSingleSelectionBox WHEN?
             PathRenderer.drawManySelectionBoxes(e, Collections.singletonList(currentMouseOver), Color.CYAN);
             if (clickStart != null && !clickStart.equals(currentMouseOver)) {

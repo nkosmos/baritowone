@@ -202,7 +202,7 @@ public class ToolSet {
 
         speed /= hardness;
         
-        if (block.getMaterial().isToolNotRequired() || (!XHelper.isEmpty(item) && item.canHarvestBlock(block))) {
+        if (block.getMaterial().isToolNotRequired() || (!XHelper.isEmpty(item) && item.canItemHarvestBlock(block))) {
             return speed / 30;
         } else {
             return speed / 100;

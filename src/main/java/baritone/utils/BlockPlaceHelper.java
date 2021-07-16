@@ -18,6 +18,7 @@
 package baritone.utils;
 
 import baritone.Baritone;
+import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
 import baritonex.utils.XHelper;
@@ -38,12 +39,12 @@ public class BlockPlaceHelper implements Helper {
             return;
         }
         MovingObjectPosition mouseOver = ctx.objectMouseOver();
-        if (!rightClickRequested || mouseOver == null || mouseOver.getBlockPos() == null || mouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
+        if (!rightClickRequested || mouseOver == null || mouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
             return;
         }
         rightClickTimer = Baritone.settings().rightClickSpeed.value;
         
-        if (ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
+        if (ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), BetterBlockPos.from(mouseOver), mouseOver.sideHit, mouseOver.hitVec)) {
             ctx.player().swingItem();
             return;
         }
