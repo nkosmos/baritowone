@@ -122,7 +122,7 @@ public final class InventoryBehavior extends Behavior {
                 continue;
             }
             if (cla$$.isInstance(stack.getItem())) {
-                double speed = ToolSet.calculateSpeedVsBlock(stack, XBlockStateSerializer.getBlockState(against)); // takes into account enchants
+                double speed = ToolSet.calculateSpeedVsBlock(stack, against); // takes into account enchants
                 if (speed > bestSpeed) {
                     bestSpeed = speed;
                     bestInd = i;
@@ -143,7 +143,26 @@ public final class InventoryBehavior extends Behavior {
 
     public boolean selectThrowawayForLocation(boolean select, int x, int y, int z) {
         IBlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
-        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof ItemBlock && maybe.equals(((ItemBlock) stack.getItem()).blockInstance.onBlockPlaced(ctx.world(), ctx.playerFeet(), EnumFacing.UP, (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()), ctx.player())))) {
+        if (maybe != null && throwaway(select, stack -> {
+        	Block block = ((ItemBlock) stack.getItem()).blockInstance;
+        	return stack.getItem() instanceof ItemBlock 
+        			&& maybe.equals(
+        					XBlockStateSerializer.getStateFromMeta(
+        							block, 
+        							block.onBlockPlaced(
+        									ctx.world(), 
+        									ctx.playerFeet().x, 
+        									ctx.playerFeet().y, 
+        									ctx.playerFeet().z, 
+        									XHelper.facingToInt(EnumFacing.UP), 
+        									(float) ctx.player().posX, 
+        									(float) ctx.player().posY, 
+        									(float) ctx.player().posZ, 
+        									stack.getItem().getMetadata(stack.getMetadata())
+        							)
+        					)
+        			);
+        })) {
             return true; // gotem
         }
         if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).blockInstance.equals(maybe.getBlock()))) {

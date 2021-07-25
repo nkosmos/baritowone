@@ -35,14 +35,14 @@ import baritone.api.utils.VecUtils;
 import baritone.api.utils.input.Input;
 import baritone.behavior.PathingBehavior;
 import baritone.utils.BlockStateInterface;
+import baritonex.utils.data.XEnumFacing;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumFacing;
 
 public abstract class Movement implements IMovement, MovementHelper {
 
-    public static final EnumFacing[] HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP = {EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST, EnumFacing.DOWN};
+    public static final XEnumFacing[] HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP = {XEnumFacing.NORTH, XEnumFacing.SOUTH, XEnumFacing.EAST, XEnumFacing.WEST, XEnumFacing.DOWN};
 
     protected final IBaritone baritone;
     protected final IPlayerContext ctx;

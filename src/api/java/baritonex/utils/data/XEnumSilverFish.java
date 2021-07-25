@@ -3,9 +3,6 @@ package baritonex.utils.data;
 import baritonex.utils.property.Properties;
 import baritonex.utils.state.IBlockState;
 import baritonex.utils.state.serialization.XBlockStateSerializer;
-import net.minecraft.block.BlockSilverfish;
-import net.minecraft.block.BlockStone;
-import net.minecraft.block.BlockStoneBrick;
 import net.minecraft.init.Blocks;
 
 public enum XEnumSilverFish {

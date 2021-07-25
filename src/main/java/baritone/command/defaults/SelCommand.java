@@ -54,10 +54,10 @@ import baritone.utils.BlockStateInterface;
 import baritone.utils.IRenderer;
 import baritone.utils.schematic.StaticSchematic;
 import baritonex.utils.XVec3i;
+import baritonex.utils.data.XEnumFacing;
 import baritonex.utils.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumFacing;
 
 public class SelCommand extends Command {
 
@@ -226,7 +226,7 @@ public class SelCommand extends Command {
             if (transformTarget == null) {
                 throw new CommandInvalidStateException("Invalid transform type");
             }
-            EnumFacing direction = args.getDatatypeFor(ForEnumFacing.INSTANCE);
+            XEnumFacing direction = XEnumFacing.byName(args.getDatatypeFor(ForEnumFacing.INSTANCE).name());
             int blocks = args.getAs(Integer.class);
             ISelection[] selections = manager.getSelections();
             if (selections.length < 1) {

@@ -22,7 +22,7 @@ import java.util.Optional;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritonex.utils.XHelper;
-import baritonex.utils.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -193,9 +193,9 @@ public final class RotationUtils {
         if (possibleRotation.isPresent()) {
             return possibleRotation;
         }
-
-        IBlockState state = entity.worldObj.getBlockState(pos);
-        AxisAlignedBB aabb = state.getBlock().getSelectedBoundingBox(entity.worldObj, pos);
+        	
+        Block block = entity.worldObj.getBlock(pos.x, pos.y, pos.z);
+        AxisAlignedBB aabb = block.getSelectedBoundingBoxFromPool(entity.worldObj, pos.x, pos.y, pos.z);
         for (Vec3 sideOffset : BLOCK_SIDE_MULTIPLIERS) {
         	double xDiff = (aabb.minX - pos.getX()) * sideOffset.xCoord + (aabb.maxX - pos.getX()) * (1 - sideOffset.xCoord);
             double yDiff = (aabb.minY - pos.getY()) * sideOffset.yCoord + (aabb.maxY - pos.getY()) * (1 - sideOffset.yCoord);
@@ -220,7 +220,7 @@ public final class RotationUtils {
      * @return The optional rotation
      */
     public static Optional<Rotation> reachableOffset(Entity entity, BetterBlockPos pos, Vec3 offsetPos, double blockReachDistance, boolean wouldSneak) {
-    	Vec3 eyes = wouldSneak ? RayTraceUtils.inferSneakingEyePosition(entity) : entity.getPositionEyes(1.0F);
+    	Vec3 eyes = wouldSneak ? RayTraceUtils.inferSneakingEyePosition(entity) : Vec3.createVectorHelper(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
         Rotation rotation = calcRotationFromVec3d(eyes, offsetPos, new Rotation(entity.rotationYaw, entity.rotationPitch));
         MovingObjectPosition result = RayTraceUtils.rayTraceTowards(entity, rotation, blockReachDistance, wouldSneak);
         //System.out.println(result);
@@ -229,7 +229,7 @@ public final class RotationUtils {
             if (blockPos.equals(pos)) {
                 return Optional.of(rotation);
             }
-            if (entity.worldObj.getBlockState(pos).getBlock() instanceof BlockFire && blockPos.equals(pos.down())) {
+            if (entity.worldObj.getBlock(pos.x, pos.y, pos.z) instanceof BlockFire && blockPos.equals(pos.down())) {
                 return Optional.of(rotation);
             }
         }

@@ -204,7 +204,7 @@ public final class PathRenderer implements IRenderer {
             if (state.getBlock().equals(Blocks.air)) {
                 toDraw = Blocks.dirt.getSelectedBoundingBoxFromPool(player.worldObj, pos.x, pos.y, pos.z);
             } else {
-                toDraw = state.getBlock().getSelectedBoundingBox(player.worldObj, pos);
+                toDraw = state.getBlock().getSelectedBoundingBoxFromPool(player.worldObj, pos.x, pos.y, pos.z);
             }
 
             IRenderer.drawAABB(toDraw, .002D);

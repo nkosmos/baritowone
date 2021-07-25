@@ -36,7 +36,6 @@ public abstract class BlockStateBase implements IBlockState
             return this.apply((Entry)p_apply_1_);
         }
     };
-    private static final String __OBFID = "CL_00002032";
     private int blockId = -1;
     private int blockStateId = -1;
     private int metadata = -1;

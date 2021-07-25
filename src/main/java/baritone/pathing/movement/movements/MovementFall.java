@@ -36,9 +36,10 @@ import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.pathing.MutableMoveResult;
 import baritonex.utils.XHelper;
 import baritonex.utils.XVec3i;
+import baritonex.utils.property.Properties;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLadder;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -90,7 +91,7 @@ public class MovementFall extends Movement {
         BetterBlockPos playerFeet = ctx.playerFeet();
         Rotation toDest = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations());
         Rotation targetRotation = null;
-        Block destBlock = ctx.world().getBlockState(dest).getBlock();
+        Block destBlock = XBlockStateSerializer.getStateFromWorld(ctx.world(), dest).getBlock();
         boolean isWater = destBlock == Blocks.water || destBlock == Blocks.flowing_water;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
             if (!XHelper.isHotbar(XHelper.getSlotFor(ctx.player(), STACK_BUCKET_WATER)) || ctx.world().provider.isHellWorld) {
@@ -157,9 +158,9 @@ public class MovementFall extends Movement {
 
     private EnumFacing avoid() {
         for (int i = 0; i < 15; i++) {
-            IBlockState state = ctx.world().getBlockState(ctx.playerFeet().down(i));
+            IBlockState state = XBlockStateSerializer.getStateFromWorld(ctx.world(), ctx.playerFeet().down(i));
             if (state.getBlock() == Blocks.ladder) {
-                return state.getValue(BlockLadder.FACING);
+                return state.getValue(Properties.LADDER_FACING).toVanilla();
             }
         }
         return null;

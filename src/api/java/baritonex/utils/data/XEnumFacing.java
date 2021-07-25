@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import baritonex.utils.XVec3i;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public enum XEnumFacing implements IVanillaReimplementation<EnumFacing>
 {
@@ -601,5 +602,23 @@ public enum XEnumFacing implements IVanillaReimplementation<EnumFacing>
 	@Override
 	public EnumFacing toVanilla() {
 		return this.vanillaEquivalent;
+	}
+	
+	public ForgeDirection toForge() {
+		switch(this) {
+			case NORTH:
+				return ForgeDirection.NORTH;
+			case SOUTH:
+				return ForgeDirection.SOUTH;
+			case EAST:
+				return ForgeDirection.EAST;
+			case DOWN:
+				return ForgeDirection.DOWN;
+			case UP:
+				return ForgeDirection.UP;
+			case WEST:
+				return ForgeDirection.WEST;
+		}
+		return null;
 	}
 }

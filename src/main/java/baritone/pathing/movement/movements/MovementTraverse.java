@@ -35,12 +35,12 @@ import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
+import baritonex.utils.property.Properties;
 import baritonex.utils.state.IBlockState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.Vec3;
@@ -144,7 +144,7 @@ public class MovementTraverse extends Movement {
                     }
                 }
                 // now that we've checked all possible directions to side place, we actually need to backplace
-                if (srcDown == Blocks.soul_sand || (srcDown instanceof BlockSlab && !((BlockSlab) srcDown).isDouble())) {
+                if (srcDown == Blocks.soul_sand || (srcDown instanceof BlockSlab && !((BlockSlab) srcDown).isOpaqueCube())) {
                     return COST_INF; // can't sneak and backplace against soul sand or half slabs (regardless of whether it's top half or bottom half) =/
                 }
                 if (srcDown == Blocks.flowing_water || srcDown == Blocks.water) {
@@ -265,7 +265,7 @@ public class MovementTraverse extends Movement {
             IBlockState destDown = BlockStateInterface.get(ctx, dest.down());
             BetterBlockPos against = positionsToBreak[0];
             if (feet.getY() != dest.getY() && ladder && (destDown.getBlock() == Blocks.vine || destDown.getBlock() == Blocks.ladder)) {
-                against = destDown.getBlock() == Blocks.vine ? MovementPillar.getAgainst(new CalculationContext(baritone), dest.down()) : dest.offset(destDown.getValue(BlockLadder.FACING).getOpposite());
+                against = destDown.getBlock() == Blocks.vine ? MovementPillar.getAgainst(new CalculationContext(baritone), dest.down()) : dest.offset(destDown.getValue(Properties.LADDER_FACING).getOpposite());
                 if (against == null) {
                     logDirect("Unable to climb vines. Consider disabling allowVines.");
                     return state.setStatus(MovementStatus.UNREACHABLE);

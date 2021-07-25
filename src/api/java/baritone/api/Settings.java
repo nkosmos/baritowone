@@ -552,13 +552,6 @@ public final class Settings {
     public final Setting<Boolean> pruneRegionsFromRAM = new Setting<>(true);
 
     /**
-     * Remember the contents of containers (chests, echests, furnaces)
-     * <p>
-     * Really buggy since the packet stuff is multithreaded badly thanks to brady
-     */
-    public final Setting<Boolean> containerMemory = new Setting<>(false);
-
-    /**
      * Fill in blocks behind you
      */
     public final Setting<Boolean> backfill = new Setting<>(false);
@@ -681,19 +674,6 @@ public final class Settings {
      * Whereas GetToBlock should blacklist the whole "vein" if it can't get to any of them.
      */
     public final Setting<Boolean> blacklistClosestOnFailure = new Setting<>(true);
-
-    /**
-     * 😎 Render cached chunks as semitransparent. Doesn't work with OptiFine 😭 Rarely randomly crashes, see <a href="https://github.com/cabaletta/baritone/issues/327">this issue</a>.
-     * <p>
-     * Can be very useful on servers with low render distance. After enabling, you may need to reload the world in order for it to have an effect
-     * (e.g. disconnect and reconnect, enter then exit the nether, die and respawn, etc). This may literally kill your FPS and CPU because
-     * every chunk gets recompiled twice as much as normal, since the cached version comes into range, then the normal one comes from the server for real.
-     * <p>
-     * Note that flowing water is cached as AVOID, which is rendered as lava. As you get closer, you may therefore see lava falls being replaced with water falls.
-     * <p>
-     * SOLID is rendered as stone in the overworld, netherrack in the nether, and end stone in the end
-     */
-    public final Setting<Boolean> renderCachedChunks = new Setting<>(false);
 
     /**
      * 0.0f = not visible, fully transparent (instead of setting this to 0, turn off renderCachedChunks)

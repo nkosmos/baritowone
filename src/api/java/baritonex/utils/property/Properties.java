@@ -9,7 +9,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 
 import baritonex.utils.data.XDirtType;
-import baritonex.utils.data.XDoorHalf;
 import baritonex.utils.data.XEnumAttachPosition;
 import baritonex.utils.data.XEnumAxis;
 import baritonex.utils.data.XEnumBlockHalfSlab;
@@ -18,6 +17,7 @@ import baritonex.utils.data.XEnumDoorHalf;
 import baritonex.utils.data.XEnumDyeColor;
 import baritonex.utils.data.XEnumFacing;
 import baritonex.utils.data.XEnumFlowerType;
+import baritonex.utils.data.XEnumFlowerTypeForge;
 import baritonex.utils.data.XEnumHalfStairs;
 import baritonex.utils.data.XEnumHingePosition;
 import baritonex.utils.data.XEnumOrientation;
@@ -31,7 +31,6 @@ import baritonex.utils.data.XEnumTypeMushroom;
 import baritonex.utils.data.XEnumTypePlanks;
 import baritonex.utils.data.XEnumTypePrismarine;
 import baritonex.utils.data.XEnumTypeQuartz;
-import baritonex.utils.data.XEnumTypeRedSandstone;
 import baritonex.utils.data.XEnumTypeSand;
 import baritonex.utils.data.XEnumTypeSandstone;
 import baritonex.utils.data.XEnumTypeStone;
@@ -40,6 +39,7 @@ import baritonex.utils.data.XEnumTypeStonebrick;
 import baritonex.utils.data.XEnumTypeTallGrass;
 import baritonex.utils.data.XEnumTypeWall;
 import baritonex.utils.data.XMode;
+import baritonex.utils.data.XTrapDoorHalf;
 import baritonex.utils.property.impl.PropertyBool;
 import baritonex.utils.property.impl.PropertyDirection;
 import baritonex.utils.property.impl.PropertyEnum;
@@ -129,7 +129,6 @@ import net.minecraft.block.BlockVine;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.BlockWood;
 import net.minecraft.block.BlockWoodSlab;
-import net.minecraft.util.EnumFacing;
 
 public class Properties {
 	
@@ -185,7 +184,7 @@ public class Properties {
 
     public static final PropertyEnum<XEnumPlantType> DOUBLEPLANT_VARIANT = PropertyEnum.<XEnumPlantType>create("variant", XEnumPlantType.class);
     public static final PropertyEnum<XEnumBlockHalfTrapdoor> DOUBLEPLANT_HALF = PropertyEnum.<XEnumBlockHalfTrapdoor>create("half", XEnumBlockHalfTrapdoor.class);
-    public static final PropertyEnum<EnumFacing> DOUBLEPLANT_FACING = DIRECTIONAL_FACING;
+    public static final PropertyEnum<XEnumFacing> DOUBLEPLANT_FACING = DIRECTIONAL_FACING;
     
     public static final PropertyDirection ENDERCHEST_FACING = PropertyDirection.create("facing", XEnumFacing.Plane.HORIZONTAL);
     
@@ -218,6 +217,7 @@ public class Properties {
     public static final PropertyBool FIRE_EAST = PropertyBool.create("east");
     public static final PropertyBool FIRE_SOUTH = PropertyBool.create("south");
     public static final PropertyBool FIRE_WEST = PropertyBool.create("west");
+    public static final PropertyInteger FIRE_UPPER = PropertyInteger.create("upper", 0, 2);
     
     protected PropertyEnum<XEnumFlowerType> Flower_type = PropertyEnum.<XEnumFlowerType>create("type", XEnumFlowerType.class, new Predicate<XEnumFlowerType>()
     {
@@ -229,17 +229,17 @@ public class Properties {
     });
     
     public static final PropertyInteger FLOWERPOT_LEGACY_DATA = PropertyInteger.create("legacy_data", 0, 15);
-    public static final PropertyEnum<XEnumFlowerType> FLOWERPOT_CONTENTS = PropertyEnum.<XEnumFlowerType>create("contents", XEnumFlowerType.class);
+    public static final PropertyEnum<XEnumFlowerTypeForge> FLOWERPOT_CONTENTS = PropertyEnum.<XEnumFlowerTypeForge>create("contents", XEnumFlowerTypeForge.class);
 
     public static final PropertyDirection FURNACE_FACING = PropertyDirection.create("facing", XEnumFacing.Plane.HORIZONTAL);
     
     public static final PropertyBool GRASS_SNOWY = PropertyBool.create("snowy");
     
-    public static final PropertyDirection HOPPER_FACING = PropertyDirection.create("facing", new Predicate<EnumFacing>()
+    public static final PropertyDirection HOPPER_FACING = PropertyDirection.create("facing", new Predicate<XEnumFacing>()
     {
-        public boolean apply(EnumFacing p_apply_1_)
+        public boolean apply(XEnumFacing p_apply_1_)
         {
-            return p_apply_1_ != EnumFacing.UP;
+            return p_apply_1_ != XEnumFacing.UP;
         }
     });
     public static final PropertyBool HOPPER_ENABLED = PropertyBool.create("enabled");
@@ -343,8 +343,6 @@ public class Properties {
     });
     public static final PropertyBool RAILPOWERED_POWERED = PropertyBool.create("powered");
 
-    public static final PropertyEnum<XEnumTypeRedSandstone> REDSANDSTONE_TYPE = PropertyEnum.<XEnumTypeRedSandstone>create("type", XEnumTypeRedSandstone.class);
-
     public static final PropertyBool REDSTONECOMPARATOR_POWERED = PropertyBool.create("powered");
     public static final PropertyEnum<XMode> REDSTONECOMPARATOR_MODE = PropertyEnum.<XMode>create("mode", XMode.class);
 
@@ -390,11 +388,11 @@ public class Properties {
     public static final PropertyInteger STANDINGSIGN_ROTATION = PropertyInteger.create("rotation", 0, 15);
     
     public static final PropertyInteger STEM_AGE = PropertyInteger.create("age", 0, 7);
-    public static final PropertyDirection STEM_FACING = PropertyDirection.create("facing", new Predicate<EnumFacing>()
+    public static final PropertyDirection STEM_FACING = PropertyDirection.create("facing", new Predicate<XEnumFacing>()
     {
-        public boolean apply(EnumFacing p_apply_1_)
+        public boolean apply(XEnumFacing p_apply_1_)
         {
-            return p_apply_1_ != EnumFacing.DOWN;
+            return p_apply_1_ != XEnumFacing.DOWN;
         }
     });
     
@@ -409,17 +407,17 @@ public class Properties {
 
     public static final PropertyBool TNT_EXPLODE = PropertyBool.create("explode");
     
-    public static final PropertyDirection TORCH_FACING = PropertyDirection.create("facing", new Predicate<EnumFacing>()
+    public static final PropertyDirection TORCH_FACING = PropertyDirection.create("facing", new Predicate<XEnumFacing>()
     {
-        public boolean apply(EnumFacing p_apply_1_)
+        public boolean apply(XEnumFacing p_apply_1_)
         {
-            return p_apply_1_ != EnumFacing.DOWN;
+            return p_apply_1_ != XEnumFacing.DOWN;
         }
     });
     
     public static final PropertyDirection TRAPDOOR_FACING = PropertyDirection.create("facing", XEnumFacing.Plane.HORIZONTAL);
     public static final PropertyBool TRAPDOOR_OPEN = PropertyBool.create("open");
-    public static final PropertyEnum<XDoorHalf> TRAPDOOR_HALF = PropertyEnum.<XDoorHalf>create("half", XDoorHalf.class);
+    public static final PropertyEnum<XTrapDoorHalf> TRAPDOOR_HALF = PropertyEnum.<XTrapDoorHalf>create("half", XTrapDoorHalf.class);
 
     public static final PropertyBool TRIPWIRE_POWERED = PropertyBool.create("powered");
     public static final PropertyBool TRIPWIRE_SUSPENDED = PropertyBool.create("suspended");
@@ -520,7 +518,7 @@ public class Properties {
     	put(BlockFurnace.class, FURNACE_FACING);
     	put(BlockFlowerPot.class, FLOWERPOT_LEGACY_DATA, FLOWERPOT_CONTENTS);
     	//put(BlockFlower.class, Flower_type); // xtrm help //TODO: check instance
-    	put(BlockFire.class, FIRE_AGE, FIRE_FLIP, FIRE_ALT, FIRE_NORTH, FIRE_EAST, FIRE_SOUTH, FIRE_WEST);
+    	put(BlockFire.class, FIRE_AGE, FIRE_FLIP, FIRE_ALT, FIRE_NORTH, FIRE_EAST, FIRE_SOUTH, FIRE_WEST, FIRE_UPPER);
     	put(BlockFenceGate.class, FENCEGATE_OPEN, FENCEGATE_POWERED, FENCEGATE_IN_WALL);
     	put(BlockFence.class, FENCE_NORTH, FENCE_EAST, FENCE_SOUTH, FENCE_WEST);
     	put(BlockFarmland.class, FARMLAND_MOISTURE);

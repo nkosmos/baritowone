@@ -20,6 +20,7 @@ package baritone.api.utils;
 import javax.annotation.Nonnull;
 
 import baritonex.utils.XVec3i;
+import baritonex.utils.data.XEnumFacing;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -170,6 +171,17 @@ public class BetterBlockPos extends XVec3i {
     }
 
     public BetterBlockPos offset(EnumFacing dir, int dist) {
+        if (dist == 0) {
+            return this;
+        }
+        return new BetterBlockPos(x + dir.getFrontOffsetX() * dist, y + dir.getFrontOffsetY() * dist, z + dir.getFrontOffsetZ() * dist);
+    }
+    
+    public BetterBlockPos offset(XEnumFacing dir) {
+        return new BetterBlockPos(x + dir.getFrontOffsetX(), y + dir.getFrontOffsetY(), z + dir.getFrontOffsetZ());
+    }
+
+    public BetterBlockPos offset(XEnumFacing dir, int dist) {
         if (dist == 0) {
             return this;
         }

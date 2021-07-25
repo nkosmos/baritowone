@@ -39,7 +39,6 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockUtils;
 import baritonex.utils.state.IBlockState;
 import baritonex.utils.state.serialization.XBlockStateSerializer;
-import net.minecraft.init.Blocks;
 
 /**
  * @author Brady

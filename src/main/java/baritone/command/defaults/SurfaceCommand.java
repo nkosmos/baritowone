@@ -24,6 +24,7 @@ import baritone.api.command.exception.CommandException;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.utils.BetterBlockPos;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.BlockAir;
 
 import java.util.Arrays;
@@ -39,14 +40,14 @@ public class SurfaceCommand extends Command {
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
         final BetterBlockPos playerPos = baritone.getPlayerContext().playerFeet();
-        final int surfaceLevel = baritone.getPlayerContext().world().getSeaLevel();
+        final int surfaceLevel = 63; // bruh
         final int worldHeight = baritone.getPlayerContext().world().getActualHeight();
 
         // Ensure this command will not run if you are above the surface level and the block above you is air
         // As this would imply that your are already on the open surface
-        if (playerPos.getY() > surfaceLevel && mc.theWorld.getBlockState(playerPos.up()).getBlock() instanceof BlockAir) {
+        if (playerPos.getY() > surfaceLevel && XBlockStateSerializer.getStateFromWorld(mc.theWorld, playerPos.up()).getBlock() instanceof BlockAir) {
             logDirect("Already at surface");
-            return;
+            return; 
         }
 
         final int startingYPos = Math.max(playerPos.getY(), surfaceLevel);
@@ -54,7 +55,7 @@ public class SurfaceCommand extends Command {
         for (int currentIteratedY = startingYPos; currentIteratedY < worldHeight; currentIteratedY++) {
             final BetterBlockPos newPos = new BetterBlockPos(playerPos.getX(), currentIteratedY, playerPos.getZ());
 
-            if (!(mc.theWorld.getBlockState(newPos).getBlock() instanceof BlockAir) && newPos.getY() > playerPos.getY()) {
+            if (!(XBlockStateSerializer.getStateFromWorld(mc.theWorld, newPos).getBlock() instanceof BlockAir) && newPos.getY() > playerPos.getY()) {
                 Goal goal = new GoalBlock(newPos.up());
                 logDirect(String.format("Going to: %s", goal.toString()));
                 baritone.getCustomGoalProcess().setGoalAndPath(goal);

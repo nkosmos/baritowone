@@ -104,6 +104,10 @@ public class XHelper {
 		return sidehit == -1 ? null : HIT_LOOKUP.get(sidehit);
 	}
 
+	public static int facingToInt(EnumFacing facing) {
+		return HIT_LOOKUP.entrySet().stream().filter(e -> e.getValue() == facing).map(Map.Entry::getKey).findFirst().orElse(-1);
+	}
+	
 	// RENDERER
 	
 	public static void renderBeamSegment(double x, double y, double z, double partialTicks, double textureScale,

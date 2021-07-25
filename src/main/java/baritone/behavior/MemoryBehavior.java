@@ -22,7 +22,6 @@ import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,22 +40,12 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import baritone.cache.ContainerMemory;
 import baritone.utils.BlockStateInterface;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
-import net.minecraft.network.play.server.S2DPacketOpenWindow;
-import net.minecraft.network.play.server.S2EPacketCloseWindow;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 
 /**
@@ -67,23 +56,12 @@ import net.minecraft.util.IChatComponent;
  */
 public final class MemoryBehavior extends Behavior {
 
-    private final List<FutureInventory> futureInventories = new ArrayList<>(); // this is per-bot
-
-    private Integer enderChestWindowId; // nae nae
-
     public MemoryBehavior(Baritone baritone) {
         super(baritone);
     }
 
     @Override
     public synchronized void onTick(TickEvent event) {
-        if (!Baritone.settings().containerMemory.value) {
-            return;
-        }
-        if (event.getType() == TickEvent.Type.OUT) {
-            enderChestWindowId = null;
-            futureInventories.clear();
-        }
     }
 
     @Override
@@ -95,78 +73,12 @@ public final class MemoryBehavior extends Behavior {
 
     @Override
     public synchronized void onSendPacket(PacketEvent event) {
-        if (!Baritone.settings().containerMemory.value) {
-            return;
-        }
-        Packet p = event.getPacket();
-
-        if (event.getState() == EventState.PRE) {
-            if (p instanceof C08PacketPlayerBlockPlacement) {
-            	C08PacketPlayerBlockPlacement packet = event.cast();
-
-                TileEntity tileEntity = ctx.world().getTileEntity(packet.getPlacedBlockX(), packet.getPlacedBlockY(), packet.getPlacedBlockZ());
-                // if tileEntity is an ender chest, we don't need to do anything. ender chests are treated the same regardless of what coordinate right clicked
-
-                // Ensure the TileEntity is a container of some sort
-                if (tileEntity instanceof TileEntityLockable) {
-
-                    TileEntityLockable lockable = (TileEntityLockable) tileEntity;
-                    int size = lockable.getSizeInventory();
-                    BetterBlockPos position = BetterBlockPos.from(tileEntity);
-                    BetterBlockPos adj = BetterBlockPos.from(neighboringConnectedBlock(position));
-                    System.out.println(position + " " + adj);
-                    if (adj != null) {
-                        size *= 2; // double chest or double trapped chest
-                        if (adj.getX() < position.getX() || adj.getZ() < position.getZ()) {
-                            position = adj; // standardize on the lower coordinate, regardless of which side of the large chest we right clicked
-                        }
-                    }
-
-                    this.futureInventories.add(new FutureInventory(System.nanoTime() / 1000000L, size, lockable.getGuiID(), position));
-                }
-            }
-
-            if (p instanceof C0DPacketCloseWindow) {
-                getCurrent().save();
-            }
-        }
+        
     }
 
     @Override
     public synchronized void onReceivePacket(PacketEvent event) {
-        if (!Baritone.settings().containerMemory.value) {
-            return;
-        }
-        Packet p = event.getPacket();
-
-        if (event.getState() == EventState.PRE) {
-            if (p instanceof S2DPacketOpenWindow) {
-            	S2DPacketOpenWindow packet = event.cast();
-                // Remove any entries that were created over a second ago, this should make up for INSANE latency
-                futureInventories.removeIf(i -> System.nanoTime() / 1000000L - i.time > 1000);
-
-                System.out.println("Received packet " + packet.func_148899_d() + " " + packet.func_148897_h() + " " + packet.func_148898_f() + " " + packet.func_148901_c());
-                System.out.println(packet.func_148902_e());
-                if (packet.func_148902_e().contains("container.enderchest")) {
-                    // title is not customized (i.e. this isn't just a renamed shulker)
-                    enderChestWindowId = packet.func_148901_c();
-                    return;
-                }
-                futureInventories.stream()
-                        .filter(i -> i.type == packet.func_148899_d() && i.slots == packet.func_148898_f())
-                        .findFirst().ifPresent(matched -> {
-                    // Remove the future inventory
-                    futureInventories.remove(matched);
-
-                    // Setup the remembered inventory
-                    getCurrentContainer().setup(matched.pos, packet.func_148901_c(), packet.func_148898_f());
-                });
-            }
-
-            if (p instanceof S2EPacketCloseWindow) {
-                getCurrent().save();
-            }
-        }
+        
     }
 
     @Override
@@ -202,78 +114,7 @@ public final class MemoryBehavior extends Behavior {
 
 
     private void updateInventory() {
-        if (!Baritone.settings().containerMemory.value) {
-            return;
-        }
-        int windowId = ctx.player().openContainer.windowId;
-        if (enderChestWindowId != null) {
-            if (windowId == enderChestWindowId) {
-                getCurrent().contents = ctx.player().openContainer.getInventory().subList(0, 27);
-            } else {
-                getCurrent().save();
-                enderChestWindowId = null;
-            }
-        }
-        if (getCurrentContainer() != null) {
-            getCurrentContainer().getInventoryFromWindow(windowId).ifPresent(inventory -> inventory.updateFromOpenWindow(ctx));
-        }
-    }
 
-    private ContainerMemory getCurrentContainer() {
-        if (baritone.getWorldProvider().getCurrentWorld() == null) {
-            return null;
-        }
-        return (ContainerMemory) baritone.getWorldProvider().getCurrentWorld().getContainerMemory();
-    }
-
-    private BetterBlockPos neighboringConnectedBlock(BetterBlockPos in) {
-        BlockStateInterface bsi = baritone.bsi;
-        Block block = bsi.get0(in).getBlock();
-        if (block != Blocks.trapped_chest && block != Blocks.chest) {
-            return null; // other things that have contents, but can be placed adjacent without combining
-        }
-        for (int i = 0; i < 4; i++) {
-        	BetterBlockPos adj = in.offset(EnumFacing.getHorizontal(i));
-            if (bsi.get0(adj).getBlock() == block) {
-                return adj;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * An inventory that we are not yet fully aware of, but are expecting to exist at some point in the future.
-     */
-    private static final class FutureInventory {
-
-        /**
-         * The time that we initially expected the inventory to be provided, in milliseconds
-         */
-        private final long time;
-
-        /**
-         * The amount of slots in the inventory
-         */
-        private final int slots;
-
-        /**
-         * The type of inventory
-         */
-        private final int type;
-
-        /**
-         * The position of the inventory container
-         */
-        private final BetterBlockPos pos;
-
-        private FutureInventory(long time, int slots, int type, BetterBlockPos pos) {
-            this.time = time;
-            this.slots = slots;
-            this.type = type;
-            this.pos = pos;
-            // betterblockpos has censoring
-            System.out.println("Future inventory created " + time + " " + slots + " " + type + " " + BetterBlockPos.from(pos));
-        }
     }
 
     public Optional<List<ItemStack>> echest() {

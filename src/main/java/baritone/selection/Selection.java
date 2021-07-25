@@ -5,7 +5,6 @@ import baritone.api.utils.BetterBlockPos;
 import baritonex.utils.XVec3i;
 import baritonex.utils.data.XEnumFacing;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumFacing;
 
 public class Selection implements ISelection {
 

@@ -60,7 +60,7 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
             bestSoFar[i] = startNode;
         }
         MutableMoveResult res = new MutableMoveResult();
-        BetterWorldBorder worldBorder = new BetterWorldBorder(calcContext.world.getWorldBorder());
+        BetterWorldBorder worldBorder = new BetterWorldBorder();
         long startTime = System.currentTimeMillis();
         boolean slowPath = Baritone.settings().slowPath.value;
         if (slowPath) {

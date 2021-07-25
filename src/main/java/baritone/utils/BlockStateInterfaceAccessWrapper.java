@@ -17,17 +17,11 @@
 
 package baritone.utils;
 
-import javax.annotation.Nullable;
-
-import baritone.api.utils.BetterBlockPos;
-import baritonex.utils.state.IBlockState;
 import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenForest;
 import net.minecraftforge.common.util.ForgeDirection;

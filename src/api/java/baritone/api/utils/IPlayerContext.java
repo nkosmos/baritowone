@@ -55,7 +55,7 @@ public interface IPlayerContext {
         // this does not impact performance at all since we're not null checking constantly
         // if there is an exception, the only overhead is Java generating the exception object... so we can ignore it
         try {
-            if (world().getBlockState(feet).getBlock() instanceof BlockSlab) {
+            if (world().getBlock(feet.x, feet.y, feet.z) instanceof BlockSlab) {
                 return feet.up();
             }
         } catch (NullPointerException ignored) {}

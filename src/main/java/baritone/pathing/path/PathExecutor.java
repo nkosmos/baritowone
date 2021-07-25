@@ -52,6 +52,7 @@ import baritone.pathing.movement.movements.MovementTraverse;
 import baritone.utils.BlockStateInterface;
 import baritonex.utils.XTuple;
 import baritonex.utils.XVec3i;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.util.Vec3;
 
@@ -336,7 +337,7 @@ public class PathExecutor implements IPathExecutor, Helper {
      * @return Whether or not it was possible to snap to the current player feet
      */
     public boolean snipsnapifpossible() {
-        if (!ctx.player().onGround && !(ctx.world().getBlockState(ctx.playerFeet()).getBlock() instanceof BlockLiquid)) {
+        if (!ctx.player().onGround && !(XBlockStateSerializer.getStateFromWorld(ctx.world(), ctx.playerFeet()).getBlock() instanceof BlockLiquid)) {
             // if we're falling in the air, and not in water, don't splice
             return false;
         } else {
@@ -542,10 +543,10 @@ public class PathExecutor implements IPathExecutor, Helper {
                 }
             }
         }
-        if (MovementHelper.avoidWalkingInto(ctx.world().getBlockState(current.getSrc().up(3)).getBlock())) {
+        if (MovementHelper.avoidWalkingInto(XBlockStateSerializer.getStateFromWorld(ctx.world(), current.getSrc().up(3)).getBlock())) {
             return false;
         }
-        return !MovementHelper.avoidWalkingInto(ctx.world().getBlockState(next.getDest().up(2)).getBlock()); // codacy smh my head
+        return !MovementHelper.avoidWalkingInto(XBlockStateSerializer.getStateFromWorld(ctx.world(), next.getDest().up(2)).getBlock()); // codacy smh my head
     }
 
     private static boolean canSprintFromDescendInto(IPlayerContext ctx, IMovement current, IMovement next) {

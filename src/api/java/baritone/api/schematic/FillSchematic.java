@@ -21,6 +21,7 @@ import java.util.List;
 
 import baritone.api.utils.BlockOptionalMeta;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 
 public class FillSchematic extends AbstractSchematic {
 
@@ -32,7 +33,7 @@ public class FillSchematic extends AbstractSchematic {
     }
 
     public FillSchematic(int x, int y, int z, IBlockState state) {
-        this(x, y, z, new BlockOptionalMeta(state.getBlock(), state.getBlock().getMetaFromState(state)));
+        this(x, y, z, new BlockOptionalMeta(state.getBlock(), XBlockStateSerializer.getMetaFromState(state)));
     }
 
     public BlockOptionalMeta getBom() {

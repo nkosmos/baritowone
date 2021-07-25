@@ -21,6 +21,8 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerController;
 import baritone.utils.accessor.IPlayerControllerMP;
+import baritonex.utils.XHelper;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +30,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings.GameType;
 
 /**
  * Implementation of {@link IPlayerController} that chains to the primary player controller's methods
@@ -52,7 +53,11 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
 
     @Override
     public boolean onPlayerDamageBlock(BetterBlockPos pos, EnumFacing side) {
-        return mc.playerController.onPlayerDamageBlock(pos, side);
+    	if(mc.theWorld.getBlock(pos.x, pos.y, pos.z).getMaterial() == Material.air) {
+    		return false;
+    	}
+        mc.playerController.onPlayerDamageBlock(pos.x, pos.y, pos.z, XHelper.facingToInt(side));
+        return mc.thePlayer.isCurrentToolAdventureModeExempt(pos.x, pos.y, pos.z);
     }
 
     @Override
@@ -66,13 +71,13 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
     }
 
     @Override
-    public GameType getGameType() {
-        return mc.playerController.getCurrentGameType();
+    public boolean isCreative() {
+    	return mc.playerController.isInCreativeMode();
     }
 
     @Override
-    public boolean processRightClickBlock(EntityPlayerSP player, World world, BetterBlockPos pos, EnumFacing direction, Vec3 vec) {
-        return mc.playerController.onPlayerRightClick(player, (WorldClient) world, player.getHeldItem(), pos, direction, vec);
+    public boolean processRightClickBlock(EntityPlayerSP player, World world, BetterBlockPos pos, int direction, Vec3 vec) {
+        return mc.playerController.onPlayerRightClick(player, (WorldClient) world, player.getHeldItem(), pos.x, pos.y, pos.z, direction, vec);
     }
 
     @Override
@@ -81,8 +86,8 @@ public enum PrimaryPlayerController implements IPlayerController, Helper {
     }
 
     @Override
-    public boolean clickBlock(BetterBlockPos loc, EnumFacing face) {
-        return mc.playerController.clickBlock(loc, face);
+    public void clickBlock(BetterBlockPos loc, EnumFacing face) {
+        mc.playerController.clickBlock(loc.x, loc.y, loc.z, XHelper.facingToInt(face));
     }
 
     @Override

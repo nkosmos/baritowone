@@ -38,11 +38,14 @@ import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.ToolSet;
 import baritonex.utils.XHelper;
+import baritonex.utils.data.XEnumBlockHalfSlab;
 import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.data.XEnumPlantType;
+import baritonex.utils.property.Properties;
 import baritonex.utils.property.impl.PropertyBool;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockEndPortal;
@@ -137,7 +140,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             }
             // the check in BlockSnow.isPassable is layers < 5
             // while actually, we want < 3 because 3 or greater makes it impassable in a 2 high ceiling
-            if (state.getValue(BlockSnow.LAYERS) >= 3) {
+            if (state.getValue(Properties.SNOW_LAYERS) >= 3) {
                 return false;
             }
             // ok, it's low enough we could walk through it, but is it supported?
@@ -157,7 +160,8 @@ public interface MovementHelper extends ActionCosts, Helper {
             return block == Blocks.water || block == Blocks.flowing_water;
         }
 
-        return block.isPassable(bsi.access, bsi.isPassableBlockPos.set(x, y, z));
+        bsi.isPassableBlockPos.set(x, y, z);
+        return block.isPassable(bsi.access, x, y, z);
     }
 
     /**
@@ -179,7 +183,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
     static boolean fullyPassable(IPlayerContext ctx, BetterBlockPos pos) {
-        return fullyPassable(ctx.world(), pos, ctx.world().getBlockState(pos));
+        return fullyPassable(ctx.world(), pos, XBlockStateSerializer.getStateFromWorld(ctx.world(), pos));
     }
 
     static boolean fullyPassable(IBlockAccess access, BetterBlockPos pos, IBlockState state) {
@@ -204,7 +208,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return false;
         }
         // door, fence gate, liquid, trapdoor have been accounted for, nothing else uses the world or pos parameters
-        return block.isPassable(access, pos);
+        return block.isPassable(access, pos.x, pos.y, pos.z);
     }
 
     static boolean isReplaceable(int x, int y, int z, IBlockState state, BlockStateInterface bsi) {
@@ -228,11 +232,11 @@ public interface MovementHelper extends ActionCosts, Helper {
             if (!bsi.worldContainsLoadedChunk(x, z)) {
                 return true;
             }
-            return state.getValue(BlockSnow.LAYERS) == 1;
+            return state.getValue(Properties.SNOW_LAYERS) == 1;
         }
         if (block instanceof BlockDoublePlant) {
-            BlockDoublePlant.EnumPlantType kek = state.getValue(BlockDoublePlant.VARIANT);
-            return kek == BlockDoublePlant.EnumPlantType.FERN || kek == BlockDoublePlant.EnumPlantType.GRASS;
+            XEnumPlantType kek = state.getValue(Properties.DOUBLEPLANT_VARIANT);
+            return kek == XEnumPlantType.FERN || kek == XEnumPlantType.GRASS;
         }
         return state.getBlock().getMaterial().isReplaceable();
     }
@@ -252,7 +256,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return true;
         }
 
-        return isHorizontalBlockPassable(doorPos, state, playerPos, BlockDoor.OPEN);
+        return isHorizontalBlockPassable(doorPos, state, playerPos, Properties.DOOR_OPEN);
     }
 
     static boolean isGatePassable(IPlayerContext ctx, BetterBlockPos gatePos, BetterBlockPos playerPos) {
@@ -265,7 +269,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return true;
         }
 
-        return state.getValue(BlockFenceGate.OPEN);
+        return state.getValue(Properties.FENCEGATE_OPEN);
     }
 
     static boolean isHorizontalBlockPassable(BetterBlockPos blockPos, IBlockState blockState, BetterBlockPos playerPos, PropertyBool propertyOpen) {
@@ -273,7 +277,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return false;
         }
 
-        XEnumFacing.Axis facing = blockState.getValue(BlockDirectional.FACING).getAxis();
+        XEnumFacing.Axis facing = blockState.getValue(Properties.DIRECTIONAL_FACING).getAxis();
         boolean open = blockState.getValue(propertyOpen);
 
         XEnumFacing.Axis playerFacing;
@@ -350,10 +354,10 @@ public interface MovementHelper extends ActionCosts, Helper {
         }
         if (block instanceof BlockSlab) {
             if (!Baritone.settings().allowWalkOnBottomSlab.value) {
-                if (((BlockSlab) block).isDouble()) {
+                if (((BlockSlab) block).isOpaqueCube()) {
                     return true;
                 }
-                return state.getValue(BlockSlab.HALF) != BlockSlab.EnumBlockHalf.BOTTOM;
+                return state.getValue(Properties.SLAB_HALF) != XEnumBlockHalfSlab.BOTTOM;
             }
             return true;
         }
@@ -428,8 +432,8 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean isBottomSlab(IBlockState state) {
         return state.getBlock() instanceof BlockSlab
-                && !((BlockSlab) state.getBlock()).isDouble()
-                && state.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.BOTTOM;
+                && !((BlockSlab) state.getBlock()).isOpaqueCube()
+                && state.getValue(Properties.SLAB_HALF) == XEnumBlockHalfSlab.BOTTOM;
     }
 
     /**
@@ -505,14 +509,14 @@ public interface MovementHelper extends ActionCosts, Helper {
     static boolean possiblyFlowing(IBlockState state) {
         // Will be IFluidState in 1.13
         return state.getBlock() instanceof BlockLiquid
-                && state.getValue(BlockLiquid.LEVEL) != 0;
+                && state.getValue(Properties.LIQUID_LEVEL) != 0;
     }
 
     static boolean isFlowing(int x, int y, int z, IBlockState state, BlockStateInterface bsi) {
         if (!(state.getBlock() instanceof BlockLiquid)) {
             return false;
         }
-        if (state.getValue(BlockLiquid.LEVEL) != 0) {
+        if (state.getValue(Properties.LIQUID_LEVEL) != 0) {
             return true;
         }
         return possiblyFlowing(bsi.get0(x + 1, y, z))

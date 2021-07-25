@@ -34,6 +34,7 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Vec3;
 
 /**
  * Follow an entity
@@ -61,7 +62,7 @@ public final class FollowProcess extends BaritoneProcessHelper implements IFollo
         if (Baritone.settings().followOffsetDistance.value == 0) {
             pos = new BetterBlockPos(following);
         } else {
-            GoalXZ g = GoalXZ.fromDirection(following.getPositionVector(), Baritone.settings().followOffsetDirection.value, Baritone.settings().followOffsetDistance.value);
+            GoalXZ g = GoalXZ.fromDirection(Vec3.createVectorHelper(following.posX, following.posY, following.posZ), Baritone.settings().followOffsetDirection.value, Baritone.settings().followOffsetDistance.value);
             pos = new BetterBlockPos(g.getX(), following.posY, g.getZ());
         }
         return new GoalNear(pos, Baritone.settings().followRadius.value);

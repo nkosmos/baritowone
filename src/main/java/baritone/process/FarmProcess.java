@@ -39,12 +39,13 @@ import baritone.cache.WorldScanner;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.BaritoneProcessHelper;
 import baritonex.utils.XHelper;
+import baritonex.utils.property.Properties;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockCactus;
 import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockNetherWart;
 import net.minecraft.block.BlockReed;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
@@ -119,12 +120,12 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         POTATOES((BlockCrops) Blocks.potatoes),
         PUMPKIN(Blocks.pumpkin, state -> true),
         MELON(Blocks.melon_block, state -> true),
-        NETHERWART(Blocks.nether_wart, state -> state.getValue(BlockNetherWart.AGE) >= 3),
+        NETHERWART(Blocks.nether_wart, state -> state.getValue(Properties.NETHERWART_AGE) >= 3),
         SUGARCANE(Blocks.reeds, null) {
             @Override
             public boolean readyToHarvest(World world, BetterBlockPos pos, IBlockState state) {
                 if (Baritone.settings().replantCrops.value) {
-                    return world.getBlockState(pos.down()).getBlock() instanceof BlockReed;
+                    return XBlockStateSerializer.getStateFromWorld(world, pos.down()).getBlock() instanceof BlockReed;
                 }
                 return true;
             }
@@ -133,7 +134,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             @Override
             public boolean readyToHarvest(World world, BetterBlockPos pos, IBlockState state) {
                 if (Baritone.settings().replantCrops.value) {
-                    return world.getBlockState(pos.down()).getBlock() instanceof BlockCactus;
+                    return XBlockStateSerializer.getStateFromWorld(world, pos.down()).getBlock() instanceof BlockCactus;
                 }
                 return true;
             }
@@ -142,7 +143,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         public final Predicate<IBlockState> readyToHarvest;
 
         Harvest(BlockCrops blockCrops) {
-            this(blockCrops, b -> b.getValue(BlockCrops.AGE) == 7);
+            this(blockCrops, b -> b.getValue(Properties.Crops_AGE) == 7);
             // max age is 7 for wheat, carrots, and potatoes, but 3 for beetroot
         }
 
@@ -206,8 +207,8 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
                 continue;
             }
 
-            IBlockState state = ctx.world().getBlockState(pos);
-            boolean airAbove = ctx.world().getBlockState(pos.up()).getBlock() instanceof BlockAir;
+            IBlockState state = XBlockStateSerializer.getStateFromWorld(ctx.world(), pos);
+            boolean airAbove = XBlockStateSerializer.getStateFromWorld(ctx.world(), pos.up()).getBlock() instanceof BlockAir;
             if (state.getBlock() == Blocks.farmland) {
                 if (airAbove) {
                     openFarmland.add(pos);
@@ -226,7 +227,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             }
             if (state.getBlock() instanceof IGrowable) {
                 IGrowable ig = (IGrowable) state.getBlock();
-                if (ig.canGrow(ctx.world(), pos, state, true) && ig.canUseBonemeal(ctx.world(), ctx.world().rand, pos, state)) {
+                if (ig.canFertilize(ctx.world(), pos.x, pos.y, pos.z, true) && ig.shouldFertilize(ctx.world(), ctx.world().rand, pos.x, pos.y, pos.z)) {
                     bonemealable.add(pos);
                 }
             }
@@ -237,7 +238,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             Optional<Rotation> rot = RotationUtils.reachable(ctx, pos);
             if (rot.isPresent() && isSafeToCancel) {
                 baritone.getLookBehavior().updateTarget(rot.get(), true);
-                MovementHelper.switchToBestToolFor(ctx, ctx.world().getBlockState(pos));
+                MovementHelper.switchToBestToolFor(ctx, XBlockStateSerializer.getStateFromWorld(ctx.world(), pos));
                 if (ctx.isLookingAt(pos)) {
                     baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_LEFT, true);
                 }

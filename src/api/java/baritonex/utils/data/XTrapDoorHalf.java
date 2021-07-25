@@ -1,13 +1,13 @@
 package baritonex.utils.data;
 
-public enum XDoorHalf
+public enum XTrapDoorHalf
 {
     TOP("top"),
     BOTTOM("bottom");
 
     private final String name;
 
-    private XDoorHalf(String name)
+    private XTrapDoorHalf(String name)
     {
         this.name = name;
     }

@@ -123,13 +123,13 @@ public class BlockStateInterface {
             // which is a Long2ObjectOpenHashMap.get
             // see issue #113
             if (cached != null && cached.xPosition == x >> 4 && cached.zPosition == z >> 4) {
-                return cached.getBlockState(new BetterBlockPos(x, y, z));
+                return XBlockStateSerializer.getStateFromChunk(cached, x, y, z);
             }
             Chunk chunk = (Chunk)loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 
             if (chunk != null && chunk.isChunkLoaded) {
                 prev = chunk;
-                return chunk.getBlockState(new BetterBlockPos(x, y, z));
+                return XBlockStateSerializer.getStateFromChunk(chunk, x, y, z);
             }
         }
         // same idea here, skip the Long2ObjectOpenHashMap.get if at all possible

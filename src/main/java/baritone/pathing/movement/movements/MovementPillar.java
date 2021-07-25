@@ -35,12 +35,14 @@ import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
+import baritonex.utils.data.XEnumBlockHalfSlab;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.property.Properties;
 import baritonex.utils.state.IBlockState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.init.Blocks;
@@ -71,7 +73,7 @@ public class MovementPillar extends Movement {
             if (fromDown.getBlock() == Blocks.ladder || fromDown.getBlock() == Blocks.vine) {
                 return COST_INF; // can't pillar from a ladder or vine onto something that isn't also climbable
             }
-            if (fromDown.getBlock() instanceof BlockSlab && !((BlockSlab) fromDown.getBlock()).isDouble() && fromDown.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.BOTTOM) {
+            if (fromDown.getBlock() instanceof BlockSlab && !((BlockSlab) fromDown.getBlock()).isOpaqueCube() && fromDown.getValue(Properties.SLAB_HALF) == XEnumBlockHalfSlab.BOTTOM) {
                 return COST_INF; // can't pillar up from a bottom slab onto a non ladder
             }
         }
@@ -199,7 +201,7 @@ public class MovementPillar extends Movement {
 
         boolean blockIsThere = MovementHelper.canWalkOn(ctx, src) || ladder;
         if (ladder) {
-        	BetterBlockPos against = vine ? getAgainst(new CalculationContext(baritone), src) : src.offset(fromDown.getValue(BlockLadder.FACING).getOpposite());
+        	BetterBlockPos against = vine ? getAgainst(new CalculationContext(baritone), src) : src.offset(XEnumFacing.byName(fromDown.getValue(Properties.LADDER_FACING).name()).getOpposite());
             if (against == null) {
                 logDirect("Unable to climb vines. Consider disabling allowVines.");
                 return state.setStatus(MovementStatus.UNREACHABLE);
@@ -211,11 +213,6 @@ public class MovementPillar extends Movement {
             if (MovementHelper.isBottomSlab(BlockStateInterface.get(ctx, src.down()))) {
                 state.setInput(Input.JUMP, true);
             }
-            /*
-            if (thePlayer.getPosition0().getX() != from.getX() || thePlayer.getPosition0().getZ() != from.getZ()) {
-                Baritone.moveTowardsBlock(from);
-            }
-             */
 
             MovementHelper.moveTowards(ctx, state, against);
             return state;

@@ -17,9 +17,11 @@
 
 package baritone.api.cache;
 
-import baritone.api.utils.BetterBlockPos;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import java.util.*;
+import baritone.api.utils.BetterBlockPos;
 
 /**
  * A marker for a position in the world.
@@ -80,11 +82,6 @@ public interface IWaypoint {
          * Tag indicating that the waypoint was user-created
          */
         USER("user");
-
-        /**
-         * A list of all of the
-         */
-        private static final List<Tag> TAG_LIST = Collections.unmodifiableList(Arrays.asList(Tag.values()));
 
         /**
          * The names for the tag, anything that the tag can be referred to as.

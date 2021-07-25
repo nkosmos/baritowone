@@ -28,7 +28,8 @@ import baritone.api.command.exception.CommandException;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalStrictDirection;
 import baritone.api.utils.BetterBlockPos;
-import net.minecraft.util.EnumFacing;
+import baritonex.utils.data.XEnumFacing;
+import net.minecraft.util.MathHelper;
 
 public class TunnelCommand extends Command {
 
@@ -55,7 +56,7 @@ public class TunnelCommand extends Command {
                 width--;
                 BetterBlockPos corner1;
                 BetterBlockPos corner2;
-                EnumFacing enumFacing = ctx.player().getHorizontalFacing();
+                XEnumFacing enumFacing = XEnumFacing.getHorizontal(MathHelper.floor_double((double)(ctx.player().rotationYaw * 4.0F / 360.0F) + 0.5D) & 3);
                 int addition = ((width % 2 == 0) ? 0 : 1);
                 switch (enumFacing) {
                     case EAST:
@@ -83,7 +84,7 @@ public class TunnelCommand extends Command {
         } else {
             Goal goal = new GoalStrictDirection(
                     ctx.playerFeet(),
-                    ctx.player().getHorizontalFacing()
+                    XEnumFacing.getHorizontal(MathHelper.floor_double((double)(ctx.player().rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).toVanilla()
             );
             baritone.getCustomGoalProcess().setGoalAndPath(goal);
             logDirect(String.format("Goal: %s", goal.toString()));

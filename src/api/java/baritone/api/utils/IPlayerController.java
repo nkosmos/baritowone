@@ -24,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings.GameType;
 
 /**
  * @author Brady
@@ -42,17 +41,17 @@ public interface IPlayerController {
 
     ItemStack windowClick(int windowId, int slotId, int mouseButton, int type, EntityPlayer player);
 
-    GameType getGameType();
+    boolean isCreative();
 
-    boolean processRightClickBlock(EntityPlayerSP player, World world, BetterBlockPos pos, EnumFacing direction, Vec3 vec);
+    boolean processRightClickBlock(EntityPlayerSP player, World world, BetterBlockPos pos, int direction, Vec3 vec);
 
     boolean processRightClick(EntityPlayerSP player, World world);
 
-    boolean clickBlock(BetterBlockPos loc, EnumFacing face);
+    void clickBlock(BetterBlockPos loc, EnumFacing face);
 
     void setHittingBlock(boolean hittingBlock);
 
     default double getBlockReachDistance() {
-        return this.getGameType().isCreative() ? 5.0F : BaritoneAPI.getSettings().blockReachDistance.value;
+        return this.isCreative() ? 5.0F : BaritoneAPI.getSettings().blockReachDistance.value;
     }
 }

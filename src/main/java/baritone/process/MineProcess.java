@@ -53,6 +53,7 @@ import baritone.utils.BaritoneProcessHelper;
 import baritone.utils.BlockStateInterface;
 import baritonex.utils.XHelper;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockFalling;
@@ -146,7 +147,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
                 Optional<Rotation> rot = RotationUtils.reachable(ctx, pos);
                 if (rot.isPresent() && isSafeToCancel) {
                     baritone.getLookBehavior().updateTarget(rot.get(), true);
-                    MovementHelper.switchToBestToolFor(ctx, ctx.world().getBlockState(pos));
+                    MovementHelper.switchToBestToolFor(ctx, XBlockStateSerializer.getStateFromWorld(ctx.world(), pos));
                     if (ctx.isLookingAt(pos) || ctx.playerRotations().isReallyCloseTo(rot.get())) {
                         baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_LEFT, true);
                     }

@@ -24,6 +24,7 @@ import java.util.Map;
 
 import baritonex.utils.property.IProperty;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.init.Blocks;
@@ -58,7 +59,7 @@ public class SubstituteSchematic extends AbstractSchematic {
         }
         for (Block substitute : substitutes) {
             if (substitute instanceof BlockAir) {
-                return current.getBlock() instanceof BlockAir ? current : Blocks.air.getDefaultState(); // can always "place" air
+                return current.getBlock() instanceof BlockAir ? current : XBlockStateSerializer.getBlockState(Blocks.air); // can always "place" air
             }
             for (IBlockState placeable : approxPlaceable) {
                 if (substitute.equals(placeable.getBlock())) {
@@ -66,7 +67,7 @@ public class SubstituteSchematic extends AbstractSchematic {
                 }
             }
         }
-        return substitutes.get(0).getDefaultState();
+        return XBlockStateSerializer.getBlockState(substitutes.get(0));
     }
 
     private IBlockState withBlock(IBlockState state, Block block) {
@@ -74,7 +75,7 @@ public class SubstituteSchematic extends AbstractSchematic {
             return blockStateCache.get(state).get(block);
         }
         Collection<IProperty> properties = state.getPropertyNames();
-        IBlockState newState = block.getDefaultState();
+        IBlockState newState = XBlockStateSerializer.getBlockState(block);
         for (IProperty<?> property : properties) {
             try {
                 newState = copySingleProp(state, newState, property);

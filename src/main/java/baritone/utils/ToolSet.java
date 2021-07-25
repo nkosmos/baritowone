@@ -25,7 +25,6 @@ import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritonex.utils.XHelper;
 import baritonex.utils.state.IBlockState;
-import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.Enchantment;
@@ -125,7 +124,6 @@ public class ToolSet {
         double highestSpeed = Double.NEGATIVE_INFINITY;
         int lowestCost = Integer.MIN_VALUE;
         boolean bestSilkTouch = false;
-        IBlockState blockState = XBlockStateSerializer.getBlockState(b);
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = player.inventory.getStackInSlot(i);
             
@@ -138,7 +136,7 @@ public class ToolSet {
             if (Baritone.settings().itemSaver.value && (itemStack.getMetadata() + Baritone.settings().itemSaverThreshold.value) >= itemStack.getMaxDurability() && itemStack.getMaxDurability() > 1) {
                 continue;
             }
-            double speed = calculateSpeedVsBlock(itemStack, blockState);
+            double speed = calculateSpeedVsBlock(itemStack, b);
             boolean silkTouch = hasSilkTouch(itemStack);
             if (speed > highestSpeed) {
                 highestSpeed = speed;

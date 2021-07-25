@@ -27,6 +27,7 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockUtils;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.pathing.PathingBlockType;
+import baritonex.utils.property.Properties;
 import baritonex.utils.state.IBlockState;
 import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
@@ -75,7 +76,7 @@ public final class ChunkPacker {
                     for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
                             int index = CachedChunk.getPositionIndex(x, y, z);
-                            IBlockState state = extendedblockstorage.get(x, y1, z);
+                            IBlockState state = XBlockStateSerializer.getStateFromMeta(extendedblockstorage.getBlockByExtId(x, y, z), extendedblockstorage.getExtBlockMetadata(x, y, z));
                             boolean[] bits = getPathingBlockType(state, chunk, x, y, z).getBits();
                             bitSet.set(index, bits[0]);
                             bitSet.set(index + 1, bits[1]);
@@ -102,7 +103,7 @@ public final class ChunkPacker {
                 for (int y = 255; y >= 0; y--) {
                     int index = CachedChunk.getPositionIndex(x, y, z);
                     if (bitSet.get(index) || bitSet.get(index + 1)) {
-                        blocks[z << 4 | x] = chunk.getBlockState(new BetterBlockPos(x, y, z));
+                        blocks[z << 4 | x] = XBlockStateSerializer.getStateFromChunk(chunk, x, y, z);
                         continue https;
                     }
                 }
@@ -123,17 +124,17 @@ public final class ChunkPacker {
                 return PathingBlockType.AVOID;
             }
             if (
-                    (x != 15 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BetterBlockPos(x + 1, y, z))))
-                            || (x != 0 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BetterBlockPos(x - 1, y, z))))
-                            || (z != 15 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BetterBlockPos(x, y, z + 1))))
-                            || (z != 0 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BetterBlockPos(x, y, z - 1))))
+                    (x != 15 && MovementHelper.possiblyFlowing(XBlockStateSerializer.getStateFromChunk(chunk, x + 1, y, z)))
+                            || (x != 0 && MovementHelper.possiblyFlowing(XBlockStateSerializer.getStateFromChunk(chunk, x - 1, y, z)))
+                            || (z != 15 && MovementHelper.possiblyFlowing(XBlockStateSerializer.getStateFromChunk(chunk, x, y, z + 1)))
+                            || (z != 0 && MovementHelper.possiblyFlowing(XBlockStateSerializer.getStateFromChunk(chunk, x, y, z - 1)))
             ) {
                 return PathingBlockType.AVOID;
             }
             if (x == 0 || x == 15 || z == 0 || z == 15) {
             	World world = chunk.worldObj;
             	BetterBlockPos bp = new BetterBlockPos(x + chunk.xPosition << 4, y, z + chunk.zPosition << 4);
-        		if(world.getBlockState(bp).getProperties().containsKey(BlockLiquid.LEVEL)) {
+        		if(XBlockStateSerializer.getStateFromWorld(world, bp).getProperties().containsKey(Properties.LIQUID_LEVEL)) {
         			if (BlockLiquid.getFlowDirection(world, bp.x, bp.y, bp.z, state.getBlock().getMaterial()) == -1000.0F) {
         				return PathingBlockType.WATER;
         			}

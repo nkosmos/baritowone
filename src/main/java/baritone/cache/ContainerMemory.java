@@ -18,8 +18,6 @@
 package baritone.cache;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import baritone.Baritone;
 import baritone.api.cache.IContainerMemory;
 import baritone.api.cache.IRememberedInventory;
 import baritone.api.utils.BetterBlockPos;
@@ -40,7 +37,6 @@ import net.minecraft.network.PacketBuffer;
 
 public class ContainerMemory implements IContainerMemory {
 
-    private final Path saveTo;
     /**
      * The current remembered inventories
      */
@@ -48,49 +44,10 @@ public class ContainerMemory implements IContainerMemory {
 
 
     public ContainerMemory(Path saveTo) {
-        this.saveTo = saveTo;
-        try {
-            read(Files.readAllBytes(saveTo));
-        } catch (NoSuchFileException ignored) {
-            inventories.clear();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            inventories.clear();
-        }
-    }
 
-    private void read(byte[] bytes) throws IOException {
-        PacketBuffer in = new PacketBuffer(Unpooled.wrappedBuffer(bytes));
-        int chests = in.readInt();
-        for (int i = 0; i < chests; i++) {
-            int x = in.readInt();
-            int y = in.readInt();
-            int z = in.readInt();
-            RememberedInventory rem = new RememberedInventory();
-            rem.items.addAll(readItemStacks(in));
-            rem.size = rem.items.size();
-            rem.windowId = -1;
-            if (rem.items.isEmpty()) {
-                continue; // this only happens if the list has no elements, not if the list has elements that are all empty item stacks
-            }
-            inventories.put(new BetterBlockPos(x, y, z), rem);
-        }
     }
 
     public synchronized void save() throws IOException {
-        if (!Baritone.settings().containerMemory.value) {
-            return;
-        }
-        ByteBuf buf = Unpooled.buffer(0, Integer.MAX_VALUE);
-        PacketBuffer out = new PacketBuffer(buf);
-        out.writeInt(inventories.size());
-        for (Map.Entry<BetterBlockPos, RememberedInventory> entry : inventories.entrySet()) {
-            out = new PacketBuffer(out.writeInt(entry.getKey().getX()));
-            out = new PacketBuffer(out.writeInt(entry.getKey().getY()));
-            out = new PacketBuffer(out.writeInt(entry.getKey().getZ()));
-            out = writeItemStacks(entry.getValue().getContents(), out);
-        }
-        Files.write(saveTo, out.array());
     }
 
     public synchronized void setup(BetterBlockPos pos, int windowId, int slotCount) {

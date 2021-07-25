@@ -34,36 +34,24 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableSet;
 
 import baritone.api.utils.accessor.IItemStack;
+import baritonex.utils.data.XEnumAxis;
+import baritonex.utils.data.XEnumBlockHalfSlab;
+import baritonex.utils.data.XEnumBlockHalfTrapdoor;
+import baritonex.utils.data.XEnumDoorHalf;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.data.XEnumHalfStairs;
+import baritonex.utils.data.XEnumHingePosition;
+import baritonex.utils.data.XEnumOrientation;
+import baritonex.utils.data.XEnumPartType;
+import baritonex.utils.data.XEnumRailDirection;
+import baritonex.utils.data.XEnumShapeStairs;
+import baritonex.utils.data.XEnumTypeQuartz;
 import baritonex.utils.property.IProperty;
+import baritonex.utils.property.Properties;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBed;
-import net.minecraft.block.BlockBrewingStand;
-import net.minecraft.block.BlockButton;
-import net.minecraft.block.BlockDirt;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.BlockFire;
-import net.minecraft.block.BlockGrass;
-import net.minecraft.block.BlockLeaves;
-import net.minecraft.block.BlockLever;
-import net.minecraft.block.BlockLog;
-import net.minecraft.block.BlockPane;
-import net.minecraft.block.BlockQuartz;
-import net.minecraft.block.BlockRailBase;
-import net.minecraft.block.BlockRedstoneWire;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.block.BlockSkull;
-import net.minecraft.block.BlockSlab;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockStem;
-import net.minecraft.block.BlockTrapDoor;
-import net.minecraft.block.BlockTripWire;
-import net.minecraft.block.BlockVine;
-import net.minecraft.block.BlockWall;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 
 public final class BlockOptionalMeta {
 
@@ -115,89 +103,88 @@ public final class BlockOptionalMeta {
     static {
         Map<Object, Object> _normalizations = new HashMap<>();
         Consumer<Enum> put = instance -> _normalizations.put(instance.getClass(), instance);
-        put.accept(EnumFacing.NORTH); // TODO: Properties > 
-        put.accept(EnumFacing.Axis.Y);
-        put.accept(BlockLog.EnumAxis.Y);
-        put.accept(BlockStairs.EnumHalf.BOTTOM);
-        put.accept(BlockStairs.EnumShape.STRAIGHT);
-        put.accept(BlockLever.EnumOrientation.DOWN_X);
-        put.accept(BlockDoublePlant.EnumBlockHalf.LOWER);
-        put.accept(BlockSlab.EnumBlockHalf.BOTTOM);
-        put.accept(BlockDoor.EnumDoorHalf.LOWER);
-        put.accept(BlockDoor.EnumHingePosition.LEFT);
-        put.accept(BlockBed.EnumPartType.HEAD);
-        put.accept(BlockRailBase.EnumRailDirection.NORTH_SOUTH);
-        put.accept(BlockTrapDoor.DoorHalf.BOTTOM);
-        _normalizations.put(BlockBed.OCCUPIED, false);
-        _normalizations.put(BlockBrewingStand.HAS_BOTTLE[0], false);
-        _normalizations.put(BlockBrewingStand.HAS_BOTTLE[1], false);
-        _normalizations.put(BlockBrewingStand.HAS_BOTTLE[2], false);
-        _normalizations.put(BlockButton.POWERED, false);
+        put.accept(XEnumFacing.NORTH); // TODO: Properties > 
+        put.accept(XEnumFacing.Axis.Y);
+        put.accept(XEnumAxis.Y);
+        put.accept(XEnumHalfStairs.BOTTOM);
+        put.accept(XEnumShapeStairs.STRAIGHT);
+        put.accept(XEnumOrientation.DOWN_X);
+        put.accept(XEnumBlockHalfTrapdoor.LOWER);
+        put.accept(XEnumBlockHalfSlab.BOTTOM);
+        put.accept(XEnumDoorHalf.LOWER);
+        put.accept(XEnumHingePosition.LEFT);
+        put.accept(XEnumPartType.HEAD);
+        put.accept(XEnumRailDirection.NORTH_SOUTH);
+        _normalizations.put(Properties.BED_OCCUPIED, false);
+        _normalizations.put(Properties.BREWINGSTAND_HAS_BOTTLE[0], false);
+        _normalizations.put(Properties.BREWINGSTAND_HAS_BOTTLE[1], false);
+        _normalizations.put(Properties.BREWINGSTAND_HAS_BOTTLE[2], false);
+        _normalizations.put(Properties.BUTTON_POWERED, false);
         // _normalizations.put(BlockCactus.AGE, 0);
         // _normalizations.put(BlockCauldron.LEVEL, 0);
         // _normalizations.put(BlockChorusFlower.AGE, 0);
         // _normalizations.put(BlockCocoa.AGE, 0);
         // _normalizations.put(BlockCrops.AGE, 0);
-        _normalizations.put(BlockDirt.SNOWY, false);
-        _normalizations.put(BlockDoor.OPEN, false);
-        _normalizations.put(BlockDoor.POWERED, false);
+        _normalizations.put(Properties.DIRT_SNOWY, false);
+        _normalizations.put(Properties.DOOR_OPEN, false);
+        _normalizations.put(Properties.DOOR_POWERED, false);
         // _normalizations.put(BlockFarmland.MOISTURE, 0);
-        _normalizations.put(BlockFence.NORTH, false);
-        _normalizations.put(BlockFence.EAST, false);
-        _normalizations.put(BlockFence.WEST, false);
-        _normalizations.put(BlockFence.SOUTH, false);
+        _normalizations.put(Properties.FENCE_NORTH, false);
+        _normalizations.put(Properties.FENCE_EAST, false);
+        _normalizations.put(Properties.FENCE_WEST, false);
+        _normalizations.put(Properties.FENCE_SOUTH, false);
         // _normalizations.put(BlockFenceGate.POWERED, false);
         // _normalizations.put(BlockFenceGate.IN_WALL, false);
-        _normalizations.put(BlockFire.AGE, 0);
-        _normalizations.put(BlockFire.NORTH, false);
-        _normalizations.put(BlockFire.EAST, false);
-        _normalizations.put(BlockFire.SOUTH, false);
-        _normalizations.put(BlockFire.WEST, false);
-        _normalizations.put(BlockFire.UPPER, false);
+        _normalizations.put(Properties.FIRE_AGE, 0);
+        _normalizations.put(Properties.FIRE_NORTH, false);
+        _normalizations.put(Properties.FIRE_EAST, false);
+        _normalizations.put(Properties.FIRE_SOUTH, false);
+        _normalizations.put(Properties.FIRE_WEST, false);
+        _normalizations.put(Properties.FIRE_UPPER, false);
         // _normalizations.put(BlockFrostedIce.AGE, 0);
-        _normalizations.put(BlockGrass.SNOWY, false);
+        _normalizations.put(Properties.GRASS_SNOWY, false);
         // _normalizations.put(BlockHopper.ENABLED, true);
         // _normalizations.put(BlockLever.POWERED, false);
         // _normalizations.put(BlockLiquid.LEVEL, 0);
         // _normalizations.put(BlockMycelium.SNOWY, false);
         // _normalizations.put(BlockNetherWart.AGE, false);
-        _normalizations.put(BlockLeaves.CHECK_DECAY, false);
+        _normalizations.put(Properties.LEAVES_CHECK_DECAY, false);
         // _normalizations.put(BlockLeaves.DECAYABLE, false);
         // _normalizations.put(BlockObserver.POWERED, false);
-        _normalizations.put(BlockPane.NORTH, false);
-        _normalizations.put(BlockPane.EAST, false);
-        _normalizations.put(BlockPane.WEST, false);
-        _normalizations.put(BlockPane.SOUTH, false);
+        _normalizations.put(Properties.PANE_NORTH, false);
+        _normalizations.put(Properties.PANE_EAST, false);
+        _normalizations.put(Properties.PANE_WEST, false);
+        _normalizations.put(Properties.PANE_SOUTH, false);
         // _normalizations.put(BlockPistonBase.EXTENDED, false);
         // _normalizations.put(BlockPressurePlate.POWERED, false);
         // _normalizations.put(BlockPressurePlateWeighted.POWER, false);
-        _normalizations.put(BlockQuartz.EnumType.LINES_X, BlockQuartz.EnumType.LINES_Y);
-        _normalizations.put(BlockQuartz.EnumType.LINES_Z, BlockQuartz.EnumType.LINES_Y);
+        _normalizations.put(XEnumTypeQuartz.LINES_X, XEnumTypeQuartz.LINES_Y);
+        _normalizations.put(XEnumTypeQuartz.LINES_Z, XEnumTypeQuartz.LINES_Y);
         // _normalizations.put(BlockRailDetector.POWERED, false);
         // _normalizations.put(BlockRailPowered.POWERED, false);
-        _normalizations.put(BlockRedstoneWire.NORTH, false);
-        _normalizations.put(BlockRedstoneWire.EAST, false);
-        _normalizations.put(BlockRedstoneWire.SOUTH, false);
-        _normalizations.put(BlockRedstoneWire.WEST, false);
+        _normalizations.put(Properties.REDSTONEWIRE_NORTH, false);
+        _normalizations.put(Properties.REDSTONEWIRE_EAST, false);
+        _normalizations.put(Properties.REDSTONEWIRE_SOUTH, false);
+        _normalizations.put(Properties.REDSTONEWIRE_WEST, false);
         // _normalizations.put(BlockReed.AGE, false);
-        _normalizations.put(BlockSapling.STAGE, 0);
-        _normalizations.put(BlockSkull.NODROP, false);
-        _normalizations.put(BlockStandingSign.ROTATION, 0);
-        _normalizations.put(BlockStem.AGE, 0);
-        _normalizations.put(BlockTripWire.NORTH, false);
-        _normalizations.put(BlockTripWire.EAST, false);
-        _normalizations.put(BlockTripWire.WEST, false);
-        _normalizations.put(BlockTripWire.SOUTH, false);
-        _normalizations.put(BlockVine.NORTH, false);
-        _normalizations.put(BlockVine.EAST, false);
-        _normalizations.put(BlockVine.SOUTH, false);
-        _normalizations.put(BlockVine.WEST, false);
-        _normalizations.put(BlockVine.UP, false);
-        _normalizations.put(BlockWall.UP, false);
-        _normalizations.put(BlockWall.NORTH, false);
-        _normalizations.put(BlockWall.EAST, false);
-        _normalizations.put(BlockWall.WEST, false);
-        _normalizations.put(BlockWall.SOUTH, false);
+        _normalizations.put(Properties.SAPLING_STAGE, 0); 
+        _normalizations.put(Properties.SKULL_NODROP, false); 
+//        _normalizations.put(BlockStandingSign.ROTATION, 0);
+        _normalizations.put(Properties.STEM_AGE, 0); 
+        _normalizations.put(Properties.TRIPWIRE_NORTH, false);
+        _normalizations.put(Properties.TRIPWIRE_EAST, false);
+        _normalizations.put(Properties.TRIPWIRE_WEST, false);
+        _normalizations.put(Properties.TRIPWIRE_SOUTH, false);
+        _normalizations.put(Properties.VINE_NORTH, false);
+        _normalizations.put(Properties.VINE_EAST, false);
+        _normalizations.put(Properties.VINE_SOUTH, false);
+        _normalizations.put(Properties.VINE_WEST, false);
+        _normalizations.put(Properties.VINE_UP, false);
+        _normalizations.put(Properties.WALL_UP, false);
+        _normalizations.put(Properties.WALL_NORTH, false);
+        _normalizations.put(Properties.WALL_EAST, false);
+        _normalizations.put(Properties.WALL_WEST, false);
+        _normalizations.put(Properties.WALL_SOUTH, false);
         normalizations = Collections.unmodifiableMap(_normalizations);
     }
 
@@ -263,11 +250,11 @@ public final class BlockOptionalMeta {
      * @see #normalize(IBlockState)
      */
     public static int stateMeta(IBlockState state) {
-        return state.getBlock().getMetaFromState(normalize(state));
+        return XBlockStateSerializer.getMetaFromState(normalize(state));
     }
 
     private static Set<IBlockState> getStates(@Nonnull Block block, @Nullable Integer meta) {
-        return block.getBlockState().getValidStates().stream()
+        return XBlockStateSerializer.getBlockState2(block).getValidStates().stream()
                 .filter(blockstate -> meta == null || stateMeta(blockstate) == meta)
                 .collect(Collectors.toSet());
     }
@@ -284,10 +271,11 @@ public final class BlockOptionalMeta {
         //noinspection ConstantConditions
         return ImmutableSet.copyOf(
                 blockstates.stream()
-                        .map(state -> new ItemStack(
-                                state.getBlock().getItemDropped(state, new Random(), 0),
-                                state.getBlock().damageDropped(state)
-                        ))
+                        .map(state -> {
+                        	int meta = XBlockStateSerializer.getMetaFromState(state);
+                        	return new ItemStack(state.getBlock().getItemDropped(meta, new Random(), 0),
+                                    state.getBlock().damageDropped(meta));
+                        })
                         .map(stack -> ((IItemStack) (Object) stack).getBaritoneHash())
                         .toArray(Integer[]::new)
         );
@@ -328,7 +316,7 @@ public final class BlockOptionalMeta {
 
     public static IBlockState blockStateFromStack(ItemStack stack) {
         //noinspection deprecation
-        return Block.getBlockFromItem(stack.getItem()).getStateFromMeta(stack.getMetadata());
+        return XBlockStateSerializer.getStateFromMeta(Block.getBlockFromItem(stack.getItem()), stack.getMetadata());
     }
 
     public IBlockState getAnyBlockState() {

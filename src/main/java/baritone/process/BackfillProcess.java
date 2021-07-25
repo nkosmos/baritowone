@@ -35,9 +35,10 @@ import baritone.pathing.movement.MovementState;
 import baritone.pathing.path.PathExecutor;
 import baritone.utils.BaritoneProcessHelper;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.chunk.EmptyChunk;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public final class BackfillProcess extends BaritoneProcessHelper {
 
@@ -62,7 +63,7 @@ public final class BackfillProcess extends BaritoneProcessHelper {
         }
         amIBreakingABlockHMMMMMMM();
         for (BetterBlockPos pos : new ArrayList<>(blocksToReplace.keySet())) {
-            if (ctx.world().getChunkFromBlockCoords(pos) instanceof EmptyChunk) {
+            if (ctx.world().getChunkFromBlockCoords(pos.x, pos.z) instanceof EmptyChunk) {
                 blocksToReplace.remove(pos);
             }
         }
@@ -100,15 +101,17 @@ public final class BackfillProcess extends BaritoneProcessHelper {
         if (!ctx.getSelectedBlock().isPresent()) {
             return;
         }
-        blocksToReplace.put(ctx.getSelectedBlock().get(), ctx.world().getBlockState(ctx.getSelectedBlock().get()));
+        blocksToReplace.put(ctx.getSelectedBlock().get(), XBlockStateSerializer.getStateFromWorld(ctx.world(), ctx.getSelectedBlock().get()));
     }
+    
+    private static final List<ForgeDirection> DIRS = Arrays.asList(ForgeDirection.VALID_DIRECTIONS);
 
     public List<BetterBlockPos> toFillIn() {
         return blocksToReplace
                 .keySet()
                 .stream()
-                .filter(pos -> ctx.world().getBlockState(pos).getBlock() == Blocks.air)
-                .filter(pos -> ctx.world().canBlockBePlaced(Blocks.dirt, pos, false, EnumFacing.UP, null, null))
+                .filter(pos -> ctx.world().getBlock(pos.x, pos.y, pos.z) == Blocks.air)
+                .filter(pos -> ctx.world().canPlaceEntityOnSide(Blocks.dirt, pos.x, pos.y, pos.z, false, DIRS.indexOf(ForgeDirection.UP), null, null))
                 .filter(pos -> !partOfCurrentMovement(pos))
                 .sorted(Comparator.<BetterBlockPos>comparingDouble(b -> ctx.player().getDistanceSq(b.x, b.y, b.z)).reversed())
                 .collect(Collectors.toList());

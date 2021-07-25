@@ -22,8 +22,8 @@ import java.util.List;
 import com.github.lunatrius.schematica.client.world.SchematicWorld;
 
 import baritone.api.schematic.IStaticSchematic;
-import baritone.api.utils.BetterBlockPos;
 import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 
 public final class SchematicAdapter implements IStaticSchematic {
 
@@ -40,7 +40,7 @@ public final class SchematicAdapter implements IStaticSchematic {
 
     @Override
     public IBlockState getDirect(int x, int y, int z) {
-        return this.schematic.getSchematic().getBlockState(new BetterBlockPos(x, y, z));
+        return XBlockStateSerializer.getStateFromMeta(this.schematic.getBlock(x, y, z), this.schematic.getBlockMetadata(x, y, z));
     }
 
     @Override
