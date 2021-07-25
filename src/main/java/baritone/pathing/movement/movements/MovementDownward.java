@@ -17,6 +17,10 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
@@ -24,12 +28,9 @@ import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
-import com.google.common.collect.ImmutableSet;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-
-import java.util.Set;
 
 public class MovementDownward extends Movement {
 

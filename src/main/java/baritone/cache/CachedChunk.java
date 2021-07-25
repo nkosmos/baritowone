@@ -27,9 +27,10 @@ import com.google.common.collect.ImmutableSet;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockUtils;
 import baritone.utils.pathing.PathingBlockType;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 
 /**
@@ -160,20 +161,20 @@ public final class CachedChunk {
         if (special != null) {
             String str = special.get(index);
             if (str != null) {
-                return BlockUtils.stringToBlockRequired(str).getDefaultState();
+                return XBlockStateSerializer.getBlockState(BlockUtils.stringToBlockRequired(str));
             }
         }
 
         if (type == PathingBlockType.SOLID) {
             if (y == 127 && dimension == -1) {
                 // nether roof is always unbreakable
-                return Blocks.bedrock.getDefaultState();
+                return XBlockStateSerializer.getBlockState(Blocks.bedrock);
             }
             if (y < 5 && dimension == 0) {
                 // solid blocks below 5 are commonly bedrock
                 // however, returning bedrock always would be a little yikes
                 // discourage paths that include breaking blocks below 5 a little more heavily just so that it takes paths breaking what's known to be stone (at 5 or above) instead of what could maybe be bedrock (below 5)
-                return Blocks.obsidian.getDefaultState();
+                return XBlockStateSerializer.getBlockState(Blocks.obsidian);
             }
         }
         return ChunkPacker.pathingTypeToBlock(type, dimension);

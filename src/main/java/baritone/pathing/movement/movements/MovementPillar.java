@@ -35,6 +35,7 @@ import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockFalling;
@@ -42,7 +43,6 @@ import net.minecraft.block.BlockFenceGate;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockSlab;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.Vec3;
 

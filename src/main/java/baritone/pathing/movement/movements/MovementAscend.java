@@ -17,6 +17,10 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
@@ -27,13 +31,10 @@ import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
-import com.google.common.collect.ImmutableSet;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.block.BlockFalling;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
-
-import java.util.Set;
 
 public class MovementAscend extends Movement {
 

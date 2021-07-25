@@ -17,6 +17,9 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
@@ -27,15 +30,12 @@ import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.pathing.MutableMoveResult;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class MovementParkour extends Movement {
 

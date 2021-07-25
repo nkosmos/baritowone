@@ -111,13 +111,13 @@ public class MixinEntityPlayerSP {
             method = "onLivingUpdate",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/client/settings/KeyBinding.isKeyDown()Z"
+                    target = "net/minecraft/client/settings/KeyBinding.getIsKeyPressed()Z"
             )
     )
     private boolean isKeyDown(KeyBinding keyBinding) {
         IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityPlayerSP) (Object) this);
         if (baritone == null) {
-            return keyBinding.isKeyDown();
+            return keyBinding.getIsKeyPressed();
         }
         SprintStateEvent event = new SprintStateEvent();
         baritone.getGameEventHandler().onPlayerSprintState(event);
@@ -128,6 +128,6 @@ public class MixinEntityPlayerSP {
             // hitting control shouldn't make all bots sprint
             return false;
         }
-        return keyBinding.isKeyDown();
+        return keyBinding.getIsKeyPressed();
     }
 }

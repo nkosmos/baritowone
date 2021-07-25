@@ -54,7 +54,7 @@ import baritone.utils.BlockStateInterface;
 import baritone.utils.IRenderer;
 import baritone.utils.schematic.StaticSchematic;
 import baritonex.utils.XVec3i;
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;

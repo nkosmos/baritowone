@@ -17,13 +17,13 @@
 
 package baritone.utils.schematic;
 
-import baritone.api.schematic.IStaticSchematic;
-import baritone.api.schematic.MaskSchematic;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.state.IBlockState;
-
 import java.util.OptionalInt;
 import java.util.function.Predicate;
+
+import baritone.api.schematic.IStaticSchematic;
+import baritone.api.schematic.MaskSchematic;
+import baritonex.utils.state.IBlockState;
+import net.minecraft.block.BlockAir;
 
 public class MapArtSchematic extends MaskSchematic {
 

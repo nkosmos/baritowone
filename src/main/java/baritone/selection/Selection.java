@@ -3,6 +3,7 @@ package baritone.selection;
 import baritone.api.selection.ISelection;
 import baritone.api.utils.BetterBlockPos;
 import baritonex.utils.XVec3i;
+import baritonex.utils.data.XEnumFacing;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 
@@ -37,7 +38,9 @@ public class Selection implements ISelection {
                 max.z - min.z + 1
         );
 
-        this.aabb = new AxisAlignedBB(this.min, this.max.add(1, 1, 1));
+        BetterBlockPos bbp = this.max.add(1, 1, 1);
+        
+        this.aabb = AxisAlignedBB.getBoundingBox(this.min.getX(), this.min.getY(), this.min.getZ(), bbp.getX(), bbp.getY(), bbp.getZ());
     }
 
     @Override
@@ -90,7 +93,7 @@ public class Selection implements ISelection {
      * @return {@code true} if pos2 is further in that direction than pos1, {@code false} if it isn't, and something
      * else if they're both at the same position on that axis (it really doesn't matter)
      */
-    private boolean isPos2(EnumFacing facing) {
+    private boolean isPos2(XEnumFacing facing) {
         boolean negative = facing.getAxisDirection().getOffset() < 0;
 
         switch (facing.getAxis()) {
@@ -106,7 +109,7 @@ public class Selection implements ISelection {
     }
 
     @Override
-    public ISelection expand(EnumFacing direction, int blocks) {
+    public ISelection expand(XEnumFacing direction, int blocks) {
         if (isPos2(direction)) {
             return new Selection(pos1, pos2.offset(direction, blocks));
         } else {
@@ -115,7 +118,7 @@ public class Selection implements ISelection {
     }
 
     @Override
-    public ISelection contract(EnumFacing direction, int blocks) {
+    public ISelection contract(XEnumFacing direction, int blocks) {
         if (isPos2(direction)) {
             return new Selection(pos1.offset(direction, blocks), pos2);
         } else {
@@ -124,7 +127,7 @@ public class Selection implements ISelection {
     }
 
     @Override
-    public ISelection shift(EnumFacing direction, int blocks) {
+    public ISelection shift(XEnumFacing direction, int blocks) {
         return new Selection(pos1.offset(direction, blocks), pos2.offset(direction, blocks));
     }
 }

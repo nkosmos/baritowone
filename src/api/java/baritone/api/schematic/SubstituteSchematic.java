@@ -17,15 +17,16 @@
 
 package baritone.api.schematic;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import baritonex.utils.property.IProperty;
+import baritonex.utils.state.IBlockState;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
+import net.minecraft.init.Blocks;
 
 public class SubstituteSchematic extends AbstractSchematic {
 

@@ -17,7 +17,7 @@
 
 package baritone.api.schematic;
 
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.state.IBlockState;
 
 public class WallsSchematic extends MaskSchematic {
 

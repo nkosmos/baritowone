@@ -47,7 +47,7 @@ import baritone.api.utils.interfaces.IGoalRenderPos;
 import baritone.behavior.PathingBehavior;
 import baritone.pathing.path.PathExecutor;
 import baritonex.utils.XHelper;
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;

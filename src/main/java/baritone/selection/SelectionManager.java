@@ -1,13 +1,13 @@
 package baritone.selection;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
+
 import baritone.Baritone;
 import baritone.api.selection.ISelection;
 import baritone.api.selection.ISelectionManager;
 import baritone.api.utils.BetterBlockPos;
-import net.minecraft.util.EnumFacing;
-
-import java.util.LinkedList;
-import java.util.ListIterator;
+import baritonex.utils.data.XEnumFacing;
 
 public class SelectionManager implements ISelectionManager {
 
@@ -69,7 +69,7 @@ public class SelectionManager implements ISelectionManager {
     }
 
     @Override
-    public synchronized ISelection expand(ISelection selection, EnumFacing direction, int blocks) {
+    public synchronized ISelection expand(ISelection selection, XEnumFacing direction, int blocks) {
         for (ListIterator<ISelection> it = selections.listIterator(); it.hasNext(); ) {
             ISelection current = it.next();
 
@@ -85,7 +85,7 @@ public class SelectionManager implements ISelectionManager {
     }
 
     @Override
-    public synchronized ISelection contract(ISelection selection, EnumFacing direction, int blocks) {
+    public synchronized ISelection contract(ISelection selection, XEnumFacing direction, int blocks) {
         for (ListIterator<ISelection> it = selections.listIterator(); it.hasNext(); ) {
             ISelection current = it.next();
 
@@ -101,7 +101,7 @@ public class SelectionManager implements ISelectionManager {
     }
 
     @Override
-    public synchronized ISelection shift(ISelection selection, EnumFacing direction, int blocks) {
+    public synchronized ISelection shift(ISelection selection, XEnumFacing direction, int blocks) {
         for (ListIterator<ISelection> it = selections.listIterator(); it.hasNext(); ) {
             ISelection current = it.next();
 

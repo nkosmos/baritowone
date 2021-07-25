@@ -27,12 +27,13 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockUtils;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.pathing.PathingBlockType;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockTallGrass;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -105,7 +106,7 @@ public final class ChunkPacker {
                         continue https;
                     }
                 }
-                blocks[z << 4 | x] = Blocks.air.getDefaultState();
+                blocks[z << 4 | x] = XBlockStateSerializer.getBlockState(Blocks.air);
             }
         }
         // @formatter:on
@@ -130,10 +131,10 @@ public final class ChunkPacker {
                 return PathingBlockType.AVOID;
             }
             if (x == 0 || x == 15 || z == 0 || z == 15) {
-            	World world = chunk.getWorld();
+            	World world = chunk.worldObj;
             	BetterBlockPos bp = new BetterBlockPos(x + chunk.xPosition << 4, y, z + chunk.zPosition << 4);
         		if(world.getBlockState(bp).getProperties().containsKey(BlockLiquid.LEVEL)) {
-        			if (BlockLiquid.getFlowDirection(world, bp, state.getBlock().getMaterial()) == -1000.0F) {
+        			if (BlockLiquid.getFlowDirection(world, bp.x, bp.y, bp.z, state.getBlock().getMaterial()) == -1000.0F) {
         				return PathingBlockType.WATER;
         			}
         		}
@@ -159,21 +160,21 @@ public final class ChunkPacker {
     public static IBlockState pathingTypeToBlock(PathingBlockType type, int dimension) {
         switch (type) {
             case AIR:
-                return Blocks.air.getDefaultState();
+                return XBlockStateSerializer.getBlockState(Blocks.air);
             case WATER:
-                return Blocks.water.getDefaultState();
+                return XBlockStateSerializer.getBlockState(Blocks.water);
             case AVOID:
-                return Blocks.lava.getDefaultState();
+                return XBlockStateSerializer.getBlockState(Blocks.lava);
             case SOLID:
                 // Dimension solid types
                 switch (dimension) {
                     case -1:
-                        return Blocks.netherrack.getDefaultState();
+                        return XBlockStateSerializer.getBlockState(Blocks.netherrack);
                     case 0:
                     default: // The fallback solid type
-                        return Blocks.stone.getDefaultState();
+                        return XBlockStateSerializer.getBlockState(Blocks.stone);
                     case 1:
-                        return Blocks.end_stone.getDefaultState();
+                        return XBlockStateSerializer.getBlockState(Blocks.end_stone);
                 }
             default:
                 return null;

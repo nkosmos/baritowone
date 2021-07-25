@@ -10,20 +10,19 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
 import baritone.api.utils.accessor.IItemStack;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.properties.PropertyInteger;
+import baritonex.utils.property.IProperty;
+import baritonex.utils.property.impl.PropertyBool;
+import baritonex.utils.property.impl.PropertyEnum;
+import baritonex.utils.property.impl.PropertyInteger;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.MathHelper;
 
 public class XHelper {
-	
+	// je fais koi du kou?
 	// PROPERTY
 	
 	private static Map<PropertyEnum, Map<String, Object>> nameToValueCache = new HashMap<>();
@@ -45,10 +44,8 @@ public class XHelper {
 			PropertyEnum p = (PropertyEnum)property;
 			if(!nameToValueCache.containsKey(p)) {
 				Map<String, Object> map = new HashMap<>();
-				for(Object o : p.getAllowedValues()) {
-					if(o instanceof IStringSerializable) {
-						map.put(((IStringSerializable)o).getName(), o);
-					}
+				for(Enum o : (Collection<Enum>)p.getAllowedValues()) {
+					map.put(o.name(), o);
 				}
 				nameToValueCache.put(p, map);
 			}

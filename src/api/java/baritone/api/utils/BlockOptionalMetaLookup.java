@@ -17,15 +17,14 @@
 
 package baritone.api.utils;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.ItemStack;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import baritonex.utils.XHelper;
+import baritonex.utils.state.IBlockState;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 
 public class BlockOptionalMetaLookup {
 

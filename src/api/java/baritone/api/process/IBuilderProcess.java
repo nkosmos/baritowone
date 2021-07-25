@@ -23,7 +23,7 @@ import java.util.List;
 import baritone.api.schematic.ISchematic;
 import baritone.api.utils.BetterBlockPos;
 import baritonex.utils.XVec3i;
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.client.Minecraft;
 
 /**

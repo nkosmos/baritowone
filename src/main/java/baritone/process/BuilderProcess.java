@@ -62,10 +62,12 @@ import baritone.utils.schematic.schematica.SchematicaHelper;
 import baritonex.utils.XHelper;
 import baritonex.utils.XTuple;
 import baritonex.utils.XVec3i;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -189,7 +191,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         int widthX = Math.abs(corner1.getX() - corner2.getX()) + 1;
         int heightY = Math.abs(corner1.getY() - corner2.getY()) + 1;
         int lengthZ = Math.abs(corner1.getZ() - corner2.getZ()) + 1;
-        build("clear area", new FillSchematic(widthX, heightY, lengthZ, Blocks.air.getDefaultState()), origin);
+        build("clear area", new FillSchematic(widthX, heightY, lengthZ, XBlockStateSerializer.getBlockState(Blocks.air)), origin);
     }
 
     @Override
@@ -291,16 +293,16 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     }
 
     private Optional<Placement> possibleToPlace(IBlockState toPlace, int x, int y, int z, BlockStateInterface bsi) {
-        for (EnumFacing against : EnumFacing.values()) {
-            BetterBlockPos placeAgainstPos = new BetterBlockPos(x, y, z).offset(against);
+        for (XEnumFacing against : XEnumFacing.values()) {
+            BetterBlockPos placeAgainstPos = new BetterBlockPos(x, y, z).offset(against.toVanilla());
             IBlockState placeAgainstState = bsi.get0(placeAgainstPos);
             if (MovementHelper.isReplaceable(placeAgainstPos.x, placeAgainstPos.y, placeAgainstPos.z, placeAgainstState, bsi)) {
                 continue;
             }
-            if (!ctx.world().canBlockBePlaced(toPlace.getBlock(), new BetterBlockPos(x, y, z), false, against, null, null)) {
+            if (!ctx.world().canBlockBePlaced(toPlace.getBlock(), new BetterBlockPos(x, y, z), false, against.toVanilla(), null, null)) {
                 continue;
             }
-            AxisAlignedBB aabb = placeAgainstState.getBlock().getSelectedBoundingBox(ctx.world(), placeAgainstPos);
+            AxisAlignedBB aabb = placeAgainstState.getBlock().getSelectedBoundingBoxFromPool(ctx.world(), placeAgainstPos.x, placeAgainstPos.y, placeAgainstPos.z);
             for (Vec3 placementMultiplier : aabbSideMultipliers(against)) {
                 double placeX = placeAgainstPos.x + aabb.minX * placementMultiplier.xCoord + aabb.maxX * (1 - placementMultiplier.xCoord);
                 double placeY = placeAgainstPos.y + aabb.minY * placementMultiplier.yCoord + aabb.maxY * (1 - placementMultiplier.yCoord);
@@ -310,7 +312,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && BetterBlockPos.from(result).equals(placeAgainstPos) && result.sideHit == against.getOpposite()) {
                     OptionalInt hotbar = hasAnyItemThatWouldPlace(toPlace, result, rot);
                     if (hotbar.isPresent()) {
-                        return Optional.of(new Placement(hotbar.getAsInt(), placeAgainstPos, against.getOpposite(), rot));
+                        return Optional.of(new Placement(hotbar.getAsInt(), placeAgainstPos, against.getOpposite().toVanilla(), rot));
                     }
                 }
             }
@@ -348,7 +350,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         return OptionalInt.empty();
     }
 
-    private static Vec3[] aabbSideMultipliers(EnumFacing side) {
+    private static Vec3[] aabbSideMultipliers(XEnumFacing side) {
         switch (side) {
             case UP:
                 return new Vec3[]{Vec3.createVectorHelper(0.5, 1, 0.5), Vec3.createVectorHelper(0.1, 1, 0.5), Vec3.createVectorHelper(0.9, 1, 0.5), Vec3.createVectorHelper(0.5, 1, 0.1), Vec3.createVectorHelper(0.5, 1, 0.9)};
@@ -833,7 +835,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         for (int i = 0; i < size; i++) {
             ItemStack stack = ctx.player().inventory.mainInventory[i];
             if (XHelper.isEmpty(stack) || !(stack.getItem() instanceof ItemBlock)) {
-                result.add(Blocks.air.getDefaultState());
+                result.add(XBlockStateSerializer.getBlockState(Blocks.air));
                 continue;
             }
             // <toxic cloud>

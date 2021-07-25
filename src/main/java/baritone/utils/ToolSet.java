@@ -22,18 +22,19 @@ import java.util.Map;
 import java.util.function.Function;
 
 import baritone.Baritone;
+import baritone.api.BaritoneAPI;
 import baritonex.utils.XHelper;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item.ToolMaterial;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
+import net.minecraft.potion.Potion;
 
 /**
  * A cached list of the best tools on the hotbar for any block
@@ -124,7 +125,7 @@ public class ToolSet {
         double highestSpeed = Double.NEGATIVE_INFINITY;
         int lowestCost = Integer.MIN_VALUE;
         boolean bestSilkTouch = false;
-        IBlockState blockState = b.getDefaultState();
+        IBlockState blockState = XBlockStateSerializer.getBlockState(b);
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = player.inventory.getStackInSlot(i);
             
@@ -134,7 +135,7 @@ public class ToolSet {
                 continue;
             }
           
-            if (Baritone.settings().itemSaver.value && (itemStack.getItemDamage() + Baritone.settings().itemSaverThreshold.value) >= itemStack.getMaxDamage() && itemStack.getMaxDamage() > 1) {
+            if (Baritone.settings().itemSaver.value && (itemStack.getMetadata() + Baritone.settings().itemSaverThreshold.value) >= itemStack.getMaxDurability() && itemStack.getMaxDurability() > 1) {
                 continue;
             }
             double speed = calculateSpeedVsBlock(itemStack, blockState);
@@ -166,7 +167,7 @@ public class ToolSet {
      */
     private double getBestDestructionTime(Block b) {
         ItemStack stack = player.inventory.getStackInSlot(getBestSlot(b, false, true));
-        return calculateSpeedVsBlock(stack, b.getDefaultState()) * avoidanceMultiplier(b);
+        return calculateSpeedVsBlock(stack, b) * avoidanceMultiplier(b);
     }
 
     private double avoidanceMultiplier(Block b) {
@@ -181,10 +182,8 @@ public class ToolSet {
      * @param state the blockstate to be mined
      * @return how long it would take in ticks
      */
-    public static double calculateSpeedVsBlock(ItemStack item, IBlockState state) {
-    	Block block = state.getBlock();
-    	
-        float hardness = block.getBlockHardness(null, null);
+    public static double calculateSpeedVsBlock(ItemStack item, Block block) {    	
+        float hardness = block.getBlockHardness(BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world(), 0, 0, 0);
         if (hardness < 0) {
             return -1;
         }

@@ -23,8 +23,9 @@ import baritone.api.utils.IPlayerContext;
 import baritone.cache.CachedRegion;
 import baritone.cache.WorldData;
 import baritone.utils.accessor.IChunkProviderClient;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.LongHashMap;
@@ -51,7 +52,7 @@ public class BlockStateInterface {
 
     private final boolean useTheRealWorld;
 
-    private static final IBlockState AIR = Blocks.air.getDefaultState();
+    private static final IBlockState AIR = XBlockStateSerializer.getBlockState(Blocks.air);
 
     public BlockStateInterface(IPlayerContext ctx) {
         this(ctx, false);

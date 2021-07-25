@@ -23,7 +23,7 @@ import com.github.lunatrius.schematica.client.world.SchematicWorld;
 
 import baritone.api.schematic.IStaticSchematic;
 import baritone.api.utils.BetterBlockPos;
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.state.IBlockState;
 
 public final class SchematicAdapter implements IStaticSchematic {
 

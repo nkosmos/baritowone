@@ -41,8 +41,8 @@ import baritone.api.utils.RotationUtils;
 import baritone.api.utils.input.Input;
 import baritone.pathing.movement.CalculationContext;
 import baritone.utils.BaritoneProcessHelper;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerPlayer;
 

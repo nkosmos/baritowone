@@ -28,8 +28,9 @@ import baritone.Baritone;
 import baritone.api.event.events.TickEvent;
 import baritone.utils.ToolSet;
 import baritonex.utils.XHelper;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -117,11 +118,11 @@ public final class InventoryBehavior extends Behavior {
             if (XHelper.isEmpty(stack)) {
                 continue;
             }
-            if (Baritone.settings().itemSaver.value && (stack.getItemDamage() + Baritone.settings().itemSaverThreshold.value) >= stack.getMaxDamage() && stack.getMaxDamage() > 1) {
+            if (Baritone.settings().itemSaver.value && (stack.getMetadata() + Baritone.settings().itemSaverThreshold.value) >= stack.getMaxDurability() && stack.getMaxDurability() > 1) {
                 continue;
             }
             if (cla$$.isInstance(stack.getItem())) {
-                double speed = ToolSet.calculateSpeedVsBlock(stack, against.getDefaultState()); // takes into account enchants
+                double speed = ToolSet.calculateSpeedVsBlock(stack, XBlockStateSerializer.getBlockState(against)); // takes into account enchants
                 if (speed > bestSpeed) {
                     bestSpeed = speed;
                     bestInd = i;

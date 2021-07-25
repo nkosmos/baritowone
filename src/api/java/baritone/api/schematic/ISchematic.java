@@ -17,10 +17,10 @@
 
 package baritone.api.schematic;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-
 import java.util.List;
+
+import baritonex.utils.state.IBlockState;
+import net.minecraft.util.EnumFacing;
 
 /**
  * Basic representation of a schematic. Provides the dimensions and the desired state for a given position relative to

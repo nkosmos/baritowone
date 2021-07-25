@@ -38,6 +38,9 @@ import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.ToolSet;
 import baritonex.utils.XHelper;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.property.impl.PropertyBool;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockDoor;
@@ -54,8 +57,6 @@ import net.minecraft.block.BlockSnow;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
@@ -272,14 +273,14 @@ public interface MovementHelper extends ActionCosts, Helper {
             return false;
         }
 
-        EnumFacing.Axis facing = blockState.getValue(BlockDirectional.FACING).getAxis();
+        XEnumFacing.Axis facing = blockState.getValue(BlockDirectional.FACING).getAxis();
         boolean open = blockState.getValue(propertyOpen);
 
-        EnumFacing.Axis playerFacing;
+        XEnumFacing.Axis playerFacing;
         if (playerPos.north().equals(blockPos) || playerPos.south().equals(blockPos)) {
-            playerFacing = EnumFacing.Axis.Z;
+            playerFacing = XEnumFacing.Axis.Z;
         } else if (playerPos.east().equals(blockPos) || playerPos.west().equals(blockPos)) {
-            playerFacing = EnumFacing.Axis.X;
+            playerFacing = XEnumFacing.Axis.X;
         } else {
             return true;
         }
