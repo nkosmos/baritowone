@@ -14,12 +14,13 @@ public class SNewLog extends StateSerializer{
 		// TODO Auto-generated constructor stub
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		int i = 0;
-        i = i | ((XEnumTypePlanks)state.getValue(Properties.NEWLOG_VARIANT)).getMetadata() - 4;
+        i = i | state.getValue(Properties.NEWLOG_VARIANT).getMetadata() - 4;
 
-        switch ((XEnumAxis)state.getValue(Properties.LOG_AXIS))
+        switch (state.getValue(Properties.LOG_AXIS))
         {
             case X:
                 i |= 4;

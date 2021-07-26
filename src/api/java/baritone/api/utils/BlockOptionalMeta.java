@@ -254,7 +254,7 @@ public final class BlockOptionalMeta {
     }
 
     private static Set<IBlockState> getStates(@Nonnull Block block, @Nullable Integer meta) {
-        return XBlockStateSerializer.getBlockState2(block).getValidStates().stream()
+        return XBlockStateSerializer.getBlockStateButItsNotActuallyABlockStateSoAFakeBlockStateIGuess(block).getValidStates().stream()
                 .filter(blockstate -> meta == null || stateMeta(blockstate) == meta)
                 .collect(Collectors.toSet());
     }
