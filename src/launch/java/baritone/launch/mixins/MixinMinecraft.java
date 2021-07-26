@@ -153,7 +153,7 @@ public class MixinMinecraft {
             method = "rightClickMouse",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/client/entity/EntityClientPlayerSP.swingItem()V"
+                    target = "net/minecraft/client/entity/EntityClientPlayerMP.swingItem()V"
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )

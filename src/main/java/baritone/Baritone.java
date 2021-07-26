@@ -17,36 +17,17 @@
 
 package baritone;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.concurrent.Executor;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.Settings;
 import baritone.api.event.listener.IEventBus;
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
-import baritone.behavior.Behavior;
-import baritone.behavior.InventoryBehavior;
-import baritone.behavior.LookBehavior;
-import baritone.behavior.MemoryBehavior;
-import baritone.behavior.PathingBehavior;
+import baritone.behavior.*;
 import baritone.cache.WorldProvider;
 import baritone.command.manager.CommandManager;
 import baritone.event.GameEventHandler;
-import baritone.process.BackfillProcess;
-import baritone.process.BuilderProcess;
-import baritone.process.CustomGoalProcess;
-import baritone.process.ExploreProcess;
-import baritone.process.FarmProcess;
-import baritone.process.FollowProcess;
-import baritone.process.GetToBlockProcess;
-import baritone.process.MineProcess;
+import baritone.process.*;
 import baritone.selection.SelectionManager;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.GuiClick;
@@ -55,14 +36,22 @@ import baritone.utils.PathingControlManager;
 import baritone.utils.player.PrimaryPlayerContext;
 import net.minecraft.client.Minecraft;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.concurrent.Executor;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Brady
  * @since 7/31/2018
  */
 public class Baritone implements IBaritone {
 
-    private static ThreadPoolExecutor threadPool;
-    private static File dir;
+    private static final ThreadPoolExecutor threadPool;
+    private static final File dir;
 
     static {
         threadPool = new ThreadPoolExecutor(4, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
@@ -75,28 +64,28 @@ public class Baritone implements IBaritone {
         }
     }
 
-    private GameEventHandler gameEventHandler;
+    private final GameEventHandler gameEventHandler;
 
-    private PathingBehavior pathingBehavior;
-    private LookBehavior lookBehavior;
-    private MemoryBehavior memoryBehavior;
-    private InventoryBehavior inventoryBehavior;
-    private InputOverrideHandler inputOverrideHandler;
+    private final PathingBehavior pathingBehavior;
+    private final LookBehavior lookBehavior;
+    private final MemoryBehavior memoryBehavior;
+    private final InventoryBehavior inventoryBehavior;
+    private final InputOverrideHandler inputOverrideHandler;
 
-    private FollowProcess followProcess;
-    private MineProcess mineProcess;
-    private GetToBlockProcess getToBlockProcess;
-    private CustomGoalProcess customGoalProcess;
-    private BuilderProcess builderProcess;
-    private ExploreProcess exploreProcess;
-    private FarmProcess farmProcess;
+    private final FollowProcess followProcess;
+    private final MineProcess mineProcess;
+    private final GetToBlockProcess getToBlockProcess;
+    private final CustomGoalProcess customGoalProcess;
+    private final BuilderProcess builderProcess;
+    private final ExploreProcess exploreProcess;
+    private final FarmProcess farmProcess;
 
-    private PathingControlManager pathingControlManager;
-    private SelectionManager selectionManager;
-    private CommandManager commandManager;
+    private final PathingControlManager pathingControlManager;
+    private final SelectionManager selectionManager;
+    private final CommandManager commandManager;
 
-    private IPlayerContext playerContext;
-    private WorldProvider worldProvider;
+    private final IPlayerContext playerContext;
+    private final WorldProvider worldProvider;
 
     public BlockStateInterface bsi;
 

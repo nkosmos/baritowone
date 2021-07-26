@@ -17,9 +17,13 @@
 
 package baritone.launch.mixins;
 
-import java.io.File;
-import java.util.List;
-
+import baritone.utils.accessor.IAnvilChunkLoader;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.chunk.storage.AnvilChunkLoader;
+import net.minecraft.world.chunk.storage.PendingChunkAccessor;
+import net.minecraft.world.chunk.storage.RegionFile;
+import net.minecraft.world.chunk.storage.RegionFileCache;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,13 +32,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import baritone.utils.accessor.IAnvilChunkLoader;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.chunk.storage.AnvilChunkLoader;
-import net.minecraft.world.chunk.storage.PendingChunkAccessor;
-import net.minecraft.world.chunk.storage.RegionFile;
-import net.minecraft.world.chunk.storage.RegionFileCache;
+import java.io.File;
+import java.util.List;
 
 /**
  * @author Brady
@@ -58,7 +57,7 @@ public class MixinAnvilChunkLoader implements IAnvilChunkLoader {
     		at = @At("RETURN")
     )
     public void hookConstructor(File p_i2003_1_, CallbackInfo ci) {
-    	this.accessor = new PendingChunkAccessor((IAnvilChunkLoader)(Object)this);
+    	this.accessor = new PendingChunkAccessor((IAnvilChunkLoader) this);
     }
     
     @Override
@@ -75,13 +74,13 @@ public class MixinAnvilChunkLoader implements IAnvilChunkLoader {
 	public boolean isChunkGeneratedAt(int x, int z) {
 		ChunkCoordIntPair chunkpos = new ChunkCoordIntPair(x, z);
 		NBTTagCompound nbttagcompound = this.accessor == null ? null : this.accessor.getTagForChunk(chunkpos);
-        return nbttagcompound != null ? true : chunkExists(this.chunkSaveLocation, x, z);
+        return nbttagcompound != null || chunkExists(this.chunkSaveLocation, x, z);
 	}
 	
 	@Unique
 	private static boolean chunkExists(File file, int x, int z) {
 		RegionFile regionfile = getRegionFileIfExists(file, x, z);
-        return regionfile != null ? regionfile.isChunkSaved(x & 31, z & 31) : false;
+        return regionfile != null && regionfile.isChunkSaved(x & 31, z & 31);
 	}
 	
 	@Unique

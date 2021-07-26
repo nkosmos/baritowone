@@ -95,10 +95,10 @@ public final class GameEventHandler implements IEventBus, Helper {
         if (isPostPopulate || isPreUnload) {
             baritone.getWorldProvider().ifWorldLoaded(worldData -> {
                 Chunk chunk = world.getChunkFromChunkCoords(event.getX(), event.getZ());
+                System.out.println("chunk @ " + event.getX() + "/" + event.getZ() + ": " + chunk + " (E: " + chunk.isEmpty() + ")");
                 worldData.getCachedWorld().queueForPacking(chunk);
             });
         }
-
 
         listeners.forEach(l -> l.onChunkEvent(event));
     }

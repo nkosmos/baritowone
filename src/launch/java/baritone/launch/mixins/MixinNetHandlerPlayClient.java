@@ -17,17 +17,6 @@
 
 package baritone.launch.mixins;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
@@ -40,6 +29,16 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.S21PacketChunkData;
 import net.minecraft.network.play.server.S22PacketMultiBlockChange;
 import net.minecraft.network.play.server.S23PacketBlockChange;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Brady
@@ -52,7 +51,7 @@ public class MixinNetHandlerPlayClient {
             method = "handleChunkData",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/world/chunk/Chunk.fillChunk([BIZ)V"
+                    target = "net/minecraft/world/chunk/Chunk.fillChunk([BIIZ)V"
             )
     )
     private void preRead(S21PacketChunkData packetIn, CallbackInfo ci) {
@@ -147,7 +146,7 @@ public class MixinNetHandlerPlayClient {
                     int blockID = short2 >> 4 & 4095;
                     updateBlocks.add(Block.getBlockById(blockID));
                 }
-            } catch (IOException ioexception) {
+            } catch (IOException ignored) {
                 ;
             }
         }

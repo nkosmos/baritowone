@@ -17,12 +17,6 @@
 
 package baritone.behavior;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import baritone.Baritone;
 import baritone.api.behavior.IPathingBehavior;
 import baritone.api.event.events.PathEvent;
@@ -45,6 +39,12 @@ import baritone.pathing.path.PathExecutor;
 import baritone.utils.PathRenderer;
 import baritone.utils.PathingCommandContext;
 import baritone.utils.pathing.Favoring;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public final class PathingBehavior extends Behavior implements IPathingBehavior, Helper {
 
@@ -237,7 +237,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         this.goal = goal;
     }
 
-    public boolean secretInternalSetGoalAndPath(PathingCommand command) {
+    public void secretInternalSetGoalAndPath(PathingCommand command) {
         secretInternalSetGoal(command.goal);
         if (command instanceof PathingCommandContext) {
             context = ((PathingCommandContext) command).desiredCalcContext;
@@ -245,22 +245,21 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
             context = new CalculationContext(baritone, true);
         }
         if (goal == null) {
-            return false;
+            return;
         }
         if (goal.isInGoal(ctx.playerFeet()) || goal.isInGoal(expectedSegmentStart)) {
-            return false;
+            return;
         }
         synchronized (pathPlanLock) {
             if (current != null) {
-                return false;
+                return;
             }
             synchronized (pathCalcLock) {
                 if (inProgress != null) {
-                    return false;
+                    return;
                 }
                 queuePathEvent(PathEvent.CALC_STARTED);
                 findPathInNewThread(expectedSegmentStart, true, context);
-                return true;
             }
         }
     }
@@ -298,12 +297,10 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         pauseRequestedLastTick = true;
     }
 
-    public boolean cancelSegmentIfSafe() {
+    public void cancelSegmentIfSafe() {
         if (isSafeToCancel()) {
             secretInternalSegmentCancel();
-            return true;
         }
-        return false;
     }
 
     @Override

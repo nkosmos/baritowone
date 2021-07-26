@@ -48,7 +48,7 @@ public class MixinEntityClientPlayerMP {
     )
     private void sendChatMessage(String msg, CallbackInfo ci) {
         ChatEvent event = new ChatEvent(msg);
-        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityPlayerSP) (Object) this);
+        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityClientPlayerMP) (Object) this);
         if (baritone == null) {
             return;
         }
