@@ -33,6 +33,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
 
 /**
  * Wraps get for chuck caching capability
@@ -127,7 +128,7 @@ public class BlockStateInterface {
             }
             Chunk chunk = (Chunk)loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 
-            if (chunk != null && chunk.isChunkLoaded) {
+            if (chunk != null && (!(chunk instanceof EmptyChunk)) && chunk.isChunkLoaded) {
                 prev = chunk;
                 return XBlockStateSerializer.getStateFromChunk(chunk, x, y, z);
             }

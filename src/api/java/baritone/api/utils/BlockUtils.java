@@ -30,7 +30,7 @@ public class BlockUtils {
         String loc = Block.blockRegistry.getNameForObject(block);
         String name = loc;
         if(loc.contains("minecraft:")) {
-        	name = loc.substring(loc.indexOf(':'));
+        	name = loc.substring(loc.indexOf(':') + 1);
         }
         return name;
     }

@@ -1,11 +1,8 @@
 package baritonex.utils.state.serialization.impl;
 
-import com.google.common.base.Predicate;
-
 import baritonex.utils.data.XEnumFlowerColor;
 import baritonex.utils.data.XEnumFlowerType;
-import baritonex.utils.property.IProperty;
-import baritonex.utils.property.impl.PropertyEnum;
+import baritonex.utils.property.Properties;
 import baritonex.utils.state.BlockState;
 import baritonex.utils.state.IBlockState;
 import baritonex.utils.state.serialization.StateSerializer;
@@ -19,29 +16,17 @@ public class SFlower extends StateSerializer {
 
 	@Override
 	public int getMetaFromState(IBlockState state) {
-		return ((XEnumFlowerType)state.getValue(this.getTypeProperty())).getMeta();
+		return ((XEnumFlowerType)state.getValue(Properties.FLOWER_TYPE)).getMeta();
 	}
-
-	public IProperty<XEnumFlowerType> getTypeProperty()
-    {
-        return PropertyEnum.<XEnumFlowerType>create("type", XEnumFlowerType.class, new Predicate<XEnumFlowerType>()
-        {
-            public boolean apply(XEnumFlowerType p_apply_1_)
-            {
-                return true;
-            }
-        });
-    }
 	
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState().withProperty(this.getTypeProperty(), XEnumFlowerType.getType(XEnumFlowerColor.RED, meta));
+		return this.getDefaultState().withProperty(Properties.FLOWER_TYPE, XEnumFlowerType.getType(XEnumFlowerColor.RED, meta));
 	}
 
 	@Override
 	public IBlockState defineDefaultState() {
-		// TODO Auto-generated method stub
-		return this.blockState.getBaseState().withProperty(this.getTypeProperty(), XEnumFlowerType.POPPY);
+		return this.blockState.getBaseState().withProperty(Properties.FLOWER_TYPE, XEnumFlowerType.POPPY);
 	}
 
 }

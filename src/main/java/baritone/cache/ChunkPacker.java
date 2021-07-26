@@ -76,15 +76,28 @@ public final class ChunkPacker {
                     for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
                             int index = CachedChunk.getPositionIndex(x, y, z);
-                            IBlockState state = XBlockStateSerializer.getStateFromMeta(extendedblockstorage.getBlockByExtId(x, y, z), extendedblockstorage.getExtBlockMetadata(x, y, z));
-                            boolean[] bits = getPathingBlockType(state, chunk, x, y, z).getBits();
-                            bitSet.set(index, bits[0]);
-                            bitSet.set(index + 1, bits[1]);
-                            Block block = state.getBlock();
-                            if (CachedChunk.BLOCKS_TO_KEEP_TRACK_OF.contains(block)) {
-                                String name = BlockUtils.blockToString(block);
-                                specialBlocks.computeIfAbsent(name, b -> new ArrayList<>()).add(new BetterBlockPos(x, y, z));
+                            
+                            try {
+                            	IBlockState state = XBlockStateSerializer.getStateFromMeta(extendedblockstorage.getBlockByExtId(x, y1, z), extendedblockstorage.getExtBlockMetadata(x, y1, z));
+	                            boolean[] bits = getPathingBlockType(state, chunk, x, y, z).getBits();
+	                            bitSet.set(index, bits[0]);
+	                            bitSet.set(index + 1, bits[1]);
+	                            Block block = state.getBlock();
+	                            if (CachedChunk.BLOCKS_TO_KEEP_TRACK_OF.contains(block)) {
+	                                String name = BlockUtils.blockToString(block);
+	                                specialBlocks.computeIfAbsent(name, b -> new ArrayList<>()).add(new BetterBlockPos(x, y, z));
+	                            }
+                            } catch(Throwable throwable) {
+                            	System.out.println("x: " + x + " / y: " + y + " / z: " + z);
+                            	System.out.println("y0: " + y0);
+                            	System.out.println("y1: " + y1);
+                            	System.out.println("yReal: " + yReal);
+                            	System.out.println("index: " + index);
+                                System.out.println("storageIndex: " + (y << 8 | z << 4 | x));
+                                
+                            	throwable.printStackTrace();
                             }
+                            
                         }
                     }
                 }

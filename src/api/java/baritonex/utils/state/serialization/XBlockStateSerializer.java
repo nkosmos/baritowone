@@ -197,13 +197,15 @@ public class XBlockStateSerializer {
 		
 		while(clazz != Block.class) {
 			if(serializers.containsKey(clazz)) {
+				Class<? extends StateSerializer> klass = serializers.get(clazz);
 				try {
-					StateSerializer serializer = serializers.get(clazz).getConstructor(BlockState.class).newInstance(blockState);
+					StateSerializer serializer = klass.getConstructor(BlockState.class).newInstance(blockState);
 					serializersInstances.put(block.getClass(), serializer);
 					return serializer;
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					e.printStackTrace();
 					System.out.println("fucked up mate");
+					System.out.println(block.getClass() + " / " + klass);
 				}
 				break;
 			}
@@ -238,7 +240,7 @@ public class XBlockStateSerializer {
 	}
 	
 	public static IBlockState getStateFromChunk(Chunk access, int x, int y, int z) {
-		return getStateFromMeta(access.getBlock(x, y, z), access.getBlockMetadata(x, y, z));
+		return getStateFromMeta(access.getBlock(x & 15, y, z & 15), access.getBlockMetadata(x & 15, y, z & 15));
 	}
 	
 	public static IBlockState getStateFromChunk(Chunk access, BetterBlockPos bp) {

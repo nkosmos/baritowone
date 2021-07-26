@@ -18,17 +18,21 @@
 package baritone.launch.mixins;
 
 import java.io.File;
-import java.util.Map;
+import java.util.List;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import baritone.utils.accessor.IAnvilChunkLoader;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
+import net.minecraft.world.chunk.storage.PendingChunkAccessor;
 import net.minecraft.world.chunk.storage.RegionFile;
 import net.minecraft.world.chunk.storage.RegionFileCache;
 
@@ -39,22 +43,38 @@ import net.minecraft.world.chunk.storage.RegionFileCache;
 @Mixin(AnvilChunkLoader.class)
 public class MixinAnvilChunkLoader implements IAnvilChunkLoader {
 
+	@Unique
+	private PendingChunkAccessor accessor;
+	
     @Shadow
     @Final
     private File chunkSaveLocation;
     
     @Shadow
-    private Map<ChunkCoordIntPair, NBTTagCompound> chunksToRemove;
+    private List chunksToRemove;
 
+    @Inject(
+    		method = "<init>*",
+    		at = @At("RETURN")
+    )
+    public void hookConstructor(File p_i2003_1_, CallbackInfo ci) {
+    	this.accessor = new PendingChunkAccessor((IAnvilChunkLoader)(Object)this);
+    }
+    
     @Override
     public File getChunkSaveLocation() {
         return this.chunkSaveLocation;
+    }
+    
+    @Override
+    public List getChunksToRemove() {
+    	return chunksToRemove;
     }
 
 	@Override
 	public boolean isChunkGeneratedAt(int x, int z) {
 		ChunkCoordIntPair chunkpos = new ChunkCoordIntPair(x, z);
-        NBTTagCompound nbttagcompound = (NBTTagCompound)this.chunksToRemove.get(chunkpos);
+		NBTTagCompound nbttagcompound = this.accessor == null ? null : this.accessor.getTagForChunk(chunkpos);
         return nbttagcompound != null ? true : chunkExists(this.chunkSaveLocation, x, z);
 	}
 	

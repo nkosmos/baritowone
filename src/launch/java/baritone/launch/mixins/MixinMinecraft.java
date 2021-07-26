@@ -34,7 +34,9 @@ import baritone.api.event.events.BlockInteractEvent;
 import baritone.api.event.events.TickEvent;
 import baritone.api.event.events.WorldEvent;
 import baritone.api.event.events.type.EventState;
+import baritone.api.utils.BetterBlockPos;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -48,7 +50,7 @@ import net.minecraft.item.ItemStack;
 public class MixinMinecraft {
 
     @Shadow
-    public EntityPlayerSP thePlayer;
+    public EntityClientPlayerMP thePlayer;
     @Shadow
     public WorldClient theWorld;
 
@@ -138,25 +140,25 @@ public class MixinMinecraft {
             method = "clickMouse",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/client/multiplayer/PlayerControllerMP.clickBlock(Lnet/minecraft/util/BlockPos;Lnet/minecraft/util/EnumFacing;)Z"
+                    target = "net/minecraft/client/multiplayer/PlayerControllerMP.clickBlock(IIII)V"
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void onBlockBreak(CallbackInfo ci, BlockPos pos) {
+    private void onBlockBreak(CallbackInfo ci, int x, int y, int z) {
         // clickMouse is only for the main player
-        BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onBlockInteract(new BlockInteractEvent(pos, BlockInteractEvent.Type.START_BREAK));
+        BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onBlockInteract(new BlockInteractEvent(new BetterBlockPos(x, y, z), BlockInteractEvent.Type.START_BREAK));
     }
 
     @Inject(
             method = "rightClickMouse",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/client/entity/EntityPlayerSP.swingItem()V"
+                    target = "net/minecraft/client/entity/EntityClientPlayerSP.swingItem()V"
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void onBlockUse(CallbackInfo ci, boolean bool, ItemStack itemstack, BlockPos blockpos, int i) {
+    private void onBlockUse(CallbackInfo ci, boolean bool, ItemStack itemstack, int x, int y, int z, int i) {
         // rightClickMouse is only for the main player
-        BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onBlockInteract(new BlockInteractEvent(blockpos, BlockInteractEvent.Type.USE));
+        BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onBlockInteract(new BlockInteractEvent(new BetterBlockPos(x, y, z), BlockInteractEvent.Type.USE));
     }
 }

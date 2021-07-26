@@ -41,7 +41,6 @@ import baritone.api.utils.SettingsUtil;
 import baritone.command.argument.ArgConsumer;
 import baritone.command.argument.CommandArguments;
 import baritone.command.manager.CommandManager;
-import baritone.utils.accessor.IGuiScreen;
 import baritonex.utils.XTuple;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
@@ -94,13 +93,23 @@ public class ExampleBaritoneControl implements Helper, AbstractGameEventListener
         }
     }
 
+    private void openWebLink(final URI url) {
+        try {
+            final Class<?> oclass = Class.forName("java.awt.Desktop");
+            final Object object = oclass.getMethod("getDesktop", (Class<?>[])new Class[0]).invoke(null, new Object[0]);
+            oclass.getMethod("browse", URI.class).invoke(object, url);
+        }
+        catch (Throwable throwable) {
+        }
+    }
+    
     public boolean runCommand(String msg) {
         if (msg.trim().equalsIgnoreCase("damn")) {
             logDirect("daniel");
             return false;
         } else if (msg.trim().equalsIgnoreCase("orderpizza")) {
             try {
-                ((IGuiScreen) mc.currentScreen).openLink(new URI("https://www.dominos.com/en/pages/order/"));
+            	openWebLink(new URI("https://www.dominos.com/en/pages/order/"));
             } catch (NullPointerException | URISyntaxException ignored) {}
             return false;
         }

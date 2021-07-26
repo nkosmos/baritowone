@@ -70,6 +70,7 @@ import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
 import net.minecraft.block.BlockFire;
+import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockFlowerPot;
 import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.BlockGrass;
@@ -219,7 +220,7 @@ public class Properties {
     public static final PropertyBool FIRE_WEST = PropertyBool.create("west");
     public static final PropertyInteger FIRE_UPPER = PropertyInteger.create("upper", 0, 2);
     
-    protected PropertyEnum<XEnumFlowerType> Flower_type = PropertyEnum.<XEnumFlowerType>create("type", XEnumFlowerType.class, new Predicate<XEnumFlowerType>()
+    public static final PropertyEnum<XEnumFlowerType> FLOWER_TYPE = PropertyEnum.<XEnumFlowerType>create("type", XEnumFlowerType.class, new Predicate<XEnumFlowerType>()
     {
         public boolean apply(XEnumFlowerType p_apply_1_)
         {
@@ -517,7 +518,7 @@ public class Properties {
     	put(BlockGrass.class, GRASS_SNOWY);
     	put(BlockFurnace.class, FURNACE_FACING);
     	put(BlockFlowerPot.class, FLOWERPOT_LEGACY_DATA, FLOWERPOT_CONTENTS);
-    	//put(BlockFlower.class, Flower_type); // xtrm help //TODO: check instance
+    	put(BlockFlower.class, FLOWER_TYPE); // xtrm help //TODO: check instance
     	put(BlockFire.class, FIRE_AGE, FIRE_FLIP, FIRE_ALT, FIRE_NORTH, FIRE_EAST, FIRE_SOUTH, FIRE_WEST, FIRE_UPPER);
     	put(BlockFenceGate.class, FENCEGATE_OPEN, FENCEGATE_POWERED, FENCEGATE_IN_WALL);
     	put(BlockFence.class, FENCE_NORTH, FENCE_EAST, FENCE_SOUTH, FENCE_WEST);
