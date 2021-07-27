@@ -305,10 +305,11 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 continue;
             }
             AxisAlignedBB aabb = placeAgainstState.getBlock().getSelectedBoundingBoxFromPool(ctx.world(), placeAgainstPos.x, placeAgainstPos.y, placeAgainstPos.z);
-            for (Vec3 placementMultiplier : aabbSideMultipliers(against.toVanilla())) {
-                double placeX = placeAgainstPos.x + aabb.minX * placementMultiplier.xCoord + aabb.maxX * (1 - placementMultiplier.xCoord);
-                double placeY = placeAgainstPos.y + aabb.minY * placementMultiplier.yCoord + aabb.maxY * (1 - placementMultiplier.yCoord);
-                double placeZ = placeAgainstPos.z + aabb.minZ * placementMultiplier.zCoord + aabb.maxZ * (1 - placementMultiplier.zCoord);
+            for (Vec3 placementMultiplier : aabbSideMultipliers(against)) {
+                double placeX = placeAgainstPos.x + ((aabb.minX - x) * placementMultiplier.xCoord + (aabb.maxX - x) * (1 - placementMultiplier.xCoord));
+                double placeY = placeAgainstPos.y + ((aabb.minY - y) * placementMultiplier.yCoord + (aabb.maxY - y) * (1 - placementMultiplier.yCoord));
+                double placeZ = placeAgainstPos.z + ((aabb.minZ - z) * placementMultiplier.zCoord + (aabb.maxZ - z) * (1 - placementMultiplier.zCoord));
+            
                 Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), Vec3.createVectorHelper(placeX, placeY, placeZ), ctx.playerRotations());
                 MovingObjectPosition result = RayTraceUtils.rayTraceTowards(ctx.player(), rot, ctx.playerController().getBlockReachDistance(), true);
                 if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && BlockPos.from(result).equals(placeAgainstPos) && result.sideHit == against.getOpposite().toSideHit()) {
@@ -356,7 +357,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         return OptionalInt.empty();
     }
 
-    private static Vec3[] aabbSideMultipliers(EnumFacing side) {
+    private static Vec3[] aabbSideMultipliers(XEnumFacing side) {
         switch (side) {
             case UP:
                 return new Vec3[]{Vec3.createVectorHelper(0.5, 1, 0.5), Vec3.createVectorHelper(0.1, 1, 0.5), Vec3.createVectorHelper(0.9, 1, 0.5), Vec3.createVectorHelper(0.5, 1, 0.1), Vec3.createVectorHelper(0.5, 1, 0.9)};
@@ -494,6 +495,10 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         List<IBlockState> desirableOnHotbar = new ArrayList<>();
         Optional<Placement> toPlace = searchForPlaceables(bcc, desirableOnHotbar);
         if (toPlace.isPresent() && isSafeToCancel && ctx.player().onGround && ticks <= 0) {
+        	if(ctx.player().isCollidedHorizontally) { // fixes 1.8 block glitching
+        	    return new PathingCommand(null, PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
+        	}
+        	
             Rotation rot = toPlace.get().rot;
             baritone.getLookBehavior().updateTarget(rot, true);
             ctx.player().inventory.currentItem = toPlace.get().hotbarSelection;
