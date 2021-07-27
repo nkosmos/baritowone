@@ -19,7 +19,7 @@ package baritone.api.pathing.goals;
 
 import baritone.api.utils.SettingsUtil;
 import baritone.api.utils.interfaces.IGoalRenderPos;
-import net.minecraft.util.BlockPos;
+import baritonex.utils.math.BlockPos;
 
 
 /**

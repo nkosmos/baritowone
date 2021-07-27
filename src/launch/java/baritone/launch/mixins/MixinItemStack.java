@@ -28,6 +28,7 @@ import baritone.api.utils.accessor.IItemStack;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack implements IItemStack {
@@ -35,19 +36,19 @@ public abstract class MixinItemStack implements IItemStack {
 	private static final ItemStack EMPTY = new ItemStack((Item)null);
 	
     @Shadow
-    private Item item;
+    private Item theItem;
 
     @Shadow
     private int stackSize;
     
     @Shadow
-    private int itemDamage;
+    int metadata;
 
     @Unique
     private int baritoneHash;
 
     private void recalculateHash() {
-        baritoneHash = item == null ? -1 : item.hashCode() + itemDamage;
+        baritoneHash = theItem == null ? -1 : theItem.hashCode() + metadata;
     }
 
     @Inject(
@@ -59,11 +60,22 @@ public abstract class MixinItemStack implements IItemStack {
     }
 
     @Inject(
-            method = "setItemDamage",
-            at = @At("TAIL")
+            method = "readFromNBT",
+            at = @At("RETURN")
     )
-    private void onItemDamageSet(CallbackInfo ci) {
+    private void onItemDamageSet(NBTTagCompound p_77963_1_, CallbackInfo ci) {
         recalculateHash();
+    }
+    
+    @Inject(
+            method = "setMetadata",
+            at = @At("RETURN")
+    )
+    private void setMetadata(int meta, CallbackInfo ci) {
+    	int oldMeta = this.metadata;
+    	this.metadata = meta;
+        recalculateHash();
+        this.metadata = oldMeta;
     }
 
     @Override
@@ -73,6 +85,6 @@ public abstract class MixinItemStack implements IItemStack {
     
     @Override
     public boolean isEmpty() {
-        return (ItemStack)(Object)this == EMPTY ? true : (item != null && item != Item.getItemFromBlock(Blocks.air) ? (this.stackSize <= 0 ? true : this.itemDamage < -32768 || this.itemDamage > 65535) : true);
+        return (ItemStack)(Object)this == EMPTY ? true : (theItem != null && theItem != Item.getItemFromBlock(Blocks.air) ? (this.stackSize <= 0 ? true : this.metadata < -32768 || this.metadata > 65535) : true);
     }
 }

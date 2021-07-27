@@ -17,17 +17,14 @@
 
 package baritone.utils;
 
-import javax.annotation.Nullable;
-
+import baritonex.utils.state.serialization.XBlockStateSerializer;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenForest;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * @author Brady
@@ -42,50 +39,61 @@ public final class BlockStateInterfaceAccessWrapper implements IBlockAccess {
         this.bsi = bsi;
     }
 
-    @Nullable
-    @Override
-    public TileEntity getTileEntity(BlockPos pos) {
-        return null;
-    }
-
-    @Override
-    public int getCombinedLight(BlockPos pos, int lightValue) {
-        return 0;
-    }
-
-    @Override
-    public IBlockState getBlockState(BlockPos pos) {
-        // BlockStateInterface#get0(BlockPos) btfo!
-        return this.bsi.get0(pos.getX(), pos.getY(), pos.getZ());
-    }
-
-    @Override
-    public boolean isAirBlock(BlockPos pos) {
-        return this.bsi.get0(pos.getX(), pos.getY(), pos.getZ()).getBlock().getMaterial() == Material.air;
-    }
-
-    @Override
-    public int getStrongPower(BlockPos pos, EnumFacing direction) {
-        return 0;
-    }
-
-    @Override
-    public WorldType getWorldType() {
-        return this.bsi.world.getWorldType();
-    }
+	@Override
+	public Block getBlock(int p_147439_1_, int p_147439_2_, int p_147439_3_) {
+		return bsi.get0(p_147439_1_, p_147439_2_, p_147439_3_).getBlock();
+	}
 
 	@Override
-	public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-		return getBlockState(pos).getBlock().isSideSolid(this, pos, side);
+	public TileEntity getTileEntity(int x, int y, int z) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getLightBrightnessForSkyBlocks(int p_72802_1_, int p_72802_2_, int p_72802_3_, int p_72802_4_) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getBlockMetadata(int p_72805_1_, int p_72805_2_, int p_72805_3_) {
+		return XBlockStateSerializer.getMetaFromState(bsi.get0(p_72805_1_, p_72805_2_, p_72805_3_));
+	}
+
+	@Override
+	public int isBlockProvidingPowerTo(int x, int y, int z, int directionIn) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isAirBlock(int x, int y, int z) {
+		return getBlock(x, y, z).getMaterial() == Material.air;
+	}
+
+	@Override
+	public BiomeGenBase getBiomeGenForCoords(int x, int z) {
+		return BiomeGenForest.forest;
+	}
+
+	@Override
+	public int getHeight() {
+		return 255;
 	}
 
 	@Override
 	public boolean extendedLevelsInChunkCache() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public BiomeGenBase getBiomeGenForCoords(BlockPos pos) {
-		return BiomeGenForest.forest;
+	public boolean isSideSolid(int x, int y, int z, ForgeDirection side, boolean _default) {
+		if(getBlock(x, y, z).isSideSolid(this, x, y, z, side)) {
+			return true;
+		}
+		return _default;
 	}
+
 }

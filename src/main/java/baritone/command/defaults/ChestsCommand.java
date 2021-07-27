@@ -30,8 +30,8 @@ import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.exception.CommandInvalidStateException;
 import baritone.api.utils.BetterBlockPos;
+import baritonex.utils.math.BlockPos;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.IChatComponent;
 
 public class ChestsCommand extends Command {
@@ -54,7 +54,7 @@ public class ChestsCommand extends Command {
             IRememberedInventory inv = entry.getValue();
             logDirect(pos.toString());
             for (ItemStack item : inv.getContents()) {
-                IChatComponent component = item.getChatComponent();
+                IChatComponent component = item.func_151000_E();
                 component.appendText(String.format(" x %d", item.stackSize));
                 logDirect(component);
             }

@@ -17,8 +17,8 @@
 
 package baritone.api.cache;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.state.IBlockState;
 
 /**
  * @author Brady

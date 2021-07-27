@@ -37,8 +37,16 @@ import baritone.api.utils.input.Input;
 import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.ToolSet;
+import baritonex.utils.XHelper;
+import baritonex.utils.data.XEnumBlockHalfSlab;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.data.XEnumPlantType;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.property.Properties;
+import baritonex.utils.property.impl.PropertyBool;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockEndPortal;
@@ -53,11 +61,7 @@ import net.minecraft.block.BlockSnow;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
@@ -136,7 +140,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             }
             // the check in BlockSnow.isPassable is layers < 5
             // while actually, we want < 3 because 3 or greater makes it impassable in a 2 high ceiling
-            if (state.getValue(BlockSnow.LAYERS) >= 3) {
+            if (state.getValue(Properties.SNOW_LAYERS) >= 3) {
                 return false;
             }
             // ok, it's low enough we could walk through it, but is it supported?
@@ -156,7 +160,8 @@ public interface MovementHelper extends ActionCosts, Helper {
             return block == Blocks.water || block == Blocks.flowing_water;
         }
 
-        return block.isPassable(bsi.access, bsi.isPassableBlockPos.set(x, y, z));
+        bsi.isPassableBlockPos.set(x, y, z);
+        return block.isPassable(bsi.access, x, y, z);
     }
 
     /**
@@ -178,7 +183,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
     static boolean fullyPassable(IPlayerContext ctx, BlockPos pos) {
-        return fullyPassable(ctx.world(), pos, ctx.world().getBlockState(pos));
+        return fullyPassable(ctx.world(), pos, XBlockStateSerializer.getStateFromWorld(ctx.world(), pos));
     }
 
     static boolean fullyPassable(IBlockAccess access, BlockPos pos, IBlockState state) {
@@ -203,7 +208,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return false;
         }
         // door, fence gate, liquid, trapdoor have been accounted for, nothing else uses the world or pos parameters
-        return block.isPassable(access, pos);
+        return block.isPassable(access, pos.getX(), pos.getY(), pos.getZ());
     }
 
     static boolean isReplaceable(int x, int y, int z, IBlockState state, BlockStateInterface bsi) {
@@ -227,11 +232,11 @@ public interface MovementHelper extends ActionCosts, Helper {
             if (!bsi.worldContainsLoadedChunk(x, z)) {
                 return true;
             }
-            return state.getValue(BlockSnow.LAYERS) == 1;
+            return state.getValue(Properties.SNOW_LAYERS) == 1;
         }
         if (block instanceof BlockDoublePlant) {
-            BlockDoublePlant.EnumPlantType kek = state.getValue(BlockDoublePlant.VARIANT);
-            return kek == BlockDoublePlant.EnumPlantType.FERN || kek == BlockDoublePlant.EnumPlantType.GRASS;
+            XEnumPlantType kek = state.getValue(Properties.DOUBLEPLANT_VARIANT);
+            return kek == XEnumPlantType.FERN || kek == XEnumPlantType.GRASS;
         }
         return state.getBlock().getMaterial().isReplaceable();
     }
@@ -251,7 +256,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return true;
         }
 
-        return isHorizontalBlockPassable(doorPos, state, playerPos, BlockDoor.OPEN);
+        return isHorizontalBlockPassable(doorPos, state, playerPos, Properties.DOOR_OPEN);
     }
 
     static boolean isGatePassable(IPlayerContext ctx, BlockPos gatePos, BlockPos playerPos) {
@@ -264,7 +269,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return true;
         }
 
-        return state.getValue(BlockFenceGate.OPEN);
+        return state.getValue(Properties.FENCEGATE_OPEN);
     }
 
     static boolean isHorizontalBlockPassable(BlockPos blockPos, IBlockState blockState, BlockPos playerPos, PropertyBool propertyOpen) {
@@ -272,14 +277,14 @@ public interface MovementHelper extends ActionCosts, Helper {
             return false;
         }
 
-        EnumFacing.Axis facing = blockState.getValue(BlockDirectional.FACING).getAxis();
+        XEnumFacing.Axis facing = blockState.getValue(Properties.DIRECTIONAL_FACING).getAxis();
         boolean open = blockState.getValue(propertyOpen);
 
-        EnumFacing.Axis playerFacing;
+        XEnumFacing.Axis playerFacing;
         if (playerPos.north().equals(blockPos) || playerPos.south().equals(blockPos)) {
-            playerFacing = EnumFacing.Axis.Z;
+            playerFacing = XEnumFacing.Axis.Z;
         } else if (playerPos.east().equals(blockPos) || playerPos.west().equals(blockPos)) {
-            playerFacing = EnumFacing.Axis.X;
+            playerFacing = XEnumFacing.Axis.X;
         } else {
             return true;
         }
@@ -349,10 +354,10 @@ public interface MovementHelper extends ActionCosts, Helper {
         }
         if (block instanceof BlockSlab) {
             if (!Baritone.settings().allowWalkOnBottomSlab.value) {
-                if (((BlockSlab) block).isDouble()) {
+                if (((BlockSlab) block).isFullBlock()) {
                     return true;
                 }
-                return state.getValue(BlockSlab.HALF) != BlockSlab.EnumBlockHalf.BOTTOM;
+                return state.getValue(Properties.SLAB_HALF) != XEnumBlockHalfSlab.BOTTOM;
             }
             return true;
         }
@@ -431,8 +436,8 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean isBottomSlab(IBlockState state) {
         return state.getBlock() instanceof BlockSlab
-                && !((BlockSlab) state.getBlock()).isDouble()
-                && state.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.BOTTOM;
+                && !((BlockSlab) state.getBlock()).isFullBlock()
+                && state.getValue(Properties.SLAB_HALF) == XEnumBlockHalfSlab.BOTTOM;
     }
 
     /**
@@ -441,8 +446,8 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @param ctx The player context
      * @param b   the blockstate to mine
      */
-    static void switchToBestToolFor(IPlayerContext ctx, IBlockState b) {
-        switchToBestToolFor(ctx, b, new ToolSet(ctx.player()), BaritoneAPI.getSettings().preferSilkTouch.value);
+    static void switchToBestToolFor(IPlayerContext ctx, Block block) {
+        switchToBestToolFor(ctx, block, new ToolSet(ctx.player()), BaritoneAPI.getSettings().preferSilkTouch.value);
     }
 
     /**
@@ -452,9 +457,9 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @param b   the blockstate to mine
      * @param ts  previously calculated ToolSet
      */
-    static void switchToBestToolFor(IPlayerContext ctx, IBlockState b, ToolSet ts, boolean preferSilkTouch) {
+    static void switchToBestToolFor(IPlayerContext ctx, Block block, ToolSet ts, boolean preferSilkTouch) {
         if (Baritone.settings().autoTool.value && !Baritone.settings().assumeExternalAutoTool.value) {
-            ctx.player().inventory.currentItem = ts.getBestSlot(b.getBlock(), preferSilkTouch);
+            ctx.player().inventory.currentItem = ts.getBestSlot(block, preferSilkTouch);
         }
     }
 
@@ -508,14 +513,14 @@ public interface MovementHelper extends ActionCosts, Helper {
     static boolean possiblyFlowing(IBlockState state) {
         // Will be IFluidState in 1.13
         return state.getBlock() instanceof BlockLiquid
-                && state.getValue(BlockLiquid.LEVEL) != 0;
+                && state.getValue(Properties.LIQUID_LEVEL) != 0;
     }
 
     static boolean isFlowing(int x, int y, int z, IBlockState state, BlockStateInterface bsi) {
         if (!(state.getBlock() instanceof BlockLiquid)) {
             return false;
         }
-        if (state.getValue(BlockLiquid.LEVEL) != 0) {
+        if (state.getValue(Properties.LIQUID_LEVEL) != 0) {
             return true;
         }
         return possiblyFlowing(bsi.get0(x + 1, y, z))
@@ -544,9 +549,9 @@ public interface MovementHelper extends ActionCosts, Helper {
                 double faceX = (placeAt.getX() + against1.getX() + 1.0D) * 0.5D;
                 double faceY = (placeAt.getY() + against1.getY() + 0.5D) * 0.5D;
                 double faceZ = (placeAt.getZ() + against1.getZ() + 1.0D) * 0.5D;
-                Rotation place = RotationUtils.calcRotationFromVec3d(wouldSneak ? RayTraceUtils.inferSneakingEyePosition(ctx.player()) : ctx.playerHead(), new Vec3(faceX, faceY, faceZ), ctx.playerRotations());
+                Rotation place = RotationUtils.calcRotationFromVec3d(wouldSneak ? RayTraceUtils.inferSneakingEyePosition(ctx.player()) : ctx.playerHead(), Vec3.createVectorHelper(faceX, faceY, faceZ), ctx.playerRotations());
                 MovingObjectPosition res = RayTraceUtils.rayTraceTowards(ctx.player(), place, ctx.playerController().getBlockReachDistance(), wouldSneak);
-                if (res != null && res.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && res.getBlockPos().equals(against1) && res.getBlockPos().offset(res.sideHit).equals(placeAt)) {
+                if (res != null && res.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && BlockPos.from(res).equals(against1) && BlockPos.from(res).offset(XHelper.sideToFacing(res.sideHit)).equals(placeAt)) {
                     state.setTarget(new MovementState.MovementTarget(place, true));
                     found = true;
 
@@ -560,7 +565,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         }
         if (ctx.getSelectedBlock().isPresent()) {
             BlockPos selectedBlock = ctx.getSelectedBlock().get();
-            EnumFacing side = ctx.objectMouseOver().sideHit;
+            XEnumFacing side = XHelper.sideToFacing(ctx.objectMouseOver().sideHit);
             // only way for selectedBlock.equals(placeAt) to be true is if it's replacable
             if (selectedBlock.equals(placeAt) || (MovementHelper.canPlaceAgainst(ctx, selectedBlock) && selectedBlock.offset(side).equals(placeAt))) {
                 if (wouldSneak) {

@@ -37,6 +37,8 @@ public class BaritoneTweaker extends SimpleTweaker {
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
         super.injectIntoClassLoader(classLoader);
 
+        System.out.println("COCK");
+
         MixinBootstrap.init();
 
         // noinspection unchecked

@@ -18,14 +18,12 @@
 package baritone.api.utils;
 
 import baritone.api.BaritoneAPI;
+import baritonex.utils.math.BlockPos;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings.GameType;
 
 /**
  * @author Brady
@@ -37,23 +35,23 @@ public interface IPlayerController {
 
     boolean hasBrokenBlock();
 
-    boolean onPlayerDamageBlock(BlockPos pos, EnumFacing side);
+    boolean onPlayerDamageBlock(BlockPos pos, int side);
 
     void resetBlockRemoving();
 
     ItemStack windowClick(int windowId, int slotId, int mouseButton, int type, EntityPlayer player);
 
-    GameType getGameType();
+    boolean isInCreative();
 
-    boolean processRightClickBlock(EntityPlayerSP player, World world, BlockPos pos, EnumFacing direction, Vec3 vec);
+    boolean processRightClickBlock(EntityPlayerSP player, World world, BlockPos pos, int direction, Vec3 vec);
 
     boolean processRightClick(EntityPlayerSP player, World world);
 
-    boolean clickBlock(BlockPos loc, EnumFacing face);
+    void clickBlock(BlockPos loc, int facing);
 
     void setHittingBlock(boolean hittingBlock);
 
     default double getBlockReachDistance() {
-        return this.getGameType().isCreative() ? 5.0F : BaritoneAPI.getSettings().blockReachDistance.value;
+        return this.isInCreative() ? 5.0F : BaritoneAPI.getSettings().blockReachDistance.value;
     }
 }

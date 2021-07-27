@@ -21,8 +21,8 @@ import java.util.List;
 
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
+import baritonex.utils.math.BlockPos;
 import net.minecraft.block.Block;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 
 /**

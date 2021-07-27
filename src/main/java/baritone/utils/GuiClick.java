@@ -41,12 +41,13 @@ import baritone.api.BaritoneAPI;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
+import baritonex.utils.math.BlockPos;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
@@ -76,10 +77,10 @@ public class GuiClick extends GuiScreen {
         Vec3 near = toWorld(mx, my, 0);
         Vec3 far = toWorld(mx, my, 1); // "Use 0.945 that's what stack overflow says" - leijurv
         if (near != null && far != null) {
-        	Vec3 viewerPos = new Vec3(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);
-            MovingObjectPosition result = mc.theWorld.rayTraceBlocks(near.add(viewerPos), far.add(viewerPos), false, false, true);
+        	Vec3 viewerPos = Vec3.createVectorHelper(RenderManager.instance.viewerPosX, RenderManager.instance.viewerPosY, RenderManager.instance.viewerPosZ);
+            MovingObjectPosition result = mc.theWorld.rayTraceBlocks(near.addVector(viewerPos.xCoord, viewerPos.yCoord, viewerPos.zCoord), far.addVector(viewerPos.xCoord, viewerPos.yCoord, viewerPos.zCoord), false, false, true);
             if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                currentMouseOver = result.getBlockPos();
+                currentMouseOver = BlockPos.from(result);
             }
         }
     }
@@ -116,30 +117,30 @@ public class GuiClick extends GuiScreen {
     }
 
     public void onRender() {
-        GlStateManager.getFloat(GL_MODELVIEW_MATRIX, (FloatBuffer) MODELVIEW.clear());
-        GlStateManager.getFloat(GL_PROJECTION_MATRIX, (FloatBuffer) PROJECTION.clear());
+        GL11.glGetFloat(GL_MODELVIEW_MATRIX, (FloatBuffer) MODELVIEW.clear());
+        GL11.glGetFloat(GL_PROJECTION_MATRIX, (FloatBuffer) PROJECTION.clear());
         GL11.glGetInteger(GL_VIEWPORT, (IntBuffer) VIEWPORT.clear());
 
         if (currentMouseOver != null) {
-            Entity e = mc.getRenderViewEntity();
+            Entity e = mc.renderViewEntity;
             // drawSingleSelectionBox WHEN?
             PathRenderer.drawManySelectionBoxes(e, Collections.singletonList(currentMouseOver), Color.CYAN);
             if (clickStart != null && !clickStart.equals(currentMouseOver)) {
-                GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-                GlStateManager.color(Color.RED.getColorComponents(null)[0], Color.RED.getColorComponents(null)[1], Color.RED.getColorComponents(null)[2], 0.4F);
+                GL11.glEnable(GL11.GL_BLEND); // GlStateManager.enableBlend();
+                OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+                GL11.glColor4f(Color.RED.getColorComponents(null)[0], Color.RED.getColorComponents(null)[1], Color.RED.getColorComponents(null)[2], 0.4F);
                 GL11.glLineWidth(Baritone.settings().pathRenderLineWidthPixels.value);
-                GlStateManager.disableTexture2D();
-                GlStateManager.depthMask(false);
-                GlStateManager.disableDepth();
+                GL11.glDisable(GL11.GL_TEXTURE_2D); // GlStateManager.disableTexture2D();
+                GL11.glDepthMask(false);
+                GL11.glDisable(GL11.GL_DEPTH_TEST); // GlStateManager.disableDepth();
                 BetterBlockPos a = new BetterBlockPos(currentMouseOver);
                 BetterBlockPos b = new BetterBlockPos(clickStart);
-                IRenderer.drawAABB(new AxisAlignedBB(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z), Math.max(a.x, b.x) + 1, Math.max(a.y, b.y) + 1, Math.max(a.z, b.z) + 1));
-                GlStateManager.enableDepth();
+                IRenderer.drawAABB(AxisAlignedBB.getBoundingBox(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z), Math.max(a.x, b.x) + 1, Math.max(a.y, b.y) + 1, Math.max(a.z, b.z) + 1));
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
 
-                GlStateManager.depthMask(true);
-                GlStateManager.enableTexture2D();
-                GlStateManager.disableBlend();
+                GL11.glDepthMask(true);
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
+                GL11.glDisable(GL11.GL_BLEND);
             }
         }
     }
@@ -147,7 +148,7 @@ public class GuiClick extends GuiScreen {
     private Vec3 toWorld(double x, double y, double z) {
         boolean result = GLU.gluUnProject((float) x, (float) y, (float) z, MODELVIEW, PROJECTION, VIEWPORT, (FloatBuffer) TO_WORLD_BUFFER.clear());
         if (result) {
-            return new Vec3(TO_WORLD_BUFFER.get(0), TO_WORLD_BUFFER.get(1), TO_WORLD_BUFFER.get(2));
+            return Vec3.createVectorHelper(TO_WORLD_BUFFER.get(0), TO_WORLD_BUFFER.get(1), TO_WORLD_BUFFER.get(2));
         }
         return null;
     }

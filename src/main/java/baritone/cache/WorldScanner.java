@@ -29,9 +29,11 @@ import baritone.api.cache.IWorldScanner;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
+import net.minecraft.block.Block;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
@@ -165,8 +167,10 @@ public enum WorldScanner implements IWorldScanner {
             for (int y = 0; y < 16; y++) {
                 for (int z = 0; z < 16; z++) {
                     for (int x = 0; x < 16; x++) {
-                        IBlockState state = extendedblockstorage.get(x, y, z);
-                        if (filter.has(state.getBlock())) {
+                        Block block = extendedblockstorage.getBlockByExtId(x, y, z);
+                        int metadata = extendedblockstorage.getExtBlockMetadata(x, y, z);
+                        IBlockState state = XBlockStateSerializer.getStateFromMeta(block, metadata);
+                        if (filter.has(block)) {
                             int yy = yReal | y;
                             if (result.size() >= max) {
                                 if (Math.abs(yy - playerY) < yLevelThreshold) {

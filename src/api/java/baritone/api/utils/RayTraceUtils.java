@@ -17,6 +17,7 @@
 
 package baritone.api.utils;
 
+import baritonex.utils.math.BlockPos;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -48,7 +49,7 @@ public final class RayTraceUtils {
         if (wouldSneak) {
             start = inferSneakingEyePosition(entity);
         } else {
-            start = entity.getPositionEyes(1.0F); // do whatever is correct
+            start = new BlockPos(entity).toVec3().addVector(0, entity.getEyeHeight(), 0); // do whatever is correct
         }
         Vec3 direction = RotationUtils.calcVec3dFromRotation(rotation);
         Vec3 end = start.addVector(
@@ -60,6 +61,6 @@ public final class RayTraceUtils {
     }
 
     public static Vec3 inferSneakingEyePosition(Entity entity) {
-        return new Vec3(entity.posX, entity.posY + IPlayerContext.eyeHeight(true), entity.posZ);
+        return Vec3.createVectorHelper(entity.posX, entity.posY + IPlayerContext.eyeHeight(true), entity.posZ);
     }
 }

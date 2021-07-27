@@ -17,6 +17,10 @@
 
 package baritone.command.defaults;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
 import baritone.api.command.argument.IArgConsumer;
@@ -25,10 +29,6 @@ import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.utils.BetterBlockPos;
 import net.minecraft.block.BlockAir;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class SurfaceCommand extends Command {
 
@@ -39,12 +39,13 @@ public class SurfaceCommand extends Command {
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
         final BetterBlockPos playerPos = baritone.getPlayerContext().playerFeet();
-        final int surfaceLevel = baritone.getPlayerContext().world().getSeaLevel();
+        final int surfaceLevel = 64; // kek
         final int worldHeight = baritone.getPlayerContext().world().getActualHeight();
 
         // Ensure this command will not run if you are above the surface level and the block above you is air
         // As this would imply that your are already on the open surface
-        if (playerPos.getY() > surfaceLevel && mc.theWorld.getBlockState(playerPos.up()).getBlock() instanceof BlockAir) {
+        BetterBlockPos up = playerPos.up();
+        if (playerPos.getY() > surfaceLevel && mc.theWorld.getBlock(up.x, up.y, up.z) instanceof BlockAir) {
             logDirect("Already at surface");
             return;
         }
@@ -54,7 +55,7 @@ public class SurfaceCommand extends Command {
         for (int currentIteratedY = startingYPos; currentIteratedY < worldHeight; currentIteratedY++) {
             final BetterBlockPos newPos = new BetterBlockPos(playerPos.getX(), currentIteratedY, playerPos.getZ());
 
-            if (!(mc.theWorld.getBlockState(newPos).getBlock() instanceof BlockAir) && newPos.getY() > playerPos.getY()) {
+            if (!(mc.theWorld.getBlock(newPos.getX(), newPos.getY(), newPos.getZ()) instanceof BlockAir) && newPos.getY() > playerPos.getY()) {
                 Goal goal = new GoalBlock(newPos.up());
                 logDirect(String.format("Going to: %s", goal.toString()));
                 baritone.getCustomGoalProcess().setGoalAndPath(goal);

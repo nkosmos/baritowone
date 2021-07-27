@@ -33,12 +33,12 @@ import java.util.function.Consumer;
 import baritone.api.utils.NotificationHelper;
 import baritone.api.utils.SettingsUtil;
 import baritone.api.utils.TypeUtils;
+import baritonex.utils.math.Vec3i;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.Vec3i;
 
 /**
  * Baritone's settings. Settings apply to all Baritone instances.
@@ -47,6 +47,11 @@ import net.minecraft.util.Vec3i;
  */
 public final class Settings {
 
+	public final Setting<Double> worldBorderMinX = new Setting<>(-29_999_980D);
+	public final Setting<Double> worldBorderMaxX = new Setting<>(29_999_980D);
+	public final Setting<Double> worldBorderMinZ = new Setting<>(-29_999_980D);
+	public final Setting<Double> worldBorderMaxZ = new Setting<>(29_999_980D);
+	
     /**
      * Allow Baritone to break blocks
      */
@@ -552,18 +557,11 @@ public final class Settings {
      * Really buggy since the packet stuff is multithreaded badly thanks to brady
      */
     public final Setting<Boolean> containerMemory = new Setting<>(false);
-
+    
     /**
      * Fill in blocks behind you
      */
     public final Setting<Boolean> backfill = new Setting<>(false);
-
-    /**
-     * The time of how long the message in the pop-up will display
-     * <p>
-     * If below 1000L (1sec), it's better to disable this
-     */
-    public final Setting<Long> toastTimer = new Setting<>(5000L);
 
     /**
      * Print all the debug messages to chat
@@ -676,19 +674,6 @@ public final class Settings {
      * Whereas GetToBlock should blacklist the whole "vein" if it can't get to any of them.
      */
     public final Setting<Boolean> blacklistClosestOnFailure = new Setting<>(true);
-
-    /**
-     * 😎 Render cached chunks as semitransparent. Doesn't work with OptiFine 😭 Rarely randomly crashes, see <a href="https://github.com/cabaletta/baritone/issues/327">this issue</a>.
-     * <p>
-     * Can be very useful on servers with low render distance. After enabling, you may need to reload the world in order for it to have an effect
-     * (e.g. disconnect and reconnect, enter then exit the nether, die and respawn, etc). This may literally kill your FPS and CPU because
-     * every chunk gets recompiled twice as much as normal, since the cached version comes into range, then the normal one comes from the server for real.
-     * <p>
-     * Note that flowing water is cached as AVOID, which is rendered as lava. As you get closer, you may therefore see lava falls being replaced with water falls.
-     * <p>
-     * SOLID is rendered as stone in the overworld, netherrack in the nether, and end stone in the end
-     */
-    public final Setting<Boolean> renderCachedChunks = new Setting<>(false);
 
     /**
      * 0.0f = not visible, fully transparent (instead of setting this to 0, turn off renderCachedChunks)

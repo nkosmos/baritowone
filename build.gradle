@@ -24,23 +24,21 @@ buildscript {
             name = 'forge'
             url = 'http://files.minecraftforge.net/maven'
         }
-        maven {
-            name = 'SpongePowered'
-            url = 'https://repo.spongepowered.org/repository/maven-public/'
-        }
         jcenter()
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath('com.anatawa12.forge:ForgeGradle:1.2-1.0.6') {
+            changing = true
+        }
+        //classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'forge'
+//apply plugin: 'org.spongepowered.mixin'
 
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
@@ -63,14 +61,12 @@ sourceSets {
 }
 
 minecraft {
-    version = '1.8.9-11.15.1.2318-1.8.9'
-    mappings = 'stable_22'
+    version = '1.7.10-10.13.4.1614-1.7.10'
+    mappings = 'stable_12'
     runDir = 'run'
 
-    clientRunArgs = ["--tweakClass", "baritone.launch.BaritoneTweaker"]
-
     // The sources jar should use SRG names not MCP to ensure compatibility with all mappings
-    makeObfSourceJar = true
+    //makeObfSourceJar = true
 }
 
 configurations {
@@ -108,9 +104,19 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+/*
 mixin {
     defaultObfuscationEnv searge
     add sourceSets.launch, 'mixins.baritone.refmap.json'
+}
+*/
+
+def mixinSrg = "${tasks.reobf.temporaryDir}" + File.separator + "mixins.srg"
+def gradle_home = System.getenv().getOrDefault("GRADLE_USER_HOME", System.getProperty("user.home") + File.separator + ".gradle");
+def datSrg = gradle_home + File.separator + "caches" + File.separator + "minecraft" + File.separator + "net" + File.separator + "minecraftforge" + File.separator + "forge" + File.separator + "1.7.10-10.13.4.1614-1.7.10" + File.separator + "stable" + File.separator + "12" + File.separator + "srgs" + File.separator + "mcp-srg.srg"
+
+afterEvaluate {
+    tasks.compileLaunchJava.options.compilerArgs += ["-AreobfSrgFile=${datSrg}", "-AoutSrgFile=${mixinSrg}", "-AoutRefMapFile=mixins.baritone.refmap.json"]
 }
 
 javadoc {
@@ -157,36 +163,3 @@ jar {
 processResources {
 	rename '(.+_at.cfg)', 'META-INF/$1'
 }
-/*
-task proguard(type: ProguardTask) {
-    url 'https://downloads.sourceforge.net/project/proguard/proguard/6.0/proguard6.0.3.zip'
-    extract 'proguard6.0.3/lib/proguard.jar'
-}
-
-task createDist(type: CreateDistTask, dependsOn: proguard)
-
-build.finalizedBy(createDist)
-
-install {
-    def jarApiName = String.format("%s-api-%s", rootProject.name, version.toString())
-    def jarApiForgeName = String.format("%s-api-forge-%s", rootProject.name, version.toString())
-    def jarSAName = String.format("%s-standalone-%s", rootProject.name, version.toString())
-    def jarSAForgeName = String.format("%s-standalone-forge-%s", rootProject.name, version.toString())
-
-    artifacts {
-        archives file("$buildDir/libs/"+jarApiName+".jar")
-        archives file("$buildDir/libs/"+jarApiForgeName+".jar")
-        archives file("$buildDir/libs/"+jarSAName+".jar")
-        archives file("$buildDir/libs/"+jarSAForgeName+".jar")
-    }
-    repositories.mavenInstaller {
-		addFilter('api') { artifact, file -> artifact.name == "baritone-api" }
-		addFilter('api-forge') { artifact, file -> artifact.name == "baritone-api-forge" }
-		addFilter('standalone') { artifact, file -> artifact.name == "baritone-standalone" }
-		addFilter('standalone-forge') { artifact, file -> artifact.name == "baritone-standalone-forge" }
-    }
-}
-
-install.dependsOn(build)
-
-*/

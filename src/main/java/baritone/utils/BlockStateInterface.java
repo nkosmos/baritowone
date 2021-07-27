@@ -22,11 +22,12 @@ import baritone.api.utils.IPlayerContext;
 import baritone.cache.CachedRegion;
 import baritone.cache.WorldData;
 import baritone.utils.accessor.IChunkProviderClient;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
@@ -40,7 +41,7 @@ import net.minecraft.world.chunk.Chunk;
  */
 public class BlockStateInterface {
 
-    private final LongHashMap<Chunk> loadedChunks;
+    private final LongHashMap loadedChunks;
     private final WorldData worldData;
     protected final IBlockAccess world;
     public final BlockPos.MutableBlockPos isPassableBlockPos;
@@ -51,7 +52,7 @@ public class BlockStateInterface {
 
     private final boolean useTheRealWorld;
 
-    private static final IBlockState AIR = Blocks.air.getDefaultState();
+    private static final IBlockState AIR = XBlockStateSerializer.getBlockState(Blocks.air);
 
     public BlockStateInterface(IPlayerContext ctx) {
         this(ctx, false);
@@ -64,7 +65,7 @@ public class BlockStateInterface {
     public BlockStateInterface(World world, WorldData worldData, boolean copyLoadedChunks) {
         this.world = world;
         this.worldData = worldData;
-        LongHashMap<Chunk> worldLoaded = ((IChunkProviderClient) world.getChunkProvider()).loadedChunks();
+        LongHashMap worldLoaded = ((IChunkProviderClient) world.getChunkProvider()).loadedChunks();
         if (copyLoadedChunks) {
             this.loadedChunks = clone(worldLoaded); // make a copy that we can safely access from another thread
         } else {
@@ -78,11 +79,10 @@ public class BlockStateInterface {
         this.access = new BlockStateInterfaceAccessWrapper(this);
     }
     
-    private <T> LongHashMap<T> clone(LongHashMap<T> original){
-    	LongHashMap<T> coolMap = new LongHashMap();
+    private LongHashMap clone(LongHashMap original){
+    	LongHashMap coolMap = new LongHashMap();
     	coolMap.capacity = original.capacity;
     	coolMap.hashArray = original.hashArray;
-    	coolMap.mask = original.mask;
     	coolMap.modCount = original.modCount;
     	coolMap.numHashElements = original.numHashElements;
     	coolMap.percentUseable = original.percentUseable; 
@@ -123,13 +123,13 @@ public class BlockStateInterface {
             // which is a Long2ObjectOpenHashMap.get
             // see issue #113
             if (cached != null && cached.xPosition == x >> 4 && cached.zPosition == z >> 4) {
-                return cached.getBlockState(new BlockPos(x, y, z));
+                return XBlockStateSerializer.getStateFromChunk(cached, new BlockPos(x, y, z));
             }
-            Chunk chunk = loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
+            Chunk chunk = (Chunk) loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 
-            if (chunk != null && chunk.isLoaded()) {
+            if (chunk != null && chunk.isChunkLoaded) {
                 prev = chunk;
-                return chunk.getBlockState(new BlockPos(x, y, z));
+                return XBlockStateSerializer.getStateFromChunk(chunk, new BlockPos(x, y, z));
             }
         }
         // same idea here, skip the Long2ObjectOpenHashMap.get if at all possible
@@ -158,8 +158,8 @@ public class BlockStateInterface {
         if (prevChunk != null && prevChunk.xPosition == x >> 4 && prevChunk.zPosition == z >> 4) {
             return true;
         }
-        prevChunk = loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
-        if (prevChunk != null && prevChunk.isLoaded()) {
+        prevChunk = (Chunk) loadedChunks.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
+        if (prevChunk != null && prevChunk.isChunkLoaded) {
             prev = prevChunk;
             return true;
         }

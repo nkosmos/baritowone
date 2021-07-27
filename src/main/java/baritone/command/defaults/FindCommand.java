@@ -32,49 +32,39 @@ import java.util.stream.Stream;
 
 public class FindCommand extends Command {
 
-    public FindCommand(IBaritone baritone) {
-        super(baritone, "find");
-    }
+	public FindCommand(IBaritone baritone) {
+		super(baritone, "find");
+	}
 
-    @Override
-    public void execute(String label, IArgConsumer args) throws CommandException {
-        List<Block> toFind = new ArrayList<>();
-        while (args.hasAny()) {
-            toFind.add(args.getDatatypeFor(BlockById.INSTANCE));
-        }
-        BetterBlockPos origin = ctx.playerFeet();
-        toFind.stream()
-                .flatMap(block ->
-                        ctx.worldData().getCachedWorld().getLocationsOf(
-                                Block.blockRegistry.getNameForObject(block).getResourcePath(),
-                                Integer.MAX_VALUE,
-                                origin.x,
-                                origin.y,
-                                4
-                        ).stream()
-                )
-                .map(BetterBlockPos::new)
-                .map(BetterBlockPos::toString)
-                .forEach(this::logDirect);
-    }
+	@Override
+	public void execute(String label, IArgConsumer args) throws CommandException {
+		List<Block> toFind = new ArrayList<>();
+		while (args.hasAny()) {
+			toFind.add(args.getDatatypeFor(BlockById.INSTANCE));
+		}
+		BetterBlockPos origin = ctx.playerFeet();
+		toFind.stream().flatMap(block -> {
+			String name = Block.blockRegistry.getNameForObject(block);
+			if(name.indexOf(':') != -1) {
+				name = name.substring(name.indexOf(':') + 1);
+			}
+			return ctx.worldData().getCachedWorld().getLocationsOf(Block.blockRegistry.getNameForObject(block),
+					Integer.MAX_VALUE, origin.x, origin.y, 4).stream();
+		}).map(BetterBlockPos::new).map(BetterBlockPos::toString).forEach(this::logDirect);
+	}
 
-    @Override
-    public Stream<String> tabComplete(String label, IArgConsumer args) {
-        return args.tabCompleteDatatype(BlockById.INSTANCE);
-    }
+	@Override
+	public Stream<String> tabComplete(String label, IArgConsumer args) {
+		return args.tabCompleteDatatype(BlockById.INSTANCE);
+	}
 
-    @Override
-    public String getShortDesc() {
-        return "Find positions of a certain block";
-    }
+	@Override
+	public String getShortDesc() {
+		return "Find positions of a certain block";
+	}
 
-    @Override
-    public List<String> getLongDesc() {
-        return Arrays.asList(
-                "",
-                "",
-                "Usage:",
-                "> "
-        );
-    }
+	@Override
+	public List<String> getLongDesc() {
+		return Arrays.asList("", "", "Usage:", "> ");
+	}
 }

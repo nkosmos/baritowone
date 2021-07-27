@@ -25,7 +25,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import org.spongepowered.asm.mixin.Final;
@@ -47,14 +46,14 @@ public class MixinNetworkManager {
 
     @Shadow
     @Final
-    private EnumPacketDirection direction;
+    private boolean isClientSide;
 
     @Inject(
             method = "dispatchPacket",
             at = @At("HEAD")
     )
-    private void preDispatchPacket(Packet<?> inPacket, final GenericFutureListener<? extends Future<? super Void>>[] futureListeners, CallbackInfo ci) {
-        if (this.direction != EnumPacketDirection.CLIENTBOUND) {
+    private void preDispatchPacket(Packet inPacket, final GenericFutureListener<? extends Future<? super Void>>[] futureListeners, CallbackInfo ci) {
+        if (!this.isClientSide) {
             return;
         }
 
@@ -69,8 +68,8 @@ public class MixinNetworkManager {
             method = "dispatchPacket",
             at = @At("RETURN")
     )
-    private void postDispatchPacket(Packet<?> inPacket, final GenericFutureListener<? extends Future<? super Void>>[] futureListeners, CallbackInfo ci) {
-        if (this.direction != EnumPacketDirection.CLIENTBOUND) {
+    private void postDispatchPacket(Packet inPacket, final GenericFutureListener<? extends Future<? super Void>>[] futureListeners, CallbackInfo ci) {
+    	if (!this.isClientSide) {
             return;
         }
 
@@ -88,8 +87,8 @@ public class MixinNetworkManager {
                     target = "net/minecraft/network/Packet.processPacket(Lnet/minecraft/network/INetHandler;)V"
             )
     )
-    private void preProcessPacket(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
-        if (this.direction != EnumPacketDirection.CLIENTBOUND) {
+    private void preProcessPacket(ChannelHandlerContext context, Packet packet, CallbackInfo ci) {
+    	if (!this.isClientSide) {
             return;
         }
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
@@ -103,8 +102,8 @@ public class MixinNetworkManager {
             method = "channelRead0",
             at = @At("RETURN")
     )
-    private void postProcessPacket(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
-        if (!this.channel.isOpen() || this.direction != EnumPacketDirection.CLIENTBOUND) {
+    private void postProcessPacket(ChannelHandlerContext context, Packet packet, CallbackInfo ci) {
+        if (!this.channel.isOpen() || !this.isClientSide) {
             return;
         }
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {

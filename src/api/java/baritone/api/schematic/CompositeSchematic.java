@@ -17,10 +17,10 @@
 
 package baritone.api.schematic;
 
-import net.minecraft.block.state.IBlockState;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import baritonex.utils.state.IBlockState;
 
 public class CompositeSchematic extends AbstractSchematic {
 

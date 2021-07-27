@@ -28,8 +28,10 @@ import baritone.Baritone;
 import baritone.api.event.events.TickEvent;
 import baritone.utils.ToolSet;
 import baritonex.utils.XHelper;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -37,7 +39,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
-import net.minecraft.util.EnumFacing;
 
 public final class InventoryBehavior extends Behavior {
 
@@ -117,11 +118,11 @@ public final class InventoryBehavior extends Behavior {
             if (XHelper.isEmpty(stack)) {
                 continue;
             }
-            if (Baritone.settings().itemSaver.value && (stack.getItemDamage() + Baritone.settings().itemSaverThreshold.value) >= stack.getMaxDamage() && stack.getMaxDamage() > 1) {
+            if (Baritone.settings().itemSaver.value && (stack.getMetadata() + Baritone.settings().itemSaverThreshold.value) >= stack.getMaxDurability() && stack.getMaxDurability() > 1) {
                 continue;
             }
             if (cla$$.isInstance(stack.getItem())) {
-                double speed = ToolSet.calculateSpeedVsBlock(stack, against.getDefaultState()); // takes into account enchants
+                double speed = ToolSet.calculateSpeedVsBlock(stack, against); // takes into account enchants
                 if (speed > bestSpeed) {
                     bestSpeed = speed;
                     bestInd = i;
@@ -141,11 +142,30 @@ public final class InventoryBehavior extends Behavior {
     }
 
     public boolean selectThrowawayForLocation(boolean select, int x, int y, int z) {
-        IBlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
-        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof ItemBlock && maybe.equals(((ItemBlock) stack.getItem()).getBlock().onBlockPlaced(ctx.world(), ctx.playerFeet(), EnumFacing.UP, (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()), ctx.player())))) {
+    	IBlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
+        if (maybe != null && throwaway(select, stack -> {
+        	Block block = ((ItemBlock) stack.getItem()).blockInstance;
+        	return stack.getItem() instanceof ItemBlock 
+        			&& maybe.equals(
+        					XBlockStateSerializer.getStateFromMeta(
+        							block, 
+        							block.onBlockPlaced(
+        									ctx.world(), 
+        									ctx.playerFeet().x, 
+        									ctx.playerFeet().y, 
+        									ctx.playerFeet().z, 
+        									XEnumFacing.UP.toSideHit(), 
+        									(float) ctx.player().posX, 
+        									(float) ctx.player().posY, 
+        									(float) ctx.player().posZ, 
+        									stack.getItem().getMetadata(stack.getMetadata())
+        							)
+        					)
+        			);
+        })) {
             return true; // gotem
         }
-        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).getBlock().equals(maybe.getBlock()))) {
+        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).blockInstance.equals(maybe.getBlock()))) {
             return true;
         }
         for (Item item : Baritone.settings().acceptableThrowawayItems.value) {

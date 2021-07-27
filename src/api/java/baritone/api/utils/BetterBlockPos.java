@@ -19,10 +19,11 @@ package baritone.api.utils;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.math.Vec3i;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3i;
 
 /**
  * A better BlockPos that has fewer hash collisions (and slightly more performant offsets)
@@ -68,6 +69,14 @@ public final class BetterBlockPos extends BlockPos {
         }
 
         return new BetterBlockPos(pos);
+    }
+    
+    public static BetterBlockPos from(C08PacketPlayerBlockPlacement packet) {
+    	if(packet == null) {
+    		return null;
+    	}
+    	
+    	return new BetterBlockPos(packet.getPlacedBlockX(), packet.getPlacedBlockY(), packet.getPlacedBlockZ());
     }
 
     @Override
@@ -148,13 +157,13 @@ public final class BetterBlockPos extends BlockPos {
     }
 
     @Override
-    public BetterBlockPos offset(EnumFacing dir) {
+    public BetterBlockPos offset(XEnumFacing dir) {
         Vec3i vec = dir.getDirectionVec();
         return new BetterBlockPos(x + vec.getX(), y + vec.getY(), z + vec.getZ());
     }
 
     @Override
-    public BetterBlockPos offset(EnumFacing dir, int dist) {
+    public BetterBlockPos offset(XEnumFacing dir, int dist) {
         if (dist == 0) {
             return this;
         }

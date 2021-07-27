@@ -17,6 +17,10 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
@@ -27,13 +31,10 @@ import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
-import com.google.common.collect.ImmutableSet;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.block.BlockFalling;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
-
-import java.util.Set;
 
 public class MovementAscend extends Movement {
 
@@ -225,7 +226,7 @@ public class MovementAscend extends Movement {
     public boolean headBonkClear() {
         BetterBlockPos startUp = src.up(2);
         for (int i = 0; i < 4; i++) {
-            BetterBlockPos check = startUp.offset(EnumFacing.getHorizontal(i));
+            BetterBlockPos check = startUp.offset(XEnumFacing.getHorizontal(i));
             if (!MovementHelper.canWalkThrough(ctx, check)) {
                 // We might bonk our head
                 return false;

@@ -18,8 +18,9 @@
 package baritone.utils.schematic.format.defaults;
 
 import baritone.utils.schematic.StaticSchematic;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -59,9 +60,9 @@ public final class MCEditSchematic extends StaticSchematic {
                         // additional is 0 through 15 inclusive since it's & 0xF above
                         blockID |= additional[blockInd] << 8;
                     }
-                    Block block = Block.blockRegistry.getObjectById(blockID);
+                    Block block = (Block)Block.blockRegistry.getObjectById(blockID);
                     int meta = metadata[blockInd] & 0xFF;
-                    this.states[x][z][y] = block.getStateFromMeta(meta);
+                    this.states[x][z][y] = XBlockStateSerializer.getStateFromMeta(block, meta);
                 }
             }
         }

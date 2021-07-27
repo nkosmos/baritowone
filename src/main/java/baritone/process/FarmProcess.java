@@ -38,24 +38,25 @@ import baritone.cache.WorldScanner;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.BaritoneProcessHelper;
 import baritonex.utils.XHelper;
+import baritonex.utils.data.XEnumDyeColor;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.property.Properties;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockCactus;
 import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockNetherWart;
 import net.minecraft.block.BlockReed;
 import net.minecraft.block.IGrowable;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -120,12 +121,12 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         POTATOES((BlockCrops) Blocks.potatoes),
         PUMPKIN(Blocks.pumpkin, state -> true),
         MELON(Blocks.melon_block, state -> true),
-        NETHERWART(Blocks.nether_wart, state -> state.getValue(BlockNetherWart.AGE) >= 3),
+        NETHERWART(Blocks.nether_wart, state -> state.getValue(Properties.NETHERWART_AGE) >= 3),
         SUGARCANE(Blocks.reeds, null) {
             @Override
             public boolean readyToHarvest(World world, BlockPos pos, IBlockState state) {
                 if (Baritone.settings().replantCrops.value) {
-                    return world.getBlockState(pos.down()).getBlock() instanceof BlockReed;
+                    return XBlockStateSerializer.getStateFromWorld(world, pos.down()).getBlock() instanceof BlockReed;
                 }
                 return true;
             }
@@ -134,7 +135,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             @Override
             public boolean readyToHarvest(World world, BlockPos pos, IBlockState state) {
                 if (Baritone.settings().replantCrops.value) {
-                    return world.getBlockState(pos.down()).getBlock() instanceof BlockCactus;
+                    return XBlockStateSerializer.getStateFromWorld(world, pos.down()).getBlock() instanceof BlockCactus;
                 }
                 return true;
             }
@@ -143,7 +144,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         public final Predicate<IBlockState> readyToHarvest;
 
         Harvest(BlockCrops blockCrops) {
-            this(blockCrops, b -> b.getValue(BlockCrops.AGE) == 7);
+            this(blockCrops, b -> b.getValue(Properties.CROPS_AGE) == 7);
             // max age is 7 for wheat, carrots, and potatoes, but 3 for beetroot
         }
 
@@ -171,7 +172,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
     }
 
     private boolean isBoneMeal(ItemStack stack) {
-        return !XHelper.isEmpty(stack) && stack.getItem() instanceof ItemDye && EnumDyeColor.byDyeDamage(stack.getMetadata()) == EnumDyeColor.WHITE;
+        return !XHelper.isEmpty(stack) && stack.getItem() instanceof ItemDye && XEnumDyeColor.byDyeDamage(stack.getMetadata()) == XEnumDyeColor.WHITE;
     }
 
     private boolean isNetherWart(ItemStack stack) {
@@ -207,15 +208,17 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
                 continue;
             }
 
-            IBlockState state = ctx.world().getBlockState(pos);
-            boolean airAbove = ctx.world().getBlockState(pos.up()).getBlock() instanceof BlockAir;
-            if (state.getBlock() == Blocks.farmland) {
+            IBlockState state = XBlockStateSerializer.getStateFromWorld(ctx.world(), pos);
+            Block block = state.getBlock();
+            BlockPos up = pos.up();
+            boolean airAbove = ctx.world().getBlock(up.getX(), up.getY(), up.getZ()) instanceof BlockAir;
+            if (block == Blocks.farmland) {
                 if (airAbove) {
                     openFarmland.add(pos);
                 }
                 continue;
             }
-            if (state.getBlock() == Blocks.soul_sand) {
+            if (block == Blocks.soul_sand) {
                 if (airAbove) {
                     openSoulsand.add(pos);
                 }
@@ -225,9 +228,9 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
                 toBreak.add(pos);
                 continue;
             }
-            if (state.getBlock() instanceof IGrowable) {
-                IGrowable ig = (IGrowable) state.getBlock();
-                if (ig.canGrow(ctx.world(), pos, state, true) && ig.canUseBonemeal(ctx.world(), ctx.world().rand, pos, state)) {
+            if (block instanceof IGrowable) {
+                IGrowable ig = (IGrowable) block;
+                if (ig.canFertilize(ctx.world(), pos.getX(), pos.getY(), pos.getZ(), true) && ig.shouldFertilize(ctx.world(), ctx.world().rand, pos.getX(), pos.getY(), pos.getZ())) {
                     bonemealable.add(pos);
                 }
             }
@@ -238,7 +241,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             Optional<Rotation> rot = RotationUtils.reachable(ctx, pos);
             if (rot.isPresent() && isSafeToCancel) {
                 baritone.getLookBehavior().updateTarget(rot.get(), true);
-                MovementHelper.switchToBestToolFor(ctx, ctx.world().getBlockState(pos));
+                MovementHelper.switchToBestToolFor(ctx, ctx.world().getBlock(pos.getX(), pos.getY(), pos.getZ()));
                 if (ctx.isLookingAt(pos)) {
                     baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_LEFT, true);
                 }
@@ -249,10 +252,10 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         both.addAll(openSoulsand);
         for (BlockPos pos : both) {
             boolean soulsand = openSoulsand.contains(pos);
-            Optional<Rotation> rot = RotationUtils.reachableOffset(ctx.player(), pos, new Vec3(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5), ctx.playerController().getBlockReachDistance(), false);
+            Optional<Rotation> rot = RotationUtils.reachableOffset(ctx.player(), pos, Vec3.createVectorHelper(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5), ctx.playerController().getBlockReachDistance(), false);
             if (rot.isPresent() && isSafeToCancel && baritone.getInventoryBehavior().throwaway(true, soulsand ? this::isNetherWart : this::isPlantable)) {
             	MovingObjectPosition result = RayTraceUtils.rayTraceTowards(ctx.player(), rot.get(), ctx.playerController().getBlockReachDistance());
-                if (result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && result.sideHit == EnumFacing.UP) {
+                if (result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && result.sideHit == XEnumFacing.UP.toSideHit()) {
                     baritone.getLookBehavior().updateTarget(rot.get(), true);
                     if (ctx.isLookingAt(pos)) {
                         baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);
@@ -300,7 +303,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
                 goalz.add(new GoalBlock(pos));
             }
         }
-        for (Entity entity : ctx.world().loadedEntityList) {
+        for (Entity entity : (List<Entity>)ctx.world().loadedEntityList) {
             if (entity instanceof EntityItem && entity.onGround) {
                 EntityItem ei = (EntityItem) entity;
                 if (PICKUP_DROPPED.contains(ei.getEntityItem().getItem())) {

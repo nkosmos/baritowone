@@ -50,11 +50,11 @@ import baritone.pathing.movement.movements.MovementDiagonal;
 import baritone.pathing.movement.movements.MovementFall;
 import baritone.pathing.movement.movements.MovementTraverse;
 import baritone.utils.BlockStateInterface;
+import baritonex.utils.data.XTuple;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.math.Vec3i;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
-import net.minecraft.util.Vec3i;
 
 /**
  * Behavior to execute a precomputed path
@@ -141,7 +141,7 @@ public class PathExecutor implements IPathExecutor, Helper {
                 }
             }
         }
-        Tuple<Double, BlockPos> status = closestPathPos(path);
+        XTuple<Double, BlockPos> status = closestPathPos(path);
         if (possiblyOffPath(status, MAX_DIST_FROM_PATH)) {
             ticksAway++;
             System.out.println("FAR AWAY FROM PATH FOR " + ticksAway + " TICKS. Current distance: " + status.getFirst() + ". Threshold: " + MAX_DIST_FROM_PATH);
@@ -268,7 +268,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         return canCancel; // movement is in progress, but if it reports cancellable, PathingBehavior is good to cut onto the next path
     }
 
-    private Tuple<Double, BlockPos> closestPathPos(IPath path) {
+    private XTuple<Double, BlockPos> closestPathPos(IPath path) {
         double best = -1;
         BlockPos bestPos = null;
         for (IMovement movement : path.movements()) {
@@ -280,7 +280,7 @@ public class PathExecutor implements IPathExecutor, Helper {
                 }
             }
         }
-        return new Tuple<>(best, bestPos);
+        return new XTuple<>(best, bestPos);
     }
 
     private boolean shouldPause() {
@@ -316,7 +316,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         return positions.contains(ctx.playerFeet());
     }
 
-    private boolean possiblyOffPath(Tuple<Double, BlockPos> status, double leniency) {
+    private boolean possiblyOffPath(XTuple<Double, BlockPos> status, double leniency) {
         double distanceFromPath = status.getFirst();
         if (distanceFromPath > leniency) {
             // when we're midair in the middle of a fall, we're very far from both the beginning and the end, but we aren't actually off path
@@ -337,7 +337,8 @@ public class PathExecutor implements IPathExecutor, Helper {
      * @return Whether or not it was possible to snap to the current player feet
      */
     public boolean snipsnapifpossible() {
-        if (!ctx.player().onGround && !(ctx.world().getBlockState(ctx.playerFeet()).getBlock() instanceof BlockLiquid)) {
+    	BetterBlockPos bp = ctx.playerFeet();
+        if (!ctx.player().onGround && !(ctx.world().getBlock(bp.x, bp.y, bp.z) instanceof BlockLiquid)) {
             // if we're falling in the air, and not in water, don't splice
             return false;
         } else {
@@ -438,7 +439,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             }
         }
         if (current instanceof MovementFall) {
-            Tuple<Vec3, BlockPos> data = overrideFall((MovementFall) current);
+            XTuple<Vec3, BlockPos> data = overrideFall((MovementFall) current);
             if (data != null) {
                 BetterBlockPos fallDest = new BetterBlockPos(data.getSecond());
                 if (!path.positions().contains(fallDest)) {
@@ -459,7 +460,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         return false;
     }
 
-    private Tuple<Vec3, BlockPos> overrideFall(MovementFall movement) {
+    private XTuple<Vec3, BlockPos> overrideFall(MovementFall movement) {
         Vec3i dir = movement.getDirection();
         if (dir.getY() < -3) {
             return null;
@@ -493,8 +494,8 @@ public class PathExecutor implements IPathExecutor, Helper {
             return null; // no valid extension exists
         }
         double len = i - pathPosition - 0.4;
-        return new Tuple<>(
-                new Vec3(flatDir.getX() * len + movement.getDest().x + 0.5, movement.getDest().y, flatDir.getZ() * len + movement.getDest().z + 0.5),
+        return new XTuple<>(
+        		Vec3.createVectorHelper(flatDir.getX() * len + movement.getDest().x + 0.5, movement.getDest().y, flatDir.getZ() * len + movement.getDest().z + 0.5),
                 movement.getDest().add(flatDir.getX() * (i - pathPosition), 0, flatDir.getZ() * (i - pathPosition)));
     }
 
@@ -543,10 +544,12 @@ public class PathExecutor implements IPathExecutor, Helper {
                 }
             }
         }
-        if (MovementHelper.avoidWalkingInto(ctx.world().getBlockState(current.getSrc().up(3)).getBlock())) {
+        BetterBlockPos up3 = current.getSrc().up(3);
+        if (MovementHelper.avoidWalkingInto(ctx.world().getBlock(up3.x, up3.y, up3.z))) {
             return false;
         }
-        return !MovementHelper.avoidWalkingInto(ctx.world().getBlockState(next.getDest().up(2)).getBlock()); // codacy smh my head
+        BetterBlockPos up2 = next.getDest().up(2);
+        return !MovementHelper.avoidWalkingInto(ctx.world().getBlock(up2.x, up2.y, up2.z)); // codacy smh my head
     }
 
     private static boolean canSprintFromDescendInto(IPlayerContext ctx, IMovement current, IMovement next) {

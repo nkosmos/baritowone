@@ -17,6 +17,14 @@
 
 package baritone.command.defaults;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 import baritone.KeepName;
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
@@ -30,11 +38,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class FollowCommand extends Command {
 
@@ -82,6 +85,7 @@ public class FollowCommand extends Command {
                 classes.stream()
                         .map(c -> EntityList.classToStringMapping.get(c))
                         .map(Objects::requireNonNull)
+                        .map(String.class::cast)
                         .forEach(this::logDirect);
             }
         }

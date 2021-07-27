@@ -17,22 +17,20 @@
 
 package baritone.api.command.datatypes;
 
+import java.util.stream.Stream;
+
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.helpers.TabCompleteHelper;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.stream.Stream;
 
 public enum BlockById implements IDatatypeFor<Block> {
     INSTANCE;
 
     @Override
     public Block get(IDatatypeContext ctx) throws CommandException {
-        ResourceLocation id = new ResourceLocation(ctx.getConsumer().getString());
         Block block;
-        if ((block = Block.blockRegistry.getObject(id)) == Blocks.air) {
+        if ((block = (Block) Block.blockRegistry.getObject(ctx.getConsumer().getString())) == Blocks.air) {
             throw new IllegalArgumentException("no block found by that id");
         }
         return block;

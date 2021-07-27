@@ -17,7 +17,7 @@
 
 package baritone.utils.pathing;
 
-import net.minecraft.world.border.WorldBorder;
+import baritone.Baritone;
 
 /**
  * Essentially, a "rule" for the path finder, prevents proposed movements from attempting to venture
@@ -30,11 +30,11 @@ public class BetterWorldBorder {
     private final double minZ;
     private final double maxZ;
 
-    public BetterWorldBorder(WorldBorder border) {
-        this.minX = border.minX();
-        this.maxX = border.maxX();
-        this.minZ = border.minZ();
-        this.maxZ = border.maxZ();
+    public BetterWorldBorder() {
+        this.minX = Baritone.settings().worldBorderMinX.value;
+        this.maxX = Baritone.settings().worldBorderMaxX.value;
+        this.minZ = Baritone.settings().worldBorderMinZ.value;
+        this.maxZ = Baritone.settings().worldBorderMaxZ.value;
     }
 
     public boolean entirelyContains(int x, int z) {

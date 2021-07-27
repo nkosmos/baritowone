@@ -17,11 +17,11 @@
 
 package baritone.utils.schematic;
 
+import java.util.List;
+
 import baritone.api.schematic.AbstractSchematic;
 import baritone.api.schematic.IStaticSchematic;
-import net.minecraft.block.state.IBlockState;
-
-import java.util.List;
+import baritonex.utils.state.IBlockState;
 
 /**
  * Default implementation of {@link IStaticSchematic}

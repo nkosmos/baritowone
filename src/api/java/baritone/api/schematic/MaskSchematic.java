@@ -17,9 +17,9 @@
 
 package baritone.api.schematic;
 
-import net.minecraft.block.state.IBlockState;
-
 import java.util.List;
+
+import baritonex.utils.state.IBlockState;
 
 public abstract class MaskSchematic extends AbstractSchematic {
 

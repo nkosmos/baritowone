@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import baritone.api.BaritoneAPI;
 import baritone.api.event.events.RenderEvent;
 import baritone.api.pathing.calc.IPath;
@@ -45,13 +47,11 @@ import baritone.api.utils.interfaces.IGoalRenderPos;
 import baritone.behavior.PathingBehavior;
 import baritone.pathing.path.PathExecutor;
 import baritonex.utils.XHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
@@ -72,15 +72,15 @@ public final class PathRenderer implements IRenderer {
             ((GuiClick) Helper.mc.currentScreen).onRender();
         }
 
-        int thisPlayerDimension = behavior.baritone.getPlayerContext().world().provider.getDimensionId();
-        int currentRenderViewDimension = BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world().provider.getDimensionId();
+        int thisPlayerDimension = behavior.baritone.getPlayerContext().world().provider.dimensionId;
+        int currentRenderViewDimension = BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world().provider.dimensionId;
 
         if (thisPlayerDimension != currentRenderViewDimension) {
             // this is a path for a bot in a different dimension, don't render it
             return;
         }
 
-        Entity renderView = Helper.mc.getRenderViewEntity();
+        Entity renderView = Helper.mc.renderViewEntity;
 
         if (renderView.worldObj != BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world()) {
             System.out.println("I have no idea what's going on");
@@ -181,14 +181,14 @@ public final class PathRenderer implements IRenderer {
         double vpZ = renderManager.viewerPosZ;
         boolean renderPathAsFrickinThingy = !settings.renderPathAsLine.value;
 
-        buffer.begin(renderPathAsFrickinThingy ? GL_LINE_STRIP : GL_LINES, DefaultVertexFormats.POSITION);
-        buffer.pos(x1 + 0.5D - vpX, y1 + 0.5D - vpY, z1 + 0.5D - vpZ).endVertex();
-        buffer.pos(x2 + 0.5D - vpX, y2 + 0.5D - vpY, z2 + 0.5D - vpZ).endVertex();
+        tessellator.startDrawing(renderPathAsFrickinThingy ? GL_LINE_STRIP : GL_LINES);
+        tessellator.addVertex(x1 + 0.5D - vpX, y1 + 0.5D - vpY, z1 + 0.5D - vpZ);
+        tessellator.addVertex(x2 + 0.5D - vpX, y2 + 0.5D - vpY, z2 + 0.5D - vpZ);
 
         if (renderPathAsFrickinThingy) {
-            buffer.pos(x2 + 0.5D - vpX, y2 + 0.53D - vpY, z2 + 0.5D - vpZ).endVertex();
-            buffer.pos(x1 + 0.5D - vpX, y1 + 0.53D - vpY, z1 + 0.5D - vpZ).endVertex();
-            buffer.pos(x1 + 0.5D - vpX, y1 + 0.5D - vpY, z1 + 0.5D - vpZ).endVertex();
+        	tessellator.addVertex(x2 + 0.5D - vpX, y2 + 0.53D - vpY, z2 + 0.5D - vpZ);
+            tessellator.addVertex(x1 + 0.5D - vpX, y1 + 0.53D - vpY, z1 + 0.5D - vpZ);
+            tessellator.addVertex(x1 + 0.5D - vpX, y1 + 0.5D - vpY, z1 + 0.5D - vpZ);
         }
     }
 
@@ -203,9 +203,9 @@ public final class PathRenderer implements IRenderer {
             AxisAlignedBB toDraw;
 
             if (state.getBlock().equals(Blocks.air)) {
-                toDraw = Blocks.dirt.getSelectedBoundingBox(player.worldObj, pos);
+                toDraw = Blocks.dirt.getSelectedBoundingBoxFromPool(player.worldObj, pos.getX(), pos.getY(), pos.getZ());
             } else {
-                toDraw = state.getBlock().getSelectedBoundingBox(player.worldObj, pos);
+                toDraw = state.getBlock().getSelectedBoundingBoxFromPool(player.worldObj, pos.getX(), pos.getY(), pos.getZ());
             }
 
             IRenderer.drawAABB(toDraw, .002D);
@@ -248,7 +248,7 @@ public final class PathRenderer implements IRenderer {
                 maxY--;
             }
         } else if (goal instanceof GoalXZ) {
-            GoalXZ goalPos = (GoalXZ) goal;
+        	GoalXZ goalPos = (GoalXZ) goal;
 
             if (settings.renderGoalXZBeacon.value) {
                 glPushAttrib(GL_LIGHTING_BIT);
@@ -256,7 +256,7 @@ public final class PathRenderer implements IRenderer {
                 Helper.mc.getTextureManager().bindTexture(beaconBeam);
 
                 if (settings.renderGoalIgnoreDepth.value) {
-                    GlStateManager.disableDepth();
+                    GL11.glDisable(GL11.GL_DEPTH_TEST);
                 }
 
                 XHelper.renderBeamSegment(
@@ -274,7 +274,7 @@ public final class PathRenderer implements IRenderer {
                 );
 
                 if (settings.renderGoalIgnoreDepth.value) {
-                    GlStateManager.enableDepth();
+                	GL11.glEnable(GL11.GL_DEPTH_TEST);
                 }
 
                 glPopAttrib();
@@ -317,15 +317,15 @@ public final class PathRenderer implements IRenderer {
         renderHorizontalQuad(minX, maxX, minZ, maxZ, y1);
         renderHorizontalQuad(minX, maxX, minZ, maxZ, y2);
 
-        buffer.begin(GL_LINES, DefaultVertexFormats.POSITION);
-        buffer.pos(minX, minY, minZ).endVertex();
-        buffer.pos(minX, maxY, minZ).endVertex();
-        buffer.pos(maxX, minY, minZ).endVertex();
-        buffer.pos(maxX, maxY, minZ).endVertex();
-        buffer.pos(maxX, minY, maxZ).endVertex();
-        buffer.pos(maxX, maxY, maxZ).endVertex();
-        buffer.pos(minX, minY, maxZ).endVertex();
-        buffer.pos(minX, maxY, maxZ).endVertex();
+        tessellator.startDrawing(GL_LINES);
+        tessellator.addVertex(minX, minY, minZ);
+        tessellator.addVertex(minX, maxY, minZ);
+        tessellator.addVertex(maxX, minY, minZ);
+        tessellator.addVertex(maxX, maxY, minZ);
+        tessellator.addVertex(maxX, minY, maxZ);
+        tessellator.addVertex(maxX, maxY, maxZ);
+        tessellator.addVertex(minX, minY, maxZ);
+        tessellator.addVertex(minX, maxY, maxZ);
         tessellator.draw();
 
         IRenderer.endLines(settings.renderGoalIgnoreDepth.value);
@@ -333,11 +333,11 @@ public final class PathRenderer implements IRenderer {
 
     private static void renderHorizontalQuad(double minX, double maxX, double minZ, double maxZ, double y) {
         if (y != 0) {
-            buffer.begin(GL_LINE_LOOP, DefaultVertexFormats.POSITION);
-            buffer.pos(minX, y, minZ).endVertex();
-            buffer.pos(maxX, y, minZ).endVertex();
-            buffer.pos(maxX, y, maxZ).endVertex();
-            buffer.pos(minX, y, maxZ).endVertex();
+            tessellator.startDrawing(GL_LINE_LOOP);
+            tessellator.addVertex(minX, y, minZ);
+            tessellator.addVertex(maxX, y, minZ);
+            tessellator.addVertex(maxX, y, maxZ);
+            tessellator.addVertex(minX, y, maxZ);
             tessellator.draw();
         }
     }

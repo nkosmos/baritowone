@@ -17,7 +17,7 @@
 
 package baritone.api.schematic;
 
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.state.IBlockState;
 
 /**
  * A static schematic is capable of providing the desired state at a given position without

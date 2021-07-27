@@ -17,6 +17,10 @@
 
 package baritone.command.manager;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Stream;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.command.ICommand;
@@ -29,11 +33,7 @@ import baritone.api.command.registry.Registry;
 import baritone.command.argument.ArgConsumer;
 import baritone.command.argument.CommandArguments;
 import baritone.command.defaults.DefaultCommands;
-import net.minecraft.util.Tuple;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
+import baritonex.utils.data.XTuple;
 
 /**
  * The default, internal implementation of {@link ICommandManager}
@@ -77,7 +77,7 @@ public class CommandManager implements ICommandManager {
     }
 
     @Override
-    public boolean execute(Tuple<String, List<ICommandArgument>> expanded) {
+    public boolean execute(XTuple<String, List<ICommandArgument>> expanded) {
         ExecutionWrapper execution = this.from(expanded);
         if (execution != null) {
             execution.execute();
@@ -86,14 +86,14 @@ public class CommandManager implements ICommandManager {
     }
 
     @Override
-    public Stream<String> tabComplete(Tuple<String, List<ICommandArgument>> expanded) {
+    public Stream<String> tabComplete(XTuple<String, List<ICommandArgument>> expanded) {
         ExecutionWrapper execution = this.from(expanded);
         return execution == null ? Stream.empty() : execution.tabComplete();
     }
 
     @Override
     public Stream<String> tabComplete(String prefix) {
-        Tuple<String, List<ICommandArgument>> pair = expand(prefix, true);
+        XTuple<String, List<ICommandArgument>> pair = expand(prefix, true);
         String label = pair.getFirst();
         List<ICommandArgument> args = pair.getSecond();
         if (args.isEmpty()) {
@@ -106,7 +106,7 @@ public class CommandManager implements ICommandManager {
         }
     }
 
-    private ExecutionWrapper from(Tuple<String, List<ICommandArgument>> expanded) {
+    private ExecutionWrapper from(XTuple<String, List<ICommandArgument>> expanded) {
         String label = expanded.getFirst();
         ArgConsumer args = new ArgConsumer(this, expanded.getSecond());
 
@@ -114,13 +114,13 @@ public class CommandManager implements ICommandManager {
         return command == null ? null : new ExecutionWrapper(command, label, args);
     }
 
-    private static Tuple<String, List<ICommandArgument>> expand(String string, boolean preserveEmptyLast) {
+    private static XTuple<String, List<ICommandArgument>> expand(String string, boolean preserveEmptyLast) {
         String label = string.split("\\s", 2)[0];
         List<ICommandArgument> args = CommandArguments.from(string.substring(label.length()), preserveEmptyLast);
-        return new Tuple<>(label, args);
+        return new XTuple<>(label, args);
     }
 
-    public static Tuple<String, List<ICommandArgument>> expand(String string) {
+    public static XTuple<String, List<ICommandArgument>> expand(String string) {
         return expand(string, false);
     }
 

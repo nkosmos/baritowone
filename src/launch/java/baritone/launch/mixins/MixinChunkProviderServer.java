@@ -17,7 +17,6 @@
 
 package baritone.launch.mixins;
 
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -25,7 +24,6 @@ import baritone.utils.accessor.IAnvilChunkLoader;
 import baritone.utils.accessor.IChunkProviderServer;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 import net.minecraft.world.gen.ChunkProviderServer;
 
@@ -40,7 +38,7 @@ public class MixinChunkProviderServer implements IChunkProviderServer {
     private IChunkLoader chunkLoader;
 
     @Shadow
-    private LongHashMap<Chunk> id2ChunkMap;
+    private LongHashMap id2ChunkMap;
     
     @Override
     public IChunkLoader getChunkLoader() {

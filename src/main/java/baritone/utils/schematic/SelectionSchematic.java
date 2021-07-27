@@ -22,9 +22,9 @@ import java.util.stream.Stream;
 import baritone.api.schematic.ISchematic;
 import baritone.api.schematic.MaskSchematic;
 import baritone.api.selection.ISelection;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3i;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.Vec3i;
+import baritonex.utils.state.IBlockState;
 
 public class SelectionSchematic extends MaskSchematic {
 
@@ -34,9 +34,9 @@ public class SelectionSchematic extends MaskSchematic {
         super(schematic);
         this.selections = Stream.of(selections).map(
                 sel -> sel
-                    .shift(EnumFacing.WEST, origin.getX())
-                    .shift(EnumFacing.DOWN, origin.getY())
-                    .shift(EnumFacing.NORTH, origin.getZ()))
+                    .shift(XEnumFacing.WEST, origin.getX())
+                    .shift(XEnumFacing.DOWN, origin.getY())
+                    .shift(XEnumFacing.NORTH, origin.getZ()))
                 .toArray(ISelection[]::new);
     }
 

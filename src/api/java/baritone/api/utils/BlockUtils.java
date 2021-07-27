@@ -28,7 +28,7 @@ public class BlockUtils {
     private static transient Map<String, Block> resourceCache = new HashMap<>();
 
     public static String blockToString(Block block) {
-        ResourceLocation loc = Block.blockRegistry.getNameForObject(block);
+        ResourceLocation loc = new ResourceLocation(Block.blockRegistry.getNameForObject(block));
         String name = loc.getResourcePath(); // normally, only write the part after the minecraft:
         if (!loc.getResourceDomain().equals("minecraft")) {
             // Baritone is running on top of forge with mods installed, perhaps?
@@ -36,9 +36,13 @@ public class BlockUtils {
         }
         return name;
     }
+    
+    public static String ensureNamespaced(String p_148755_0_) {
+        return p_148755_0_.indexOf(58) == -1 ? "minecraft:" + p_148755_0_ : p_148755_0_;
+    }
 
     public static Block stringToBlockRequired(String name) {
-        Block block = stringToBlockNullable(name);
+        Block block = stringToBlockNullable(ensureNamespaced(name));
 
         if (block == null) {
             throw new IllegalArgumentException(String.format("Invalid block name %s", name));

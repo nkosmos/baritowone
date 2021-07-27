@@ -20,9 +20,9 @@ package baritone.api.pathing.goals;
 import java.util.Arrays;
 
 import baritone.api.utils.SettingsUtil;
+import baritonex.utils.math.BlockPos;
 import it.unimi.dsi.fastutil.doubles.DoubleIterator;
 import it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet;
-import net.minecraft.util.BlockPos;
 
 /**
  * Useful for automated combat (retreating specifically)
@@ -110,7 +110,7 @@ public class GoalRunAway implements Goal {
                     } else {
                         minOutside = Math.min(minOutside, h);
                     }
-                }
+                }	
             }
         }
         double maxInside = Double.NEGATIVE_INFINITY;

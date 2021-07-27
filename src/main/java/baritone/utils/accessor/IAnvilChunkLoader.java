@@ -17,9 +17,10 @@
 
 package baritone.utils.accessor;
 
-import baritone.cache.WorldProvider;
-
 import java.io.File;
+import java.util.List;
+
+import baritone.cache.WorldProvider;
 
 /**
  * @author Brady
@@ -27,6 +28,8 @@ import java.io.File;
  * @since 8/4/2018
  */
 public interface IAnvilChunkLoader {
+	
+	List getChunksToRemove();
 
     File getChunkSaveLocation();
     

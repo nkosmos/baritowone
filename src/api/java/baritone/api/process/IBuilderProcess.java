@@ -21,10 +21,10 @@ import java.io.File;
 import java.util.List;
 
 import baritone.api.schematic.ISchematic;
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.math.Vec3i;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3i;
 
 /**
  * @author Brady

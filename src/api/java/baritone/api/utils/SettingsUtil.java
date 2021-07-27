@@ -41,10 +41,11 @@ import java.util.stream.Stream;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.Vec3i;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3i;
 
 public class SettingsUtil {
 
@@ -232,7 +233,7 @@ public class SettingsUtil {
         FLOAT(Float.class, Float::parseFloat),
         LONG(Long.class, Long::parseLong),
         STRING(String.class, String::new),
-        ENUMFACING(EnumFacing.class, EnumFacing::byName),
+        ENUMFACING(EnumFacing.class, s -> XEnumFacing.byName(s).toVanilla()),
         COLOR(
                 Color.class,
                 str -> new Color(Integer.parseInt(str.split(",")[0]), Integer.parseInt(str.split(",")[1]), Integer.parseInt(str.split(",")[2])),
@@ -250,7 +251,19 @@ public class SettingsUtil {
         ),
         ITEM(
                 Item.class,
-                str -> Item.getByNameOrId(str.trim()),
+                str -> {
+                	Item item = (Item)Item.itemRegistry.getObject(BlockUtils.ensureNamespaced(str.trim()));
+
+                    if (item == null) {
+                        try {
+                            return Item.getItemById(Integer.parseInt(str.trim()));
+                        } catch (NumberFormatException var3) {
+                            ;
+                        }
+                    }
+
+                    return item;
+                },
                 item -> Item.itemRegistry.getNameForObject(item).toString()
         ),
         LIST() {

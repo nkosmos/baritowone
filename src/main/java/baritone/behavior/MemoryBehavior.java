@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.google.common.collect.Maps;
+
 import baritone.Baritone;
 import baritone.api.cache.Waypoint;
 import baritone.api.event.events.BlockInteractEvent;
@@ -41,11 +43,14 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import baritone.cache.ContainerMemory;
 import baritone.utils.BlockStateInterface;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -53,12 +58,16 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.network.play.server.S2DPacketOpenWindow;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityLockable;
-import net.minecraft.util.BlockPos;
+import net.minecraft.tileentity.TileEntityBeacon;
+import net.minecraft.tileentity.TileEntityBrewingStand;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityDispenser;
+import net.minecraft.tileentity.TileEntityDropper;
+import net.minecraft.tileentity.TileEntityEnchantmentTable;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 
 /**
@@ -106,25 +115,28 @@ public final class MemoryBehavior extends Behavior {
             if (p instanceof C08PacketPlayerBlockPlacement ) {
             	C08PacketPlayerBlockPlacement packet = event.cast();
 
-                TileEntity tileEntity = ctx.world().getTileEntity(packet.getPosition());
+                TileEntity tileEntity = ctx.world().getTileEntity(packet.getPlacedBlockX(), packet.getPlacedBlockY(), packet.getPlacedBlockZ());
                 // if tileEntity is an ender chest, we don't need to do anything. ender chests are treated the same regardless of what coordinate right clicked
 
+                BetterBlockPos position = BetterBlockPos.from(packet);
+                int size = -1;
+                
                 // Ensure the TileEntity is a container of some sort
-                if (tileEntity instanceof TileEntityLockable) {
-
-                    TileEntityLockable lockable = (TileEntityLockable) tileEntity;
-                    int size = lockable.getSizeInventory();
-                    BetterBlockPos position = BetterBlockPos.from(tileEntity.getPos());
-                    BetterBlockPos adj = BetterBlockPos.from(neighboringConnectedBlock(position));
-                    System.out.println(position + " " + adj);
-                    if (adj != null) {
-                        size *= 2; // double chest or double trapped chest
-                        if (adj.getX() < position.getX() || adj.getZ() < position.getZ()) {
-                            position = adj; // standardize on the lower coordinate, regardless of which side of the large chest we right clicked
+                if (tileEntity instanceof IInventory) {
+                	int id = getGuiID(tileEntity);
+                	if(id != -1) {
+                		size = ((IInventory)tileEntity).getSizeInventory();
+                        BetterBlockPos adj = BetterBlockPos.from(neighboringConnectedBlock(position));
+                        System.out.println(position + " " + adj);
+                        if (adj != null) {
+                            size *= 2; // double chest or double trapped chest
+                            if (adj.getX() < position.getX() || adj.getZ() < position.getZ()) {
+                                position = adj; // standardize on the lower coordinate, regardless of which side of the large chest we right clicked
+                            }
                         }
-                    }
 
-                    this.futureInventories.add(new FutureInventory(System.nanoTime() / 1000000L, size, lockable.getGuiID(), position));
+                        this.futureInventories.add(new FutureInventory(System.nanoTime() / 1000000L, size, id, position));                		
+                	}
                 }
             }
 
@@ -132,6 +144,24 @@ public final class MemoryBehavior extends Behavior {
                 getCurrent().save();
             }
         }
+    }
+    
+    private static Map<Class<? extends TileEntity>, Integer> TILEENTITY_TO_GUIID = Maps.newHashMap();
+    
+    private int getGuiID(TileEntity tileEntity) {
+    	Class<?> clazz = tileEntity.getClass();
+    	return TILEENTITY_TO_GUIID.getOrDefault(clazz, -1);
+    }
+    
+    static {
+    	TILEENTITY_TO_GUIID.put(TileEntityChest.class, 0);
+    	TILEENTITY_TO_GUIID.put(TileEntityFurnace.class, 2);
+    	TILEENTITY_TO_GUIID.put(TileEntityDispenser.class, 3);
+    	TILEENTITY_TO_GUIID.put(TileEntityEnchantmentTable.class, 4);
+    	TILEENTITY_TO_GUIID.put(TileEntityBrewingStand.class, 5);
+    	TILEENTITY_TO_GUIID.put(TileEntityBeacon.class, 7);
+    	TILEENTITY_TO_GUIID.put(TileEntityHopper.class, 9);
+    	TILEENTITY_TO_GUIID.put(TileEntityDropper.class, 10);
     }
 
     @Override
@@ -147,21 +177,20 @@ public final class MemoryBehavior extends Behavior {
                 // Remove any entries that were created over a second ago, this should make up for INSANE latency
                 futureInventories.removeIf(i -> System.nanoTime() / 1000000L - i.time > 1000);
 
-                System.out.println("Received packet " + packet.getGuiId() + " " + packet.getEntityId() + " " + packet.getSlotCount() + " " + packet.getWindowId());
-                System.out.println(packet.getWindowTitle());
-                if (packet.getWindowTitle() instanceof ChatComponentTranslation && ((ChatComponentTranslation) packet.getWindowTitle()).getKey().equals("container.enderchest")) {
+                if (packet.func_148902_e().toLowerCase().contains("enderchest")) {
                     // title is not customized (i.e. this isn't just a renamed shulker)
-                    enderChestWindowId = packet.getWindowId();
+                    enderChestWindowId = packet.func_148901_c();
                     return;
                 }
+                
                 futureInventories.stream()
-                        .filter(i -> i.type.equals(packet.getGuiId()) && i.slots == packet.getSlotCount())
+                        .filter(i -> i.type == packet.func_148899_d() && i.slots == packet.func_148898_f())
                         .findFirst().ifPresent(matched -> {
                     // Remove the future inventory
                     futureInventories.remove(matched);
 
                     // Setup the remembered inventory
-                    getCurrentContainer().setup(matched.pos, packet.getWindowId(), packet.getSlotCount());
+                    getCurrentContainer().setup(matched.pos, packet.func_148901_c(), packet.func_148898_f());
                 });
             }
 
@@ -235,7 +264,7 @@ public final class MemoryBehavior extends Behavior {
             return null; // other things that have contents, but can be placed adjacent without combining
         }
         for (int i = 0; i < 4; i++) {
-            BlockPos adj = in.offset(EnumFacing.getHorizontal(i));
+            BlockPos adj = in.offset(XEnumFacing.getHorizontal(i));
             if (bsi.get0(adj).getBlock() == block) {
                 return adj;
             }
@@ -261,14 +290,14 @@ public final class MemoryBehavior extends Behavior {
         /**
          * The type of inventory
          */
-        private final String type;
+        private final int type;
 
         /**
          * The position of the inventory container
          */
         private final BlockPos pos;
 
-        private FutureInventory(long time, int slots, String type, BlockPos pos) {
+        private FutureInventory(long time, int slots, int type, BlockPos pos) {
             this.time = time;
             this.slots = slots;
             this.type = type;

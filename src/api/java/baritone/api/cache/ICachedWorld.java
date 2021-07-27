@@ -19,7 +19,7 @@ package baritone.api.cache;
 
 import java.util.ArrayList;
 
-import net.minecraft.util.BlockPos;
+import baritonex.utils.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 
 /**

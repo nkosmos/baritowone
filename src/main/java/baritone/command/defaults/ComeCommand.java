@@ -27,8 +27,8 @@ import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.exception.CommandInvalidStateException;
 import baritone.api.pathing.goals.GoalBlock;
+import baritonex.utils.math.BlockPos;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockPos;
 
 public class ComeCommand extends Command {
 
@@ -39,7 +39,7 @@ public class ComeCommand extends Command {
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
-        Entity entity = mc.getRenderViewEntity();
+        Entity entity = mc.renderViewEntity;
         if (entity == null) {
             throw new CommandInvalidStateException("render view entity is null");
         }

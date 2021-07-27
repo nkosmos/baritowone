@@ -18,8 +18,8 @@
 package baritone.api.pathing.goals;
 
 import baritone.api.utils.SettingsUtil;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.BlockPos;
 
 /**
  * Dig a tunnel in a certain direction, but if you have to deviate from the path, go back to where you started
@@ -32,7 +32,7 @@ public class GoalStrictDirection implements Goal {
     public final int dx;
     public final int dz;
 
-    public GoalStrictDirection(BlockPos origin, EnumFacing direction) {
+    public GoalStrictDirection(BlockPos origin, XEnumFacing direction) {
         x = origin.getX();
         y = origin.getY();
         z = origin.getZ();

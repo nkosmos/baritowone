@@ -53,12 +53,12 @@ import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.IRenderer;
 import baritone.utils.schematic.StaticSchematic;
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.math.Vec3i;
+import baritonex.utils.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3i;
 
 public class SelCommand extends Command {
 
@@ -80,7 +80,8 @@ public class SelCommand extends Command {
                 float lineWidth = Baritone.settings().selectionLineWidth.value;
                 boolean ignoreDepth = Baritone.settings().renderSelectionIgnoreDepth.value;
                 IRenderer.startLines(color, opacity, lineWidth, ignoreDepth);
-                IRenderer.drawAABB(new AxisAlignedBB(pos1, pos1.add(1, 1, 1)));
+                BlockPos pos2 = pos1.add(1, 1, 1);
+                IRenderer.drawAABB(AxisAlignedBB.getBoundingBox(pos1.x, pos1.y, pos1.z, pos2.getX(), pos2.getY(), pos2.getZ()));
                 IRenderer.endLines(ignoreDepth);
             }
         });
@@ -96,7 +97,7 @@ public class SelCommand extends Command {
             if (action == Action.POS2 && pos1 == null) {
                 throw new CommandInvalidStateException("Set pos1 first before using pos2");
             }
-            BetterBlockPos playerPos = mc.getRenderViewEntity() != null ? BetterBlockPos.from(new BlockPos(mc.getRenderViewEntity())) : ctx.playerFeet();
+            BetterBlockPos playerPos = mc.renderViewEntity != null ? BetterBlockPos.from(new BlockPos(mc.renderViewEntity)) : ctx.playerFeet();
             BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
             args.requireMax(0);
             if (action == Action.POS1) {
@@ -172,7 +173,7 @@ public class SelCommand extends Command {
             baritone.getBuilderProcess().build("Fill", composite, origin);
             logDirect("Filling now");
         } else if (action == Action.COPY) {
-            BetterBlockPos playerPos = mc.getRenderViewEntity() != null ? BetterBlockPos.from(new BlockPos(mc.getRenderViewEntity())) : ctx.playerFeet();
+            BetterBlockPos playerPos = mc.renderViewEntity != null ? BetterBlockPos.from(new BlockPos(mc.renderViewEntity)) : ctx.playerFeet();
             BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
             args.requireMax(0);
             ISelection[] selections = manager.getSelections();
@@ -213,7 +214,7 @@ public class SelCommand extends Command {
             clipboardOffset = origin.subtract(pos);
             logDirect("Selection copied");
         } else if (action == Action.PASTE) {
-            BetterBlockPos playerPos = mc.getRenderViewEntity() != null ? BetterBlockPos.from(new BlockPos(mc.getRenderViewEntity())) : ctx.playerFeet();
+            BetterBlockPos playerPos = mc.renderViewEntity != null ? BetterBlockPos.from(new BlockPos(mc.renderViewEntity)) : ctx.playerFeet();
             BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
             args.requireMax(0);
             if (clipboard == null) {
@@ -227,7 +228,7 @@ public class SelCommand extends Command {
             if (transformTarget == null) {
                 throw new CommandInvalidStateException("Invalid transform type");
             }
-            EnumFacing direction = args.getDatatypeFor(ForEnumFacing.INSTANCE);
+            XEnumFacing direction = args.getDatatypeFor(ForEnumFacing.INSTANCE);
             int blocks = args.getAs(Integer.class);
             ISelection[] selections = manager.getSelections();
             if (selections.length < 1) {

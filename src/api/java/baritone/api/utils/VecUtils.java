@@ -17,11 +17,11 @@
 
 package baritone.api.utils;
 
+import baritonex.utils.math.BlockPos;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -42,15 +42,15 @@ public final class VecUtils {
      * @see #getBlockPosCenter(BlockPos)
      */
     public static Vec3 calculateBlockCenter(World world, BlockPos pos) {
-        IBlockState b = world.getBlockState(pos);
-        AxisAlignedBB bbox = b.getBlock().getSelectedBoundingBox(world, pos);
+    	Block block = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+        AxisAlignedBB bbox = block.getSelectedBoundingBoxFromPool(world, pos.getX(), pos.getY(), pos.getZ());
         double xDiff = (bbox.maxX - bbox.minX) / 2;
         double yDiff = (bbox.maxY - bbox.minY) / 2;
         double zDiff = (bbox.maxZ - bbox.minZ) / 2;
-        if (b.getBlock() instanceof BlockFire) {//look at bottom of fire when putting it out
+        if (block instanceof BlockFire) {//look at bottom of fire when putting it out
             yDiff = 0;
         }
-        return new Vec3(
+        return Vec3.createVectorHelper(
                 pos.getX() + xDiff,
                 pos.getY() + yDiff,
                 pos.getZ() + zDiff
@@ -68,7 +68,7 @@ public final class VecUtils {
      * @see #calculateBlockCenter(World, BlockPos)
      */
     public static Vec3 getBlockPosCenter(BlockPos pos) {
-        return new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        return Vec3.createVectorHelper(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
     /**

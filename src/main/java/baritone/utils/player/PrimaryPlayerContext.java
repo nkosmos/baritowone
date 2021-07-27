@@ -23,7 +23,7 @@ import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.IPlayerController;
 import baritone.api.utils.RayTraceUtils;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
@@ -38,7 +38,7 @@ public enum PrimaryPlayerContext implements IPlayerContext, Helper {
     INSTANCE;
 
     @Override
-    public EntityPlayerSP player() {
+    public EntityClientPlayerMP player() {
         return mc.thePlayer;
     }
 

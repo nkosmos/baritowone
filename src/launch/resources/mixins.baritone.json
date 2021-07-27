@@ -11,20 +11,16 @@
     "MixinAnvilChunkLoader",
     "MixinChunkProviderClient",
     "MixinChunkProviderServer",
-    "MixinChunkRenderContainer",
+    "MixinEntityClientPlayerMP",
     "MixinEntityLivingBase",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
-    "MixinGuiScreen",
+    "MixinGuiGameOver",
     "MixinItemStack",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
     "MixinPlayerControllerMP",
-    "MixinRenderChunk",
-    "MixinRenderList",
-    "MixinStateImplementation",
-    "MixinVboRenderList",
     "MixinWorldClient"
   ]
 }

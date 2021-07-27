@@ -20,9 +20,10 @@ package baritone.api.utils;
 import java.util.Optional;
 
 import baritone.api.cache.IWorldData;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.BlockSlab;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.BlockPos;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -33,7 +34,7 @@ import net.minecraft.world.World;
  */
 public interface IPlayerContext {
 
-    EntityPlayerSP player();
+    EntityClientPlayerMP player();
 
     IPlayerController playerController();
 
@@ -45,7 +46,7 @@ public interface IPlayerContext {
 
     default BetterBlockPos playerFeet() {
         // TODO find a better way to deal with soul sand!!!!!
-        BetterBlockPos feet = new BetterBlockPos(player().posX, player().posY + 0.1251, player().posZ);
+        BetterBlockPos feet = new BetterBlockPos(player().posX, player().posY - 1 + 0.1251, player().posZ);
 
         // sometimes when calling this from another thread or while world is null, it'll throw a NullPointerException
         // that causes the game to immediately crash
@@ -56,7 +57,7 @@ public interface IPlayerContext {
         // this does not impact performance at all since we're not null checking constantly
         // if there is an exception, the only overhead is Java generating the exception object... so we can ignore it
         try {
-            if (world().getBlockState(feet).getBlock() instanceof BlockSlab) {
+            if (XBlockStateSerializer.getStateFromWorld(world(), feet).getBlock() instanceof BlockSlab) {
                 return feet.up();
             }
         } catch (NullPointerException ignored) {}
@@ -65,11 +66,11 @@ public interface IPlayerContext {
     }
 
     default Vec3 playerFeetAsVec() {
-        return new Vec3(player().posX, player().posY, player().posZ);
+        return Vec3.createVectorHelper(player().posX, player().posY - 1, player().posZ);
     }
 
     default Vec3 playerHead() {
-        return new Vec3(player().posX, player().posY + player().getEyeHeight(), player().posZ);
+    	return Vec3.createVectorHelper(player().posX, player().posY - 1 + player().getEyeHeight(), player().posZ);
     }
 
     default Rotation playerRotations() {
@@ -88,7 +89,7 @@ public interface IPlayerContext {
     default Optional<BlockPos> getSelectedBlock() {
     	MovingObjectPosition result = objectMouseOver();
         if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            return Optional.of(result.getBlockPos());
+            return Optional.of(BlockPos.from(result));
         }
         return Optional.empty();
     }

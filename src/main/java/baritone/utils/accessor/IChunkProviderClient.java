@@ -18,9 +18,8 @@
 package baritone.utils.accessor;
 
 import net.minecraft.util.LongHashMap;
-import net.minecraft.world.chunk.Chunk;
 
 public interface IChunkProviderClient extends IChunkProvider {
 
-	LongHashMap<Chunk> loadedChunks();
+	LongHashMap loadedChunks();
 }

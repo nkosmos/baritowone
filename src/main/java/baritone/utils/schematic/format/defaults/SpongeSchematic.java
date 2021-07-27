@@ -19,16 +19,18 @@ package baritone.utils.schematic.format.defaults;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import baritone.utils.schematic.StaticSchematic;
 import baritone.utils.type.VarInt;
 import baritonex.utils.XHelper;
+import baritonex.utils.property.IProperty;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
@@ -46,7 +48,7 @@ public final class SpongeSchematic extends StaticSchematic {
 
         Int2ObjectArrayMap<IBlockState> palette = new Int2ObjectArrayMap<>();
         NBTTagCompound paletteTag = nbt.getCompoundTag("Palette");
-        for (String tag : paletteTag.getKeySet()) {
+        for (String tag : (Set<String>)paletteTag.getKeySet()) {
             int index = paletteTag.getInteger(tag);
 
             SerializedBlockState serializedState = SerializedBlockState.getFromString(tag);
@@ -106,11 +108,11 @@ public final class SpongeSchematic extends StaticSchematic {
 
         private IBlockState deserialize() {
             if (this.blockState == null) {
-                Block block = Block.blockRegistry.getObject(this.resourceLocation);
-                this.blockState = block.getDefaultState();
+                Block block = (Block)Block.blockRegistry.getObject(this.resourceLocation);
+                this.blockState = XBlockStateSerializer.getBlockState(block);
 
                 this.properties.keySet().stream().sorted(String::compareTo).forEachOrdered(key -> {
-                	IProperty<?> property = block.getBlockState().getProperties().stream().filter(p -> p.getName().equalsIgnoreCase(key)).findFirst().orElse(null);
+                	IProperty<?> property = XBlockStateSerializer.getBlockState(block).getPropertyNames().stream().filter(p -> p.getName().equalsIgnoreCase(key)).findFirst().orElse(null);
                     if (property != null) {
                         this.blockState = setPropertyValue(this.blockState, property, this.properties.get(key));
                     }

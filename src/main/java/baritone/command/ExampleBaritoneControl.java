@@ -41,13 +41,12 @@ import baritone.api.utils.SettingsUtil;
 import baritone.command.argument.ArgConsumer;
 import baritone.command.argument.CommandArguments;
 import baritone.command.manager.CommandManager;
-import baritone.utils.accessor.IGuiScreen;
+import baritonex.utils.data.XTuple;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.Tuple;
 
 public class ExampleBaritoneControl implements Helper, AbstractGameEventListener {
 
@@ -93,6 +92,16 @@ public class ExampleBaritoneControl implements Helper, AbstractGameEventListener
             logDirect(component);
         }
     }
+    
+    private void openWebLink(final URI url) {
+        try {
+            final Class<?> oclass = Class.forName("java.awt.Desktop");
+            final Object object = oclass.getMethod("getDesktop", (Class<?>[])new Class[0]).invoke(null, new Object[0]);
+            oclass.getMethod("browse", URI.class).invoke(object, url);
+        }
+        catch (Throwable throwable) {
+        }
+    }
 
     public boolean runCommand(String msg) {
         if (msg.trim().equalsIgnoreCase("damn")) {
@@ -100,14 +109,14 @@ public class ExampleBaritoneControl implements Helper, AbstractGameEventListener
             return false;
         } else if (msg.trim().equalsIgnoreCase("orderpizza")) {
             try {
-                ((IGuiScreen) mc.currentScreen).openLink(new URI("https://www.dominos.com/en/pages/order/"));
+            	openWebLink(new URI("https://www.dominos.com/en/pages/order/"));
             } catch (NullPointerException | URISyntaxException ignored) {}
             return false;
         }
         if (msg.isEmpty()) {
             return this.runCommand("help");
         }
-        Tuple<String, List<ICommandArgument>> pair = CommandManager.expand(msg);
+        XTuple<String, List<ICommandArgument>> pair = CommandManager.expand(msg);
         String command = pair.getFirst();
         String rest = msg.substring(pair.getFirst().length());
         ArgConsumer argc = new ArgConsumer(this.manager, pair.getSecond());

@@ -36,14 +36,14 @@ public enum NearbyPlayer implements IDatatypeFor<EntityPlayer> {
     public EntityPlayer get(IDatatypeContext ctx) throws CommandException {
         final String username = ctx.getConsumer().getString();
         return getPlayers(ctx).stream()
-                .filter(s -> s.getName().equalsIgnoreCase(username))
+                .filter(s -> s.getCommandSenderName().equalsIgnoreCase(username))
                 .findFirst().orElse(null);
     }
 
     @Override
     public Stream<String> tabComplete(IDatatypeContext ctx) throws CommandException {
         return new TabCompleteHelper()
-                .append(getPlayers(ctx).stream().map(EntityPlayer::getName))
+                .append(getPlayers(ctx).stream().map(EntityPlayer::getCommandSenderName))
                 .filterPrefix(ctx.getConsumer().getString())
                 .sortAlphabetically()
                 .stream();

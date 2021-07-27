@@ -4,7 +4,9 @@ import baritone.Baritone;
 import baritone.api.event.events.RenderEvent;
 import baritone.api.event.listener.AbstractGameEventListener;
 import baritone.api.selection.ISelection;
+import baritone.api.utils.BetterBlockPos;
 import baritone.utils.IRenderer;
+import baritonex.utils.math.BlockPos;
 import net.minecraft.util.AxisAlignedBB;
 
 public class SelectionRenderer implements IRenderer, AbstractGameEventListener {
@@ -37,13 +39,17 @@ public class SelectionRenderer implements IRenderer, AbstractGameEventListener {
             IRenderer.glColor(settings.colorSelectionPos1.value, opacity);
 
             for (ISelection selection : selections) {
-                IRenderer.drawAABB(new AxisAlignedBB(selection.pos1(), selection.pos1().add(1, 1, 1)));
+            	BetterBlockPos p1 = selection.pos1();
+            	BlockPos p2 = p1.add(1, 1, 1);
+                IRenderer.drawAABB(AxisAlignedBB.getBoundingBox(p1.x, p1.y, p1.z, p2.getX(), p2.getY(), p2.getZ()));
             }
 
             IRenderer.glColor(settings.colorSelectionPos2.value, opacity);
 
             for (ISelection selection : selections) {
-                IRenderer.drawAABB(new AxisAlignedBB(selection.pos2(), selection.pos2().add(1, 1, 1)));
+            	BetterBlockPos p1 = selection.pos2();
+            	BlockPos p2 = p1.add(1, 1, 1);
+            	IRenderer.drawAABB(AxisAlignedBB.getBoundingBox(p1.x, p1.y, p1.z, p2.getX(), p2.getY(), p2.getZ()));
             }
         }
 

@@ -23,8 +23,8 @@ import com.github.lunatrius.schematica.Schematica;
 import com.github.lunatrius.schematica.proxy.ClientProxy;
 
 import baritone.api.schematic.IStaticSchematic;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Tuple;
+import baritonex.utils.data.XTuple;
+import baritonex.utils.math.BlockPos;
 
 public enum SchematicaHelper {
     ;
@@ -38,9 +38,9 @@ public enum SchematicaHelper {
         }
     }
 
-    public static Optional<Tuple<IStaticSchematic, BlockPos>> getOpenSchematic() {
+    public static Optional<XTuple<IStaticSchematic, BlockPos>> getOpenSchematic() {
         return Optional.ofNullable(ClientProxy.schematic)
-                .map(world -> new Tuple<>(new SchematicAdapter(world), world.position));
+                .map(world -> new XTuple<>(new SchematicAdapter(world), new BlockPos(world.position.x, world.position.y, world.position.z)));
     }
 
 }

@@ -60,20 +60,23 @@ import baritone.utils.schematic.SchematicSystem;
 import baritone.utils.schematic.SelectionSchematic;
 import baritone.utils.schematic.schematica.SchematicaHelper;
 import baritonex.utils.XHelper;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.data.XTuple;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.math.Vec3i;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
-import net.minecraft.util.Vec3i;
 
 public final class BuilderProcess extends BaritoneProcessHelper implements IBuilderProcess {
 
@@ -164,7 +167,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     @Override
     public void buildOpenSchematic() {
         if (SchematicaHelper.isSchematicaPresent()) {
-            Optional<Tuple<IStaticSchematic, BlockPos>> schematic = SchematicaHelper.getOpenSchematic();
+            Optional<XTuple<IStaticSchematic, BlockPos>> schematic = SchematicaHelper.getOpenSchematic();
             if (schematic.isPresent()) {
                 IStaticSchematic s = schematic.get().getFirst();
                 BlockPos origin = schematic.get().getSecond();
@@ -190,7 +193,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         int widthX = Math.abs(corner1.getX() - corner2.getX()) + 1;
         int heightY = Math.abs(corner1.getY() - corner2.getY()) + 1;
         int lengthZ = Math.abs(corner1.getZ() - corner2.getZ()) + 1;
-        build("clear area", new FillSchematic(widthX, heightY, lengthZ, Blocks.air.getDefaultState()), origin);
+        build("clear area", new FillSchematic(widthX, heightY, lengthZ, XBlockStateSerializer.getBlockState(Blocks.air)), origin);
     }
 
     @Override
@@ -217,7 +220,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         return state;
     }
 
-    private Optional<Tuple<BetterBlockPos, Rotation>> toBreakNearPlayer(BuilderCalculationContext bcc) {
+    private Optional<XTuple<BetterBlockPos, Rotation>> toBreakNearPlayer(BuilderCalculationContext bcc) {
         BetterBlockPos center = ctx.playerFeet();
         BetterBlockPos pathStart = baritone.getPathingBehavior().pathStart();
         for (int dx = -5; dx <= 5; dx++) {
@@ -238,7 +241,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                         BetterBlockPos pos = new BetterBlockPos(x, y, z);
                         Optional<Rotation> rot = RotationUtils.reachable(ctx.player(), pos, ctx.playerController().getBlockReachDistance());
                         if (rot.isPresent()) {
-                            return Optional.of(new Tuple<>(pos, rot.get()));
+                            return Optional.of(new XTuple<>(pos, rot.get()));
                         }
                     }
                 }
@@ -292,26 +295,26 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     }
 
     private Optional<Placement> possibleToPlace(IBlockState toPlace, int x, int y, int z, BlockStateInterface bsi) {
-        for (EnumFacing against : EnumFacing.values()) {
+        for (XEnumFacing against : XEnumFacing.values()) {
             BetterBlockPos placeAgainstPos = new BetterBlockPos(x, y, z).offset(against);
             IBlockState placeAgainstState = bsi.get0(placeAgainstPos);
             if (MovementHelper.isReplaceable(placeAgainstPos.x, placeAgainstPos.y, placeAgainstPos.z, placeAgainstState, bsi)) {
                 continue;
             }
-            if (!ctx.world().canBlockBePlaced(toPlace.getBlock(), new BetterBlockPos(x, y, z), false, against, null, null)) {
+            if (!ctx.world().canPlaceEntityOnSide(toPlace.getBlock(), x, y, z, false, against.toSideHit(), null, null)) {
                 continue;
             }
-            AxisAlignedBB aabb = placeAgainstState.getBlock().getSelectedBoundingBox(ctx.world(), placeAgainstPos);
-            for (Vec3 placementMultiplier : aabbSideMultipliers(against)) {
+            AxisAlignedBB aabb = placeAgainstState.getBlock().getSelectedBoundingBoxFromPool(ctx.world(), placeAgainstPos.x, placeAgainstPos.y, placeAgainstPos.z);
+            for (Vec3 placementMultiplier : aabbSideMultipliers(against.toVanilla())) {
                 double placeX = placeAgainstPos.x + aabb.minX * placementMultiplier.xCoord + aabb.maxX * (1 - placementMultiplier.xCoord);
                 double placeY = placeAgainstPos.y + aabb.minY * placementMultiplier.yCoord + aabb.maxY * (1 - placementMultiplier.yCoord);
                 double placeZ = placeAgainstPos.z + aabb.minZ * placementMultiplier.zCoord + aabb.maxZ * (1 - placementMultiplier.zCoord);
-                Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), new Vec3(placeX, placeY, placeZ), ctx.playerRotations());
+                Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), Vec3.createVectorHelper(placeX, placeY, placeZ), ctx.playerRotations());
                 MovingObjectPosition result = RayTraceUtils.rayTraceTowards(ctx.player(), rot, ctx.playerController().getBlockReachDistance(), true);
-                if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && result.getBlockPos().equals(placeAgainstPos) && result.sideHit == against.getOpposite()) {
+                if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && BlockPos.from(result).equals(placeAgainstPos) && result.sideHit == against.getOpposite().toSideHit()) {
                     OptionalInt hotbar = hasAnyItemThatWouldPlace(toPlace, result, rot);
                     if (hotbar.isPresent()) {
-                        return Optional.of(new Placement(hotbar.getAsInt(), placeAgainstPos, against.getOpposite(), rot));
+                        return Optional.of(new Placement(hotbar.getAsInt(), placeAgainstPos, against.getOpposite().toVanilla(), rot));
                     }
                 }
             }
@@ -330,16 +333,20 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             // the state depends on the facing of the player sometimes
             ctx.player().rotationYaw = rot.getYaw();
             ctx.player().rotationPitch = rot.getPitch();
-            IBlockState wouldBePlaced = ((ItemBlock) stack.getItem()).getBlock().onBlockPlaced(
+            BlockPos bp = BlockPos.from(result).offset(XHelper.sideToFacing(result.sideHit));
+            Block block = ((ItemBlock) stack.getItem()).blockInstance;
+            int meta = block.onBlockPlaced(
                     ctx.world(),
-                    result.getBlockPos().offset(result.sideHit),
+                    bp.getX(),
+                    bp.getY(),
+                    bp.getZ(),
                     result.sideHit,
-                    (float) result.hitVec.xCoord - result.getBlockPos().getX(), // as in PlayerControllerMP
-                    (float) result.hitVec.yCoord - result.getBlockPos().getY(),
-                    (float) result.hitVec.zCoord - result.getBlockPos().getZ(),
-                    stack.getItem().getMetadata(stack.getMetadata()),
-                    ctx.player()
+                    (float) result.hitVec.xCoord - result.blockX,// as in PlayerControllerMP
+                    (float) result.hitVec.yCoord - result.blockY,
+                    (float) result.hitVec.zCoord - result.blockZ,
+                    stack.getItem().getMetadata(stack.getMetadata())
             );
+            IBlockState wouldBePlaced = XBlockStateSerializer.getStateFromMeta(block, meta);
             ctx.player().rotationYaw = originalYaw;
             ctx.player().rotationPitch = originalPitch;
             if (valid(wouldBePlaced, desired, true)) {
@@ -352,16 +359,16 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     private static Vec3[] aabbSideMultipliers(EnumFacing side) {
         switch (side) {
             case UP:
-                return new Vec3[]{new Vec3(0.5, 1, 0.5), new Vec3(0.1, 1, 0.5), new Vec3(0.9, 1, 0.5), new Vec3(0.5, 1, 0.1), new Vec3(0.5, 1, 0.9)};
+                return new Vec3[]{Vec3.createVectorHelper(0.5, 1, 0.5), Vec3.createVectorHelper(0.1, 1, 0.5), Vec3.createVectorHelper(0.9, 1, 0.5), Vec3.createVectorHelper(0.5, 1, 0.1), Vec3.createVectorHelper(0.5, 1, 0.9)};
             case DOWN:
-                return new Vec3[]{new Vec3(0.5, 0, 0.5), new Vec3(0.1, 0, 0.5), new Vec3(0.9, 0, 0.5), new Vec3(0.5, 0, 0.1), new Vec3(0.5, 0, 0.9)};
+                return new Vec3[]{Vec3.createVectorHelper(0.5, 0, 0.5), Vec3.createVectorHelper(0.1, 0, 0.5), Vec3.createVectorHelper(0.9, 0, 0.5), Vec3.createVectorHelper(0.5, 0, 0.1), Vec3.createVectorHelper(0.5, 0, 0.9)};
             case NORTH:
             case SOUTH:
             case EAST:
             case WEST:
                 double x = side.getFrontOffsetX() == 0 ? 0.5 : (1 + side.getFrontOffsetX()) / 2D;
                 double z = side.getFrontOffsetZ() == 0 ? 0.5 : (1 + side.getFrontOffsetZ()) / 2D;
-                return new Vec3[]{new Vec3(x, 0.25, z), new Vec3(x, 0.75, z)};
+                return new Vec3[]{Vec3.createVectorHelper(x, 0.25, z), Vec3.createVectorHelper(x, 0.75, z)};
             default: // null
                 throw new IllegalStateException();
         }
@@ -465,14 +472,14 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             trim();
         }
 
-        Optional<Tuple<BetterBlockPos, Rotation>> toBreak = toBreakNearPlayer(bcc);
+        Optional<XTuple<BetterBlockPos, Rotation>> toBreak = toBreakNearPlayer(bcc);
         if (toBreak.isPresent() && isSafeToCancel && ctx.player().onGround) {
             // we'd like to pause to break this block
             // only change look direction if it's safe (don't want to fuck up an in progress parkour for example
             Rotation rot = toBreak.get().getSecond();
             BetterBlockPos pos = toBreak.get().getFirst();
             baritone.getLookBehavior().updateTarget(rot, true);
-            MovementHelper.switchToBestToolFor(ctx, bcc.get(pos));
+            MovementHelper.switchToBestToolFor(ctx, bcc.get(pos).getBlock());
             if (ctx.player().isSneaking()) {
                 // really horrible bug where a block is visible for breaking while sneaking but not otherwise
                 // so you can't see it, it goes to place something else, sneaks, then the next tick it tries to break
@@ -491,7 +498,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             baritone.getLookBehavior().updateTarget(rot, true);
             ctx.player().inventory.currentItem = toPlace.get().hotbarSelection;
             baritone.getInputOverrideHandler().setInputForceState(Input.SNEAK, true);
-            if ((ctx.isLookingAt(toPlace.get().placeAgainst) && ctx.objectMouseOver().sideHit.equals(toPlace.get().side)) || ctx.playerRotations().isReallyCloseTo(rot)) {
+            if ((ctx.isLookingAt(toPlace.get().placeAgainst) && XHelper.sideToFacing(ctx.objectMouseOver().sideHit).toVanilla().equals(toPlace.get().side)) || ctx.playerRotations().isReallyCloseTo(rot)) {
                 baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);
             }
             return new PathingCommand(null, PathingCommandType.CANCEL_AND_SET_GOAL);
@@ -738,14 +745,14 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     }
 
     private Goal placementGoal(BlockPos pos, BuilderCalculationContext bcc) {
-        if (ctx.world().getBlockState(pos).getBlock() != Blocks.air) { // TODO can this even happen?
+        if (XBlockStateSerializer.getStateFromWorld(ctx.world(), pos).getBlock() != Blocks.air) { // TODO can this even happen?
             return new GoalPlace(pos);
         }
-        boolean allowSameLevel = ctx.world().getBlockState(pos.up()).getBlock() != Blocks.air;
-        IBlockState current = ctx.world().getBlockState(pos);
-        for (EnumFacing facing : Movement.HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP) {
+        boolean allowSameLevel = XBlockStateSerializer.getStateFromWorld(ctx.world(), pos.up()).getBlock() != Blocks.air;
+        IBlockState current = XBlockStateSerializer.getStateFromWorld(ctx.world(), pos);
+        for (XEnumFacing facing : Movement.HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP) {
             //noinspection ConstantConditions
-            if (MovementHelper.canPlaceAgainst(ctx, pos.offset(facing)) && ctx.world().canBlockBePlaced(bcc.getSchematic(pos.getX(), pos.getY(), pos.getZ(), current).getBlock(), pos, false, facing, null, null)) {
+            if (MovementHelper.canPlaceAgainst(ctx, pos.offset(facing)) && ctx.world().canPlaceEntityOnSide(bcc.getSchematic(pos.getX(), pos.getY(), pos.getZ(), current).getBlock(), pos.getX(), pos.getY(), pos.getZ(), false, facing.toSideHit(), null, null)) {
                 return new GoalAdjacent(pos, pos.offset(facing), allowSameLevel);
             }
         }
@@ -834,11 +841,14 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         for (int i = 0; i < size; i++) {
             ItemStack stack = ctx.player().inventory.mainInventory[i];
             if (XHelper.isEmpty(stack) || !(stack.getItem() instanceof ItemBlock)) {
-                result.add(Blocks.air.getDefaultState());
+                result.add(XBlockStateSerializer.getBlockState(Blocks.air));
                 continue;
             }
             // <toxic cloud>
-            result.add(((ItemBlock) stack.getItem()).getBlock().onBlockPlaced(ctx.world(), ctx.playerFeet(), EnumFacing.UP, (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()), ctx.player()));
+            Block block = ((ItemBlock) stack.getItem()).blockInstance;
+            BetterBlockPos pos = ctx.playerFeet();
+            int meta = block.onBlockPlaced(ctx.world(), pos.x, pos.y, pos.z, XEnumFacing.UP.toSideHit(), (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()));
+            result.add(XBlockStateSerializer.getStateFromMeta(block, meta));
             // </toxic cloud>
         }
         return result;

@@ -26,14 +26,16 @@ import java.util.Map;
 import baritone.api.utils.BlockUtils;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.pathing.PathingBlockType;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.property.Properties;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockTallGrass;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
@@ -74,11 +76,12 @@ public final class ChunkPacker {
                     for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
                             int index = CachedChunk.getPositionIndex(x, y, z);
-                            IBlockState state = extendedblockstorage.get(x, y1, z);
+                            Block block = extendedblockstorage.getBlockByExtId(x, y1, z);
+                            int meta = extendedblockstorage.getExtBlockMetadata(x, y1, z);
+                            IBlockState state = XBlockStateSerializer.getStateFromMeta(block, meta);
                             boolean[] bits = getPathingBlockType(state, chunk, x, y, z).getBits();
                             bitSet.set(index, bits[0]);
                             bitSet.set(index + 1, bits[1]);
-                            Block block = state.getBlock();
                             if (CachedChunk.BLOCKS_TO_KEEP_TRACK_OF.contains(block)) {
                                 String name = BlockUtils.blockToString(block);
                                 specialBlocks.computeIfAbsent(name, b -> new ArrayList<>()).add(new BlockPos(x, y, z));
@@ -101,11 +104,11 @@ public final class ChunkPacker {
                 for (int y = 255; y >= 0; y--) {
                     int index = CachedChunk.getPositionIndex(x, y, z);
                     if (bitSet.get(index) || bitSet.get(index + 1)) {
-                        blocks[z << 4 | x] = chunk.getBlockState(new BlockPos(x, y, z));
+                        blocks[z << 4 | x] = XBlockStateSerializer.getStateFromChunk(chunk, new BlockPos(x, y, z));
                         continue https;
                     }
                 }
-                blocks[z << 4 | x] = Blocks.air.getDefaultState();
+                blocks[z << 4 | x] = XBlockStateSerializer.getBlockState(Blocks.air);
             }
         }
         // @formatter:on
@@ -122,18 +125,18 @@ public final class ChunkPacker {
                 return PathingBlockType.AVOID;
             }
             if (
-                    (x != 15 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BlockPos(x + 1, y, z))))
-                            || (x != 0 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BlockPos(x - 1, y, z))))
-                            || (z != 15 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BlockPos(x, y, z + 1))))
-                            || (z != 0 && MovementHelper.possiblyFlowing(chunk.getBlockState(new BlockPos(x, y, z - 1))))
+                    (x != 15 && MovementHelper.possiblyFlowing(XBlockStateSerializer.getStateFromChunk(chunk, x + 1, y, z)))
+                            || (x != 0 && MovementHelper.possiblyFlowing(XBlockStateSerializer.getStateFromChunk(chunk, x - 1, y, z)))
+                            || (z != 15 && MovementHelper.possiblyFlowing(XBlockStateSerializer.getStateFromChunk(chunk, x, y, z + 1)))
+                            || (z != 0 && MovementHelper.possiblyFlowing(XBlockStateSerializer.getStateFromChunk(chunk, x, y, z - 1)))
             ) {
                 return PathingBlockType.AVOID;
             }
             if (x == 0 || x == 15 || z == 0 || z == 15) {
-            	World world = chunk.getWorld();
+            	World world = chunk.worldObj;
         		BlockPos bp = new BlockPos(x + chunk.xPosition << 4, y, z + chunk.zPosition << 4);
-        		if(world.getBlockState(bp).getProperties().containsKey(BlockLiquid.LEVEL)) {
-        			if (BlockLiquid.getFlowDirection(world, bp, state.getBlock().getMaterial()) == -1000.0F) {
+        		if(XBlockStateSerializer.getStateFromWorld(world, bp).getProperties().containsKey(Properties.LIQUID_LEVEL)) {
+        			if (BlockLiquid.getFlowDirection(world, bp.getX(), bp.getY(), bp.getZ(), state.getBlock().getMaterial()) == -1000.0F) {
         				return PathingBlockType.WATER;
         			}
         		}
@@ -159,21 +162,21 @@ public final class ChunkPacker {
     public static IBlockState pathingTypeToBlock(PathingBlockType type, int dimension) {
         switch (type) {
             case AIR:
-                return Blocks.air.getDefaultState();
+                return XBlockStateSerializer.getBlockState(Blocks.air);
             case WATER:
-                return Blocks.water.getDefaultState();
+                return XBlockStateSerializer.getBlockState(Blocks.water);
             case AVOID:
-                return Blocks.lava.getDefaultState();
+                return XBlockStateSerializer.getBlockState(Blocks.lava);
             case SOLID:
                 // Dimension solid types
                 switch (dimension) {
                     case -1:
-                        return Blocks.netherrack.getDefaultState();
+                        return XBlockStateSerializer.getBlockState(Blocks.netherrack);
                     case 0:
                     default: // The fallback solid type
-                        return Blocks.stone.getDefaultState();
+                        return XBlockStateSerializer.getBlockState(Blocks.stone);
                     case 1:
-                        return Blocks.end_stone.getDefaultState();
+                        return XBlockStateSerializer.getBlockState(Blocks.end_stone);
                 }
             default:
                 return null;

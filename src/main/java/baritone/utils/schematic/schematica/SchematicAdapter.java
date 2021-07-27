@@ -22,8 +22,8 @@ import java.util.List;
 import com.github.lunatrius.schematica.client.world.SchematicWorld;
 
 import baritone.api.schematic.IStaticSchematic;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 
 public final class SchematicAdapter implements IStaticSchematic {
 
@@ -40,21 +40,24 @@ public final class SchematicAdapter implements IStaticSchematic {
 
     @Override
     public IBlockState getDirect(int x, int y, int z) {
-        return this.schematic.getSchematic().getBlockState(new BlockPos(x, y, z));
+        return XBlockStateSerializer.getStateFromMeta(
+        		this.schematic.getBlock(x, y, z), 
+        		this.schematic.getBlockMetadata(x, y, z)
+        );
     }
 
     @Override
     public int widthX() {
-        return schematic.getSchematic().getWidth();
+        return schematic.getWidth();
     }
 
     @Override
     public int heightY() {
-        return schematic.getSchematic().getHeight();
+        return schematic.getHeight();
     }
 
     @Override
     public int lengthZ() {
-        return schematic.getSchematic().getLength();
+        return schematic.getLength();
     }
 }

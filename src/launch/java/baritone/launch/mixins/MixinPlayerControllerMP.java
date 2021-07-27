@@ -21,9 +21,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
+import baritone.api.utils.BetterBlockPos;
 import baritone.utils.accessor.IPlayerControllerMP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.util.BlockPos;
 
 @Mixin(PlayerControllerMP.class)
 public abstract class MixinPlayerControllerMP implements IPlayerControllerMP {
@@ -33,8 +33,16 @@ public abstract class MixinPlayerControllerMP implements IPlayerControllerMP {
     public abstract void setIsHittingBlock(boolean isHittingBlock);
 
     @Accessor
+    public abstract int getCurrentBlockX();
+    @Accessor
+    public abstract int getCurrentBlockY();
+    @Accessor
+    public abstract int getCurrentBlockZ();
+    
     @Override
-    public abstract BlockPos getCurrentBlock();
+    public BetterBlockPos getCurrentBlock() {
+    	return new BetterBlockPos(getCurrentBlockX(), getCurrentBlockY(), getCurrentBlockZ());
+    }
 
     @Invoker
     @Override

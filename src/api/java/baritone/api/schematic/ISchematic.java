@@ -17,10 +17,10 @@
 
 package baritone.api.schematic;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-
 import java.util.List;
+
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.state.IBlockState;
 
 /**
  * Basic representation of a schematic. Provides the dimensions and the desired state for a given position relative to
@@ -48,7 +48,7 @@ public interface ISchematic {
         return x >= 0 && x < widthX() && y >= 0 && y < heightY() && z >= 0 && z < lengthZ();
     }
 
-    default int size(EnumFacing.Axis axis) {
+    default int size(XEnumFacing.Axis axis) {
         switch (axis) {
             case X:
                 return widthX();

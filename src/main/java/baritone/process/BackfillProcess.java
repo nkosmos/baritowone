@@ -33,10 +33,11 @@ import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.pathing.path.PathExecutor;
 import baritone.utils.BaritoneProcessHelper;
-import net.minecraft.block.state.IBlockState;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.chunk.EmptyChunk;
 
 public final class BackfillProcess extends BaritoneProcessHelper {
@@ -62,7 +63,7 @@ public final class BackfillProcess extends BaritoneProcessHelper {
         }
         amIBreakingABlockHMMMMMMM();
         for (BlockPos pos : new ArrayList<>(blocksToReplace.keySet())) {
-            if (ctx.world().getChunkFromBlockCoords(pos) instanceof EmptyChunk) {
+            if (ctx.world().getChunkFromBlockCoords(pos.getX(), pos.getZ()) instanceof EmptyChunk) {
                 blocksToReplace.remove(pos);
             }
         }
@@ -100,17 +101,17 @@ public final class BackfillProcess extends BaritoneProcessHelper {
         if (!ctx.getSelectedBlock().isPresent()) {
             return;
         }
-        blocksToReplace.put(ctx.getSelectedBlock().get(), ctx.world().getBlockState(ctx.getSelectedBlock().get()));
+        blocksToReplace.put(ctx.getSelectedBlock().get(), XBlockStateSerializer.getStateFromWorld(ctx.world(), ctx.getSelectedBlock().get()));
     }
 
     public List<BlockPos> toFillIn() {
         return blocksToReplace
                 .keySet()
                 .stream()
-                .filter(pos -> ctx.world().getBlockState(pos).getBlock() == Blocks.air)
-                .filter(pos -> ctx.world().canBlockBePlaced(Blocks.dirt, pos, false, EnumFacing.UP, null, null))
+                .filter(pos -> ctx.world().getBlock(pos.getX(), pos.getY(), pos.getZ()) == Blocks.air)
+                .filter(pos -> ctx.world().canPlaceEntityOnSide(Blocks.dirt, pos.getX(), pos.getY(), pos.getZ(), false, XEnumFacing.UP.toSideHit(), null, null))
                 .filter(pos -> !partOfCurrentMovement(pos))
-                .sorted(Comparator.<BlockPos>comparingDouble(ctx.player()::getDistanceSq).reversed())
+                .sorted(Comparator.<BlockPos>comparingDouble(b -> ctx.player().getDistanceSq(b.getX(), b.getY(), b.getZ())).reversed())
                 .collect(Collectors.toList());
     }
 

@@ -19,7 +19,7 @@ package baritone.api.cache;
 
 import java.util.Map;
 
-import net.minecraft.util.BlockPos;
+import baritonex.utils.math.BlockPos;
 
 /**
  * @author Brady

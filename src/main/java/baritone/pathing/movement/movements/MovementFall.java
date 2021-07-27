@@ -35,16 +35,17 @@ import baritone.pathing.movement.MovementState;
 import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.pathing.MutableMoveResult;
 import baritonex.utils.XHelper;
+import baritonex.utils.data.XEnumFacing;
+import baritonex.utils.math.BlockPos;
+import baritonex.utils.math.Vec3i;
+import baritonex.utils.property.Properties;
+import baritonex.utils.state.IBlockState;
+import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLadder;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
-import net.minecraft.util.Vec3i;
 
 public class MovementFall extends Movement {
 
@@ -91,10 +92,10 @@ public class MovementFall extends Movement {
         BlockPos playerFeet = ctx.playerFeet();
         Rotation toDest = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations());
         Rotation targetRotation = null;
-        Block destBlock = ctx.world().getBlockState(dest).getBlock();
+        Block destBlock = ctx.world().getBlock(dest.x, dest.y, dest.z);
         boolean isWater = destBlock == Blocks.water || destBlock == Blocks.flowing_water;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
-            if (!XHelper.isHotbar(XHelper.getSlotFor(ctx.player(), STACK_BUCKET_WATER)) || ctx.world().provider.doesWaterVaporize()) {
+            if (!XHelper.isHotbar(XHelper.getSlotFor(ctx.player(), STACK_BUCKET_WATER)) || ctx.world().provider.isHellWorld) {
                 return state.setStatus(MovementStatus.UNREACHABLE);
             }
 
@@ -138,7 +139,7 @@ public class MovementFall extends Movement {
             }
             state.setInput(Input.MOVE_FORWARD, true);
         }
-        Vec3i avoid = Optional.ofNullable(avoid()).map(EnumFacing::getDirectionVec).orElse(null);
+        Vec3i avoid = Optional.ofNullable(avoid()).map(XEnumFacing::getDirectionVec).orElse(null);
         if (avoid == null) {
             avoid = src.subtract(dest);
         } else {
@@ -150,17 +151,17 @@ public class MovementFall extends Movement {
             }
         }
         if (targetRotation == null) {
-        	Vec3 destCenterOffset = new Vec3(destCenter.xCoord + 0.125 * avoid.getX(), destCenter.yCoord, destCenter.zCoord + 0.125 * avoid.getZ());
+        	Vec3 destCenterOffset = Vec3.createVectorHelper(destCenter.xCoord + 0.125 * avoid.getX(), destCenter.yCoord, destCenter.zCoord + 0.125 * avoid.getZ());
             state.setTarget(new MovementTarget(RotationUtils.calcRotationFromVec3d(ctx.playerHead(), destCenterOffset, ctx.playerRotations()), false));
         }
         return state;
     }
 
-    private EnumFacing avoid() {
+    private XEnumFacing avoid() {
         for (int i = 0; i < 15; i++) {
-            IBlockState state = ctx.world().getBlockState(ctx.playerFeet().down(i));
+            IBlockState state = XBlockStateSerializer.getStateFromWorld(ctx.world(), ctx.playerFeet().down(i));
             if (state.getBlock() == Blocks.ladder) {
-                return state.getValue(BlockLadder.FACING);
+                return state.getValue(Properties.LADDER_FACING);
             }
         }
         return null;
