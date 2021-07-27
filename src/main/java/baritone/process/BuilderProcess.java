@@ -309,12 +309,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             	double placeX = placeAgainstPos.x + ((aabb.minX - x) * placementMultiplier.xCoord + (aabb.maxX - x) * (1 - placementMultiplier.xCoord));
                 double placeY = placeAgainstPos.y + ((aabb.minY - y) * placementMultiplier.yCoord + (aabb.maxY - y) * (1 - placementMultiplier.yCoord));
                 double placeZ = placeAgainstPos.z + ((aabb.minZ - z) * placementMultiplier.zCoord + (aabb.maxZ - z) * (1 - placementMultiplier.zCoord));
-//            	double placeX = placeAgainstPos.x + (((aabb.maxX - aabb.minX) / 2) * placementMultiplier.xCoord);
-//            	double placeY = placeAgainstPos.y + (((aabb.maxY - aabb.minY) / 2) * placementMultiplier.yCoord);
-//            	double placeZ = placeAgainstPos.z + (((aabb.maxZ - aabb.minZ) / 2) * placementMultiplier.zCoord);
-                
-                //System.out.println(aabb.minY + " / " + aabb.maxY + " / " + placeY);
-                
+                                
                 Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), new Vec3(placeX, placeY, placeZ), ctx.playerRotations());
                 MovingObjectPosition result = RayTraceUtils.rayTraceTowards(ctx.player(), rot, ctx.playerController().getBlockReachDistance(), true);
                 
