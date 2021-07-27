@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
@@ -121,6 +122,7 @@ public class MixinMinecraft {
                 )
         );
     }
+    // MixinMerged
 
     @Redirect(
             method = "runTick",

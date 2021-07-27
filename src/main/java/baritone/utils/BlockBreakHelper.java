@@ -19,8 +19,6 @@ package baritone.utils;
 
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
-import baritonex.utils.XHelper;
-import baritonex.utils.data.XEnumFacing;
 import baritonex.utils.math.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -53,13 +51,12 @@ public final class BlockBreakHelper implements Helper {
         MovingObjectPosition trace = ctx.objectMouseOver();
         boolean isBlockTrace = trace != null && trace.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK;
     	
+//        Helper.HELPER.logDebug("tick (" + isLeftClick + " + " + isBlockTrace + ")");
+        
         if (isLeftClick && isBlockTrace) {
         	BlockPos bp = BlockPos.from(trace);
         	int traceHit = trace.sideHit;
-        	XEnumFacing facing = XHelper.sideToFacing(traceHit);
-        	
-        	Helper.HELPER.logDebug(bp + " " + facing + " " + traceHit + " " + facing.toSideHit());
-        	
+        	        	
             if (!didBreakLastTick) {
                 ctx.playerController().syncHeldItem();
                 ctx.playerController().clickBlock(bp, trace.sideHit);

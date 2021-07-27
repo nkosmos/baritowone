@@ -17,34 +17,68 @@
 
 package baritone.launch.mixins;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import baritone.api.utils.BetterBlockPos;
 import baritone.utils.accessor.IPlayerControllerMP;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.network.play.client.C07PacketPlayerDigging;
 
 @Mixin(PlayerControllerMP.class)
 public abstract class MixinPlayerControllerMP implements IPlayerControllerMP {
 
-    @Accessor
-    @Override
-    public abstract void setIsHittingBlock(boolean isHittingBlock);
+	@Shadow
+	@Final
+	private Minecraft mc;
 
-    @Accessor
-    public abstract int getCurrentBlockX();
-    @Accessor
-    public abstract int getCurrentBlockY();
-    @Accessor
-    public abstract int getCurrentBlockZ();
-    
-    @Override
-    public BetterBlockPos getCurrentBlock() {
-    	return new BetterBlockPos(getCurrentBlockX(), getCurrentBlockY(), getCurrentBlockZ());
-    }
+	@Shadow
+	private float curBlockDamageMP;
 
-    @Invoker
-    @Override
-    public abstract void callSyncCurrentPlayItem();
+	@Shadow
+	private boolean isHittingBlock;
+
+	@Shadow
+	@Final
+	private NetHandlerPlayClient netClientHandler;
+
+	@Accessor
+	@Override
+	public abstract void setIsHittingBlock(boolean isHittingBlock);
+
+	@Accessor
+	public abstract int getCurrentBlockX();
+
+	@Accessor
+	public abstract int getCurrentBlockY();
+
+	@Accessor
+	public abstract int getCurrentBlockZ();
+
+	@Override
+	public BetterBlockPos getCurrentBlock() {
+		return new BetterBlockPos(getCurrentBlockX(), getCurrentBlockY(), getCurrentBlockZ());
+	}
+
+	@Invoker
+	@Override
+	public abstract void callSyncCurrentPlayItem();
+
+	@Overwrite
+	public void resetBlockRemoving() {
+		if (this.isHittingBlock) {
+			this.netClientHandler.addToSendQueue(
+					new C07PacketPlayerDigging(1, getCurrentBlockX(), getCurrentBlockY(), getCurrentBlockZ(), -1));
+			this.isHittingBlock = false;
+			this.curBlockDamageMP = 0.0F;
+			this.mc.theWorld.destroyBlockInWorldPartially(this.mc.thePlayer.getEntityId(), getCurrentBlockX(),
+					getCurrentBlockY(), getCurrentBlockZ(), -1);
+		}
+	}
 }

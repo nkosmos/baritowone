@@ -144,24 +144,27 @@ public final class InventoryBehavior extends Behavior {
     public boolean selectThrowawayForLocation(boolean select, int x, int y, int z) {
     	IBlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
         if (maybe != null && throwaway(select, stack -> {
+        	if(!(stack.getItem() instanceof ItemBlock)) {
+        		return false;
+        	}
+        	
         	Block block = ((ItemBlock) stack.getItem()).blockInstance;
-        	return stack.getItem() instanceof ItemBlock 
-        			&& maybe.equals(
-        					XBlockStateSerializer.getStateFromMeta(
-        							block, 
-        							block.onBlockPlaced(
-        									ctx.world(), 
-        									ctx.playerFeet().x, 
-        									ctx.playerFeet().y, 
-        									ctx.playerFeet().z, 
-        									XEnumFacing.UP.toSideHit(), 
-        									(float) ctx.player().posX, 
-        									(float) ctx.player().boundingBox.minY, 
-        									(float) ctx.player().posZ, 
-        									stack.getItem().getMetadata(stack.getMetadata())
-        							)
+        	return maybe.equals(
+        				XBlockStateSerializer.getStateFromMeta(
+        					block, 
+        					block.onBlockPlaced(
+        						ctx.world(), 
+        						ctx.playerFeet().x, 
+        						ctx.playerFeet().y, 
+        						ctx.playerFeet().z, 
+        						XEnumFacing.UP.toSideHit(), 
+        						(float) ctx.player().posX, 
+        						(float) ctx.player().boundingBox.minY, 
+        						(float) ctx.player().posZ, 
+        						stack.getItem().getMetadata(stack.getMetadata())
         					)
-        			);
+        				)
+        	);
         })) {
             return true; // gotem
         }
