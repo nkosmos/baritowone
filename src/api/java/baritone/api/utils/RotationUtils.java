@@ -230,7 +230,7 @@ public final class RotationUtils {
             if (BlockPos.from(result).equals(pos)) {
                 return Optional.of(rotation);
             }
-            if (XBlockStateSerializer.getStateFromWorld(entity.worldObj, pos).getBlock() instanceof BlockFire && BlockPos.from(result).equals(pos.down())) {
+            if (entity.worldObj.getBlock(pos.getX(), pos.getY(), pos.getZ()) instanceof BlockFire && BlockPos.from(result).equals(pos.down())) {
                 return Optional.of(rotation);
             }
         }
