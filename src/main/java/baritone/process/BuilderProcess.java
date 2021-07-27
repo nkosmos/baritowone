@@ -45,6 +45,7 @@ import baritone.api.schematic.IStaticSchematic;
 import baritone.api.schematic.SubstituteSchematic;
 import baritone.api.schematic.format.ISchematicFormat;
 import baritone.api.utils.BetterBlockPos;
+import baritone.api.utils.Helper;
 import baritone.api.utils.RayTraceUtils;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
@@ -71,6 +72,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
@@ -292,6 +294,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     }
 
     private Optional<Placement> possibleToPlace(IBlockState toPlace, int x, int y, int z, BlockStateInterface bsi) {
+    	Helper.HELPER.logDirect(x + " " + y + " " + z + " > ");
         for (EnumFacing against : EnumFacing.values()) {
             BetterBlockPos placeAgainstPos = new BetterBlockPos(x, y, z).offset(against);
             IBlockState placeAgainstState = bsi.get0(placeAgainstPos);
@@ -303,12 +306,19 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             }
             AxisAlignedBB aabb = placeAgainstState.getBlock().getSelectedBoundingBox(ctx.world(), placeAgainstPos);
             for (Vec3 placementMultiplier : aabbSideMultipliers(against)) {
-                double placeX = placeAgainstPos.x + aabb.minX * placementMultiplier.xCoord + aabb.maxX * (1 - placementMultiplier.xCoord);
-                double placeY = placeAgainstPos.y + aabb.minY * placementMultiplier.yCoord + aabb.maxY * (1 - placementMultiplier.yCoord);
-                double placeZ = placeAgainstPos.z + aabb.minZ * placementMultiplier.zCoord + aabb.maxZ * (1 - placementMultiplier.zCoord);
+            	double placeX = placeAgainstPos.x + ((aabb.minX - x) * placementMultiplier.xCoord + (aabb.maxX - x) * (1 - placementMultiplier.xCoord));
+                double placeY = placeAgainstPos.y + ((aabb.minY - y) * placementMultiplier.yCoord + (aabb.maxY - y) * (1 - placementMultiplier.yCoord));
+                double placeZ = placeAgainstPos.z + ((aabb.minZ - z) * placementMultiplier.zCoord + (aabb.maxZ - z) * (1 - placementMultiplier.zCoord));
+//            	double placeX = placeAgainstPos.x + (((aabb.maxX - aabb.minX) / 2) * placementMultiplier.xCoord);
+//            	double placeY = placeAgainstPos.y + (((aabb.maxY - aabb.minY) / 2) * placementMultiplier.yCoord);
+//            	double placeZ = placeAgainstPos.z + (((aabb.maxZ - aabb.minZ) / 2) * placementMultiplier.zCoord);
+                
+                //System.out.println(aabb.minY + " / " + aabb.maxY + " / " + placeY);
+                
                 Rotation rot = RotationUtils.calcRotationFromVec3d(RayTraceUtils.inferSneakingEyePosition(ctx.player()), new Vec3(placeX, placeY, placeZ), ctx.playerRotations());
                 MovingObjectPosition result = RayTraceUtils.rayTraceTowards(ctx.player(), rot, ctx.playerController().getBlockReachDistance(), true);
-                if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && result.getBlockPos().equals(placeAgainstPos) && result.sideHit == against.getOpposite()) {
+                
+                if (result != null && result.typeOfHit == MovingObjectType.BLOCK && result.getBlockPos().equals(placeAgainstPos) && result.sideHit == against.getOpposite()) {
                     OptionalInt hotbar = hasAnyItemThatWouldPlace(toPlace, result, rot);
                     if (hotbar.isPresent()) {
                         return Optional.of(new Placement(hotbar.getAsInt(), placeAgainstPos, against.getOpposite(), rot));
@@ -488,6 +498,9 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         Optional<Placement> toPlace = searchForPlaceables(bcc, desirableOnHotbar);
         if (toPlace.isPresent() && isSafeToCancel && ctx.player().onGround && ticks <= 0) {
             Rotation rot = toPlace.get().rot;
+            if(ctx.player().isCollidedHorizontally) {
+            	return new PathingCommand(null, PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
+            }
             baritone.getLookBehavior().updateTarget(rot, true);
             ctx.player().inventory.currentItem = toPlace.get().hotbarSelection;
             baritone.getInputOverrideHandler().setInputForceState(Input.SNEAK, true);
