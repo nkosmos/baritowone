@@ -50,6 +50,7 @@ import baritone.api.selection.ISelectionManager;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMeta;
 import baritone.api.utils.BlockOptionalMetaLookup;
+import baritone.api.utils.Helper;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.IRenderer;
 import baritone.utils.schematic.StaticSchematic;
@@ -130,6 +131,7 @@ public class SelCommand extends Command {
             BlockOptionalMeta type = action == Action.CLEARAREA
                     ? new BlockOptionalMeta(Blocks.air)
                     : args.getDatatypeFor(ForBlockOptionalMeta.INSTANCE);
+            Helper.HELPER.logDebug(type.toString());
             BlockOptionalMetaLookup replaces = null;
             if (action == Action.REPLACE) {
                 args.requireMin(1);
