@@ -563,7 +563,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
 
     private void trim() {
         HashSet<BetterBlockPos> copy = new HashSet<>(incorrectPositions);
-        copy.removeIf(pos -> pos.distanceSq(ctx.player().posX, ctx.player().posY, ctx.player().posZ) > 200);
+        copy.removeIf(pos -> pos.distanceSq(ctx.player().posX, ctx.player().boundingBox.minY, ctx.player().posZ) > 200);
         if (!copy.isEmpty()) {
             incorrectPositions = copy;
         }
@@ -847,7 +847,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             // <toxic cloud>
             Block block = ((ItemBlock) stack.getItem()).blockInstance;
             BetterBlockPos pos = ctx.playerFeet();
-            int meta = block.onBlockPlaced(ctx.world(), pos.x, pos.y, pos.z, XEnumFacing.UP.toSideHit(), (float) ctx.player().posX, (float) ctx.player().posY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()));
+            int meta = block.onBlockPlaced(ctx.world(), pos.x, pos.y, pos.z, XEnumFacing.UP.toSideHit(), (float) ctx.player().posX, (float) ctx.player().boundingBox.minY, (float) ctx.player().posZ, stack.getItem().getMetadata(stack.getMetadata()));
             result.add(XBlockStateSerializer.getStateFromMeta(block, meta));
             // </toxic cloud>
         }

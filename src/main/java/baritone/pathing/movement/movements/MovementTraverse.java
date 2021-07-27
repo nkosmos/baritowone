@@ -251,7 +251,7 @@ public class MovementTraverse extends Movement {
             }
             Block low = BlockStateInterface.get(ctx, src).getBlock();
             Block high = BlockStateInterface.get(ctx, src.up()).getBlock();
-            if (ctx.player().posY > src.y + 0.1D && !ctx.player().onGround && (low == Blocks.vine || low == Blocks.ladder || high == Blocks.vine || high == Blocks.ladder)) {
+            if (ctx.player().boundingBox.minY > src.y + 0.1D && !ctx.player().onGround && (low == Blocks.vine || low == Blocks.ladder || high == Blocks.vine || high == Blocks.ladder)) {
                 // hitting W could cause us to climb the ladder instead of going forward
                 // wait until we're on the ground
                 return state;

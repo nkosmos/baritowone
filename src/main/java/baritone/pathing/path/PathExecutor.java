@@ -429,7 +429,7 @@ public class PathExecutor implements IPathExecutor, Helper {
                 // playerFeet adds 0.1251 to account for soul sand
                 // farmland is 0.9375
                 // 0.07 is to account for farmland
-                if (ctx.player().posY >= center.getY() - 0.07) {
+                if (ctx.player().boundingBox.minY >= center.getY() - 0.07) {
                     behavior.baritone.getInputOverrideHandler().setInputForceState(Input.JUMP, false);
                     return true;
                 }

@@ -70,7 +70,7 @@ public interface IPlayerContext {
     }
 
     default Vec3 playerHead() {
-    	return Vec3.createVectorHelper(player().posX, player().boundingBox.minY + player().getEyeHeight(), player().posZ);
+    	return Vec3.createVectorHelper(player().posX, player().boundingBox.minY + eyeHeight(player().isSneaking()), player().posZ);
     }
 
     default Rotation playerRotations() {
@@ -89,7 +89,10 @@ public interface IPlayerContext {
     default Optional<BlockPos> getSelectedBlock() {
     	MovingObjectPosition result = objectMouseOver();
         if (result != null && result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            return Optional.of(BlockPos.from(result));
+        	BlockPos bp = BlockPos.from(result);
+            if(bp != null) {
+            	return Optional.of(bp);
+            }
         }
         return Optional.empty();
     }

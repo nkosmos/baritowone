@@ -35,7 +35,7 @@ public class BlockPos extends Vec3i
 
     public BlockPos(Entity source)
     {
-        this(source.posX, source.posY, source.posZ);
+        this(source.posX, source.boundingBox.minY, source.posZ);
     }
 
     public BlockPos(Vec3 source)
@@ -49,7 +49,7 @@ public class BlockPos extends Vec3i
     }
     
     public static BlockPos from(MovingObjectPosition movingObjectPosition) {
-    	if(movingObjectPosition.blockX == -1 || movingObjectPosition.blockY == -1 || movingObjectPosition.blockZ == -1) {
+    	if(movingObjectPosition.blockY == -1) {
     		return null;
     	}
     	return new BlockPos(movingObjectPosition.blockX, movingObjectPosition.blockY, movingObjectPosition.blockZ);

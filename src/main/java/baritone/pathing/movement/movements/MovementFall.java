@@ -99,7 +99,7 @@ public class MovementFall extends Movement {
                 return state.setStatus(MovementStatus.UNREACHABLE);
             }
 
-            if (ctx.player().posY - dest.getY() < ctx.playerController().getBlockReachDistance() && !ctx.player().onGround) {
+            if (ctx.player().boundingBox.minY - dest.getY() < ctx.playerController().getBlockReachDistance() && !ctx.player().onGround) {
                 ctx.player().inventory.currentItem = XHelper.getSlotFor(ctx.player(), STACK_BUCKET_WATER);
 
                 targetRotation = new Rotation(toDest.getYaw(), 90.0F);
@@ -114,7 +114,7 @@ public class MovementFall extends Movement {
         } else {
             state.setTarget(new MovementTarget(toDest, false));
         }
-        if (playerFeet.equals(dest) && (ctx.player().posY - playerFeet.getY() < 0.094 || isWater)) { // 0.094 because lilypads
+        if (playerFeet.equals(dest) && (ctx.player().boundingBox.minY - playerFeet.getY() < 0.094 || isWater)) { // 0.094 because lilypads
             if (isWater) { // only match water, not flowing water (which we cannot pick up with a bucket)
                 if (XHelper.isHotbar(XHelper.getSlotFor(ctx.player(), STACK_BUCKET_EMPTY))) {
                     ctx.player().inventory.currentItem = XHelper.getSlotFor(ctx.player(), STACK_BUCKET_EMPTY);

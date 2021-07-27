@@ -65,7 +65,7 @@ public class MovementDiagonal extends Movement {
         EntityPlayerSP player = ctx.player();
         double offset = 0.25;
         double x = player.posX;
-        double y = player.posY - 1;
+        double y = player.boundingBox.minY - 1;
         double z = player.posZ;
         //standard
         if (ctx.playerFeet().equals(src)) {
@@ -256,7 +256,7 @@ public class MovementDiagonal extends Movement {
         } else if (!playerInValidPosition() && !(MovementHelper.isLiquid(ctx, src) && getValidPositions().contains(ctx.playerFeet().up()))) {
             return state.setStatus(MovementStatus.UNREACHABLE);
         }
-        if (dest.y > src.y && ctx.player().posY < src.y + 0.1 && ctx.player().isCollidedHorizontally) {
+        if (dest.y > src.y && ctx.player().boundingBox.minY < src.y + 0.1 && ctx.player().isCollidedHorizontally) {
             state.setInput(Input.JUMP, true);
         }
         if (sprint()) {

@@ -98,7 +98,7 @@ public final class VecUtils {
      * @see #getBlockPosCenter(BlockPos)
      */
     public static double entityDistanceToCenter(Entity entity, BlockPos pos) {
-        return distanceToCenter(pos, entity.posX, entity.posY, entity.posZ);
+        return distanceToCenter(pos, entity.posX, entity.boundingBox.minY, entity.posZ);
     }
 
     /**

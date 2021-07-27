@@ -45,23 +45,14 @@ public final class RayTraceUtils {
 		return rayTraceTowards(entity, rotation, blockReachDistance, false);
 	}
 
-	public static MovingObjectPosition rayTraceTowards(Entity entity, Rotation rotation, double blockReachDistance,
-			boolean wouldSneak) {
-		Vec3 start;
-		if (wouldSneak) {
-			start = inferSneakingEyePosition(entity);
-		} else {
-			start = Vec3.createVectorHelper(entity.posX, entity.boundingBox.minY, entity.posZ).addVector(0,
-					entity.getEyeHeight(), 0); // do whatever is correct
-		}
+	public static MovingObjectPosition rayTraceTowards(Entity entity, Rotation rotation, double blockReachDistance, boolean wouldSneak) {
+		Vec3 start = Vec3.createVectorHelper(entity.posX, entity.boundingBox.minY + IPlayerContext.eyeHeight(wouldSneak), entity.posZ); // do whatever is correct
 		Vec3 direction = RotationUtils.calcVec3dFromRotation(rotation);
-		Vec3 end = start.addVector(direction.xCoord * blockReachDistance, direction.yCoord * blockReachDistance,
-				direction.zCoord * blockReachDistance);
+		Vec3 end = start.addVector(direction.xCoord * blockReachDistance, direction.yCoord * blockReachDistance, direction.zCoord * blockReachDistance);
 		return entity.worldObj.rayTraceBlocks(start, end, false, false, true);
 	}
 
 	public static Vec3 inferSneakingEyePosition(Entity entity) {
-		return Vec3.createVectorHelper(entity.posX, entity.boundingBox.minY + IPlayerContext.eyeHeight(true),
-				entity.posZ);
+		return Vec3.createVectorHelper(entity.posX, entity.boundingBox.minY + IPlayerContext.eyeHeight(true), entity.posZ);
 	}
 }

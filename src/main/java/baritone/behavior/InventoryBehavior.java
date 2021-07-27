@@ -156,7 +156,7 @@ public final class InventoryBehavior extends Behavior {
         									ctx.playerFeet().z, 
         									XEnumFacing.UP.toSideHit(), 
         									(float) ctx.player().posX, 
-        									(float) ctx.player().posY, 
+        									(float) ctx.player().boundingBox.minY, 
         									(float) ctx.player().posZ, 
         									stack.getItem().getMetadata(stack.getMetadata())
         							)

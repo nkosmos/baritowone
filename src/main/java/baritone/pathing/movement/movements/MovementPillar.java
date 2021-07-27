@@ -228,7 +228,7 @@ public class MovementPillar extends Movement {
             }
 
 
-            state.setInput(Input.SNEAK, ctx.player().posY > dest.getY() || ctx.player().posY < src.getY() + 0.2D); // delay placement by 1 tick for ncp compatibility
+            state.setInput(Input.SNEAK, ctx.player().boundingBox.minY > dest.getY() || ctx.player().posY < src.getY() + 0.2D); // delay placement by 1 tick for ncp compatibility
             // since (lower down) we only right click once player.isSneaking, and that happens the tick after we request to sneak
 
             double diffX = ctx.player().posX - (dest.getX() + 0.5);
@@ -246,7 +246,7 @@ public class MovementPillar extends Movement {
                 state.setTarget(new MovementState.MovementTarget(rotation, true));
             } else if (flatMotion < 0.05) {
                 // If our Y coordinate is above our goal, stop jumping
-                state.setInput(Input.JUMP, ctx.player().posY < dest.getY());
+                state.setInput(Input.JUMP, ctx.player().boundingBox.minY < dest.getY());
             }
 
 
@@ -261,7 +261,7 @@ public class MovementPillar extends Movement {
                     state.setInput(Input.JUMP, false); // breaking is like 5x slower when you're jumping
                     state.setInput(Input.CLICK_LEFT, true);
                     blockIsThere = false;
-                } else if (ctx.player().isSneaking() && (Objects.equals(src.down(), BlockPos.from(ctx.objectMouseOver())) || Objects.equals(src, BlockPos.from(ctx.objectMouseOver()))) && ctx.player().posY > dest.getY() + 0.1) {
+                } else if (ctx.player().isSneaking() && (Objects.equals(src.down(), BlockPos.from(ctx.objectMouseOver())) || Objects.equals(src, BlockPos.from(ctx.objectMouseOver()))) && ctx.player().boundingBox.minY > dest.getY() + 0.1) {
                     state.setInput(Input.CLICK_RIGHT, true);
                 }
             }

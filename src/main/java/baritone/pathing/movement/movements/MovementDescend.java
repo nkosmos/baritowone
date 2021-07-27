@@ -213,11 +213,11 @@ public class MovementDescend extends Movement {
 
         BlockPos playerFeet = ctx.playerFeet();
         BlockPos fakeDest = new BlockPos(dest.getX() * 2 - src.getX(), dest.getY(), dest.getZ() * 2 - src.getZ());
-        if ((playerFeet.equals(dest) || playerFeet.equals(fakeDest)) && (MovementHelper.isLiquid(ctx, dest) || ctx.player().posY - dest.getY() < 0.5)) { // lilypads
+        if ((playerFeet.equals(dest) || playerFeet.equals(fakeDest)) && (MovementHelper.isLiquid(ctx, dest) || ctx.player().boundingBox.minY - dest.getY() < 0.5)) { // lilypads
             // Wait until we're actually on the ground before saying we're done because sometimes we continue to fall if the next action starts immediately
             return state.setStatus(MovementStatus.SUCCESS);
             /* else {
-                // System.out.println(player().posY + " " + playerFeet.getY() + " " + (player().posY - playerFeet.getY()));
+                // System.out.println(player().boundingBox.minY + " " + playerFeet.getY() + " " + (player().posY - playerFeet.getY()));
             }*/
         }
         if (safeMode()) {

@@ -66,6 +66,16 @@ public final class PathRenderer implements IRenderer {
     private PathRenderer() {}
 
     public static void render(RenderEvent event, PathingBehavior behavior) {
+    	// FUCK
+//    	IPlayerContext ctx = BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext();
+//    	Entity entity = ctx.player();
+//    	IRenderer.drawAABB(AxisAlignedBB.getBoundingBox(entity.posX - 0.5, entity.boundingBox.minY + IPlayerContext.eyeHeight(entity.isSneaking()) - 0.01, entity.posZ - 0.5, entity.posX + 0.5, entity.boundingBox.minY + IPlayerContext.eyeHeight(entity.isSneaking()) + 0.01, entity.posZ + 0.5)); // do whatever is correct);
+//    	
+//    	ctx.getSelectedBlock().ifPresent(bp -> {
+//    		IRenderer.drawAABB(AxisAlignedBB.getBoundingBox(bp.getX(), bp.getY(), bp.getZ(), bp.getX() + 1, bp.getY() + 1, bp.getZ() + 1));
+//    	});
+    	// END FUCK
+    	
         float partialTicks = event.getPartialTicks();
         Goal goal = behavior.getGoal();
         if (Helper.mc.currentScreen instanceof GuiClick) {

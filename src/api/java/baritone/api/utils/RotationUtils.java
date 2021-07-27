@@ -222,7 +222,7 @@ public final class RotationUtils {
      * @return The optional rotation
      */
     public static Optional<Rotation> reachableOffset(Entity entity, BlockPos pos, Vec3 offsetPos, double blockReachDistance, boolean wouldSneak) {
-    	Vec3 eyes = wouldSneak ? RayTraceUtils.inferSneakingEyePosition(entity) : Vec3.createVectorHelper(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+    	Vec3 eyes = Vec3.createVectorHelper(entity.posX, entity.boundingBox.minY + IPlayerContext.eyeHeight(wouldSneak), entity.posZ);
         Rotation rotation = calcRotationFromVec3d(eyes, offsetPos, new Rotation(entity.rotationYaw, entity.rotationPitch));
         MovingObjectPosition result = RayTraceUtils.rayTraceTowards(entity, rotation, blockReachDistance, wouldSneak);
         //System.out.println(result);
