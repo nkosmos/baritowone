@@ -17,6 +17,8 @@
 
 package baritone.api.command.datatypes;
 
+import java.util.stream.Stream;
+
 import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.pathing.goals.Goal;
@@ -24,8 +26,6 @@ import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.pathing.goals.GoalXZ;
 import baritone.api.pathing.goals.GoalYLevel;
 import baritone.api.utils.BetterBlockPos;
-
-import java.util.stream.Stream;
 
 public enum RelativeGoal implements IDatatypePost<Goal, BetterBlockPos> {
     INSTANCE;

@@ -27,10 +27,7 @@ import baritone.api.utils.Rotation;
 public final class LookBehavior extends Behavior implements ILookBehavior {
 
     /**
-     * Target's values are as follows:
-     * <p>
-     * getFirst() -> yaw
-     * getSecond() -> pitch
+     * Target rotation
      */
     private Rotation target;
 

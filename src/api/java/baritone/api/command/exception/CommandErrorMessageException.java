@@ -17,6 +17,7 @@
 
 package baritone.api.command.exception;
 
+@SuppressWarnings("serial")
 public abstract class CommandErrorMessageException extends CommandException {
 
     protected CommandErrorMessageException(String reason) {

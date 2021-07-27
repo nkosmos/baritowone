@@ -28,25 +28,25 @@ public class PlayerMovementInput extends MovementInput {
         this.handler = handler;
     }
 
-    public void updatePlayerMoveState() {
+    public void updatePlayerMoveState() { // BaritoneX > ez
         this.moveStrafe = 0.0F;
         this.moveForward = 0.0F;
 
         jump = handler.isInputForcedDown(Input.JUMP); // oppa gangnam style
 
-        if (this.forwardKeyDown = handler.isInputForcedDown(Input.MOVE_FORWARD)) {
+        if (handler.isInputForcedDown(Input.MOVE_FORWARD)) {
             this.moveForward++;
         }
 
-        if (this.backKeyDown = handler.isInputForcedDown(Input.MOVE_BACK)) {
+        if (handler.isInputForcedDown(Input.MOVE_BACK)) {
             this.moveForward--;
         }
 
-        if (this.leftKeyDown = handler.isInputForcedDown(Input.MOVE_LEFT)) {
+        if (handler.isInputForcedDown(Input.MOVE_LEFT)) {
             this.moveStrafe++;
         }
 
-        if (this.rightKeyDown = handler.isInputForcedDown(Input.MOVE_RIGHT)) {
+        if (handler.isInputForcedDown(Input.MOVE_RIGHT)) {
             this.moveStrafe--;
         }
 
@@ -56,3 +56,4 @@ public class PlayerMovementInput extends MovementInput {
         }
     }
 }
+

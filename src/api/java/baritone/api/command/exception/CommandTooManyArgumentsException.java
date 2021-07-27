@@ -17,6 +17,7 @@
 
 package baritone.api.command.exception;
 
+@SuppressWarnings("serial")
 public class CommandTooManyArgumentsException extends CommandErrorMessageException {
 
     public CommandTooManyArgumentsException(int maxArgs) {

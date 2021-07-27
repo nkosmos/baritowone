@@ -17,6 +17,14 @@
 
 package baritone.utils;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import baritone.Baritone;
 import baritone.api.event.events.TickEvent;
 import baritone.api.event.listener.AbstractGameEventListener;
@@ -27,9 +35,7 @@ import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.behavior.PathingBehavior;
 import baritone.pathing.path.PathExecutor;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.*;
+import net.minecraft.util.BlockPos;
 
 public class PathingControlManager implements IPathingControlManager {
 

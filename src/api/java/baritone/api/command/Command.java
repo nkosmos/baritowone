@@ -34,8 +34,9 @@ import java.util.stream.Stream;
  * So basically, you should use it because it provides a small amount of boilerplate,
  * but you're not forced to use it.
  *
- * @author LoganDark
  * @see ICommand
+ *
+ * @author LoganDark
  */
 public abstract class Command implements ICommand {
 

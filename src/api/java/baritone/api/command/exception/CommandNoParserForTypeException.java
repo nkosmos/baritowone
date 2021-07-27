@@ -17,6 +17,7 @@
 
 package baritone.api.command.exception;
 
+@SuppressWarnings("serial")
 public class CommandNoParserForTypeException extends CommandUnhandledException {
 
     public CommandNoParserForTypeException(Class<?> klass) {

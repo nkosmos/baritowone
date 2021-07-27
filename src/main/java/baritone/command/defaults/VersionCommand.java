@@ -19,9 +19,9 @@ package baritone.command.defaults;
 
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
-import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.exception.CommandInvalidStateException;
+import baritone.api.command.argument.IArgConsumer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,11 +36,12 @@ public class VersionCommand extends Command {
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
+        
         String version = getClass().getPackage().getImplementationVersion();
         if (version == null) {
             throw new CommandInvalidStateException("Null version (this is normal in a dev environment)");
         } else {
-            logDirect(String.format("You are running Baritone v%s", version));
+        	logDirect(String.format("You are running Baritone v%s", version));
         }
     }
 

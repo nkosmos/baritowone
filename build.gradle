@@ -16,7 +16,7 @@
  */
 
 group 'baritone'
-version '1.2.15'
+version '1.2.14'
 
 buildscript {
     repositories {
@@ -26,13 +26,13 @@ buildscript {
         }
         maven {
             name = 'SpongePowered'
-            url = 'https://repo.spongepowered.org/repository/maven-public/'
+            url = 'http://repo.spongepowered.org/maven'
         }
         jcenter()
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
@@ -42,8 +42,7 @@ import baritone.gradle.task.CreateDistTask
 import baritone.gradle.task.ProguardTask
 
 apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 apply plugin: 'org.spongepowered.mixin'
 
 sourceCompatibility = targetCompatibility = '1.8'
@@ -67,8 +66,9 @@ sourceSets {
 }
 
 minecraft {
-    version = '1.11.2-13.20.1.2588'
-    mappings = 'stable_32'
+    version = '1.8.9'
+    mappings = 'stable_22'
+    tweakClass = 'baritone.launch.BaritoneTweaker'
     runDir = 'run'
 
     // The sources jar should use SRG names not MCP to ensure compatibility with all mappings
@@ -80,7 +80,7 @@ repositories {
 
     maven {
         name = 'spongepowered-repo'
-        url = 'https://repo.spongepowered.org/repository/maven-public/'
+        url = 'http://repo.spongepowered.org/maven/'
     }
 
     maven {
@@ -90,8 +90,6 @@ repositories {
 }
 
 dependencies {
-	implementation fileTree(dir: 'libs', include: '*.jar')
-
     runtime launchCompile('com.github.ImpactDevelopment:SimpleTweaker:1.2')
     runtime launchCompile('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
         // Mixin includes a lot of dependencies that are too up-to-date
@@ -101,6 +99,8 @@ dependencies {
         exclude module: 'commons-io'
         exclude module: 'log4j-core'
     }
+    compile group: 'it.unimi.dsi', name: 'fastutil', version: '7.1.0' // 1.10.2 lib
+    
     testImplementation 'junit:junit:4.12'
 }
 
@@ -119,12 +119,6 @@ javadoc {
 
 jar {
     from sourceSets.launch.output, sourceSets.api.output
-
-    if (!getProject().hasProperty("baritone.forge_build")) {
-        exclude "**/BaritoneForgeModXD.class"
-        exclude "**/mods.toml"
-    }
-
     preserveFileTimestamps = false
     reproducibleFileOrder = true
 
@@ -133,8 +127,7 @@ jar {
                 'MixinConfigs': 'mixins.baritone.json',
 
                 'Implementation-Title': 'Baritone',
-                'Implementation-Version': version,
-                'TweakClass': 'baritone.launch.BaritoneTweaker'
+                'Implementation-Version': version
         )
     }
 }
@@ -147,25 +140,3 @@ task proguard(type: ProguardTask) {
 task createDist(type: CreateDistTask, dependsOn: proguard)
 
 build.finalizedBy(createDist)
-
-install {
-    def jarApiName = String.format("%s-api-%s", rootProject.name, version.toString())
-    def jarApiForgeName = String.format("%s-api-forge-%s", rootProject.name, version.toString())
-    def jarSAName = String.format("%s-standalone-%s", rootProject.name, version.toString())
-    def jarSAForgeName = String.format("%s-standalone-forge-%s", rootProject.name, version.toString())
-
-    artifacts {
-        archives file("$buildDir/libs/"+jarApiName+".jar")
-        archives file("$buildDir/libs/"+jarApiForgeName+".jar")
-        archives file("$buildDir/libs/"+jarSAName+".jar")
-        archives file("$buildDir/libs/"+jarSAForgeName+".jar")
-    }
-    repositories.mavenInstaller {
-		addFilter('api') { artifact, file -> artifact.name == "baritone-api" }
-		addFilter('api-forge') { artifact, file -> artifact.name == "baritone-api-forge" }
-		addFilter('standalone') { artifact, file -> artifact.name == "baritone-standalone" }
-		addFilter('standalone-forge') { artifact, file -> artifact.name == "baritone-standalone-forge" }
-    }
-}
-
-install.dependsOn(build)

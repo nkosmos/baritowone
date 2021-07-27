@@ -17,10 +17,15 @@
 
 package baritone.command.defaults;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import baritone.api.IBaritone;
 import baritone.api.command.ICommand;
-
-import java.util.*;
+import baritonex.command.defaults.DebugCommand;
 
 public final class DefaultCommands {
 
@@ -38,7 +43,6 @@ public final class DefaultCommands {
                 new GotoCommand(baritone),
                 new PathCommand(baritone),
                 new ProcCommand(baritone),
-                new ETACommand(baritone),
                 new VersionCommand(baritone),
                 new RepackCommand(baritone),
                 new BuildCommand(baritone),
@@ -61,12 +65,12 @@ public final class DefaultCommands {
                 new FindCommand(baritone),
                 new MineCommand(baritone),
                 new ClickCommand(baritone),
-                new SurfaceCommand(baritone),
                 new ThisWayCommand(baritone),
                 new WaypointsCommand(baritone),
                 new CommandAlias(baritone, "sethome", "Sets your home waypoint", "waypoints save home"),
-                new CommandAlias(baritone, "home", "Path to your home waypoint", "waypoints goto home"),
-                new SelCommand(baritone)
+                new CommandAlias(baritone, "home", "Set goal to your home waypoint", "waypoints goal home"),
+                new SelCommand(baritone),
+                new DebugCommand(baritone)
         ));
         ExecutionControlCommands prc = new ExecutionControlCommands(baritone);
         commands.add(prc.pauseCommand);

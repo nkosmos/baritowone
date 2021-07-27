@@ -24,6 +24,7 @@ import java.util.List;
 
 import static baritone.api.utils.Helper.HELPER;
 
+@SuppressWarnings("serial")
 public class CommandNotFoundException extends CommandException {
 
     public final String command;

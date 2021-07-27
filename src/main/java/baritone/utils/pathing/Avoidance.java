@@ -17,19 +17,19 @@
 
 package baritone.utils.pathing;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import baritone.Baritone;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.IPlayerContext;
-import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import net.minecraft.util.BlockPos;
 
 public class Avoidance {
 
@@ -82,7 +82,7 @@ public class Avoidance {
         return res;
     }
 
-    public void applySpherical(Long2DoubleOpenHashMap map) {
+    public void applySpherical(Map<Long, Double> map) {
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {

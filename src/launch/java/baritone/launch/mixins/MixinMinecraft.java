@@ -17,20 +17,8 @@
 
 package baritone.launch.mixins;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.IBaritone;
-import baritone.api.event.events.BlockInteractEvent;
-import baritone.api.event.events.TickEvent;
-import baritone.api.event.events.WorldEvent;
-import baritone.api.event.events.type.EventState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
+import java.util.function.BiFunction;
+
 import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,7 +28,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.function.BiFunction;
+import baritone.api.BaritoneAPI;
+import baritone.api.IBaritone;
+import baritone.api.event.events.BlockInteractEvent;
+import baritone.api.event.events.TickEvent;
+import baritone.api.event.events.WorldEvent;
+import baritone.api.event.events.type.EventState;
+import baritone.utils.BaritoneAutoTest;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 
 /**
  * @author Brady
@@ -48,14 +48,14 @@ import java.util.function.BiFunction;
  */
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
-
+	
     @Shadow
-    public EntityPlayerSP player;
+    public EntityPlayerSP thePlayer;
     @Shadow
-    public WorldClient world;
+    public WorldClient theWorld;
 
     @Inject(
-            method = "init",
+            method = "startGame",
             at = @At("RETURN")
     )
     private void postInit(CallbackInfo ci) {
@@ -63,14 +63,20 @@ public class MixinMinecraft {
     }
 
     @Inject(
+            method = "startGame",
+            at = @At(
+                    value = "INVOKE",
+                    target = "net/minecraft/client/Minecraft.startTimerHackThread()V"
+            )
+    )
+    private void preInit(CallbackInfo ci) {
+        BaritoneAutoTest.INSTANCE.onPreInit();
+    }
+
+    @Inject(
             method = "runTick",
             at = @At(
-                    value = "FIELD",
-                    opcode = Opcodes.GETFIELD,
-                    target = "net/minecraft/client/Minecraft.currentScreen:Lnet/minecraft/client/gui/GuiScreen;",
-                    ordinal = 5,
-                    shift = At.Shift.BY,
-                    by = -3
+                    "HEAD"
             )
     )
     private void runTick(CallbackInfo ci) {
@@ -93,7 +99,7 @@ public class MixinMinecraft {
     )
     private void preLoadWorld(WorldClient world, String loadingMessage, CallbackInfo ci) {
         // If we're unloading the world but one doesn't exist, ignore it
-        if (this.world == null && world == null) {
+        if (this.theWorld == null && world == null) {
             return;
         }
 
@@ -133,14 +139,14 @@ public class MixinMinecraft {
     )
     private boolean isAllowUserInput(GuiScreen screen) {
         // allow user input is only the primary baritone
-        return (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && player != null) || screen.allowUserInput;
+        return (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && thePlayer != null) || screen.allowUserInput;
     }
 
     @Inject(
             method = "clickMouse",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/client/multiplayer/PlayerControllerMP.clickBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)Z"
+                    target = "net/minecraft/client/multiplayer/PlayerControllerMP.clickBlock(Lnet/minecraft/util/BlockPos;Lnet/minecraft/util/EnumFacing;)Z"
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
@@ -153,11 +159,11 @@ public class MixinMinecraft {
             method = "rightClickMouse",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/client/entity/EntityPlayerSP.swingArm(Lnet/minecraft/util/EnumHand;)V"
+                    target = "net/minecraft/client/entity/EntityPlayerSP.swingItem()V"
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void onBlockUse(CallbackInfo ci, EnumHand var1[], int var2, int var3, EnumHand enumhand, ItemStack itemstack, BlockPos blockpos, int i, EnumActionResult enumactionresult) {
+    private void onBlockUse(CallbackInfo ci, boolean bool, ItemStack itemstack, BlockPos blockpos, int i) {
         // rightClickMouse is only for the main player
         BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onBlockInteract(new BlockInteractEvent(blockpos, BlockInteractEvent.Type.USE));
     }

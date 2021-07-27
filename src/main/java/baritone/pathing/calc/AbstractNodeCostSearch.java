@@ -17,6 +17,8 @@
 
 package baritone.pathing.calc;
 
+import java.util.Optional;
+
 import baritone.Baritone;
 import baritone.api.pathing.calc.IPath;
 import baritone.api.pathing.calc.IPathFinder;
@@ -25,9 +27,8 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import baritone.api.utils.PathCalculationResult;
 import baritone.pathing.movement.CalculationContext;
+import baritone.utils.NotificationHelper;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-
-import java.util.Optional;
 
 /**
  * Any pathfinding algorithm that keeps track of nodes recursively by their cost (e.g. A*, dijkstra)
@@ -216,7 +217,9 @@ public abstract class AbstractNodeCostSearch implements IPathFinder, Helper {
         if (logInfo) {
             logDebug("Even with a cost coefficient of " + COEFFICIENTS[COEFFICIENTS.length - 1] + ", I couldn't get more than " + Math.sqrt(bestDist) + " blocks");
             logDebug("No path found =(");
-            logNotification("No path found =(", true);
+            if (Baritone.settings().desktopNotifications.value) {
+                NotificationHelper.notify("No path found =(", true);
+            }
         }
         return Optional.empty();
     }

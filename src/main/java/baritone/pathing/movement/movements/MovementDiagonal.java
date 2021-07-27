@@ -17,6 +17,12 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
@@ -28,17 +34,11 @@ import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.pathing.MutableMoveResult;
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class MovementDiagonal extends Movement {
 
@@ -55,35 +55,6 @@ public class MovementDiagonal extends Movement {
 
     private MovementDiagonal(IBaritone baritone, BetterBlockPos start, BetterBlockPos end, BetterBlockPos dir1, BetterBlockPos dir2) {
         super(baritone, start, end, new BetterBlockPos[]{dir1, dir1.up(), dir2, dir2.up(), end, end.up()});
-    }
-
-    @Override
-    protected boolean safeToCancel(MovementState state) {
-        //too simple. backfill does not work after cornering with this
-        //return MovementHelper.canWalkOn(ctx, ctx.playerFeet().down());
-        EntityPlayerSP player = ctx.player();
-        double offset = 0.25;
-        double x = player.posX;
-        double y = player.posY - 1;
-        double z = player.posZ;
-        //standard
-        if (ctx.playerFeet().equals(src)) {
-            return true;
-        }
-        //both corners are walkable
-        if (MovementHelper.canWalkOn(ctx, new BlockPos(src.x, src.y - 1, dest.z))
-                && MovementHelper.canWalkOn(ctx, new BlockPos(dest.x, src.y - 1, src.z))) {
-            return true;
-        }
-        //we are in a likely unwalkable corner, check for a supporting block
-        if (ctx.playerFeet().equals(new BetterBlockPos(src.x, src.y, dest.z))
-                || ctx.playerFeet().equals(new BetterBlockPos(dest.x, src.y, src.z))) {
-            return (MovementHelper.canWalkOn(ctx, new BetterBlockPos(x + offset, y, z + offset))
-                    || MovementHelper.canWalkOn(ctx, new BetterBlockPos(x + offset, y, z - offset))
-                    || MovementHelper.canWalkOn(ctx, new BetterBlockPos(x - offset, y, z + offset))
-                    || MovementHelper.canWalkOn(ctx, new BetterBlockPos(x - offset, y, z - offset)));
-        }
-        return true;
     }
 
     @Override
@@ -134,24 +105,24 @@ public class MovementDiagonal extends Movement {
         }
         double multiplier = WALK_ONE_BLOCK_COST;
         // For either possible soul sand, that affects half of our walking
-        if (destWalkOn.getBlock() == Blocks.SOUL_SAND) {
+        if (destWalkOn.getBlock() == Blocks.soul_sand) {
             multiplier += (WALK_ONE_OVER_SOUL_SAND_COST - WALK_ONE_BLOCK_COST) / 2;
-        } else if (destWalkOn.getBlock() == Blocks.WATER) {
+        } else if (destWalkOn.getBlock() == Blocks.water) {
             multiplier += context.walkOnWaterOnePenalty * SQRT_2;
         }
         Block fromDown = context.get(x, y - 1, z).getBlock();
-        if (fromDown == Blocks.LADDER || fromDown == Blocks.VINE) {
+        if (fromDown == Blocks.ladder || fromDown == Blocks.vine) {
             return;
         }
-        if (fromDown == Blocks.SOUL_SAND) {
+        if (fromDown == Blocks.soul_sand) {
             multiplier += (WALK_ONE_OVER_SOUL_SAND_COST - WALK_ONE_BLOCK_COST) / 2;
         }
         Block cuttingOver1 = context.get(x, y - 1, destZ).getBlock();
-        if (cuttingOver1 == Blocks.MAGMA || MovementHelper.isLava(cuttingOver1)) {
+        if (MovementHelper.isLava(cuttingOver1)) {
             return;
         }
         Block cuttingOver2 = context.get(destX, y - 1, z).getBlock();
-        if (cuttingOver2 == Blocks.MAGMA || MovementHelper.isLava(cuttingOver2)) {
+        if (MovementHelper.isLava(cuttingOver2)) {
             return;
         }
         Block startIn = context.getBlock(x, y, z);
@@ -204,7 +175,7 @@ public class MovementDiagonal extends Movement {
             return;
         }
         IBlockState pb3 = context.get(destX, y + 1, z);
-        if (optionA == 0 && ((MovementHelper.avoidWalkingInto(pb2.getBlock()) && pb2.getBlock() != Blocks.WATER) || MovementHelper.avoidWalkingInto(pb3.getBlock()))) {
+        if (optionA == 0 && ((MovementHelper.avoidWalkingInto(pb2.getBlock()) && pb2.getBlock() != Blocks.water) || MovementHelper.avoidWalkingInto(pb3.getBlock()))) {
             // at this point we're done calculating optionA, so we can check if it's actually possible to edge around in that direction
             return;
         }
@@ -213,13 +184,13 @@ public class MovementDiagonal extends Movement {
             // and finally, if the cost is nonzero for both ways to approach this diagonal, it's not possible
             return;
         }
-        if (optionB == 0 && ((MovementHelper.avoidWalkingInto(pb0.getBlock()) && pb0.getBlock() != Blocks.WATER) || MovementHelper.avoidWalkingInto(pb1.getBlock()))) {
+        if (optionB == 0 && ((MovementHelper.avoidWalkingInto(pb0.getBlock()) && pb0.getBlock() != Blocks.water) || MovementHelper.avoidWalkingInto(pb1.getBlock()))) { 
             // and now that option B is fully calculated, see if we can edge around that way
             return;
         }
         if (optionA != 0 || optionB != 0) {
             multiplier *= SQRT_2 - 0.001; // TODO tune
-            if (startIn == Blocks.LADDER || startIn == Blocks.VINE) {
+            if (startIn == Blocks.ladder || startIn == Blocks.vine) {
                 // edging around doesn't work if doing so would climb a ladder or vine instead of moving sideways
                 return;
             }

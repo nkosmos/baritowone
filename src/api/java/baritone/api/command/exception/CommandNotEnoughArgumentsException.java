@@ -17,6 +17,7 @@
 
 package baritone.api.command.exception;
 
+@SuppressWarnings("serial")
 public class CommandNotEnoughArgumentsException extends CommandErrorMessageException {
 
     public CommandNotEnoughArgumentsException(int minArgs) {

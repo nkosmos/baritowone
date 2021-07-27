@@ -28,7 +28,7 @@ public class BlockUtils {
     private static transient Map<String, Block> resourceCache = new HashMap<>();
 
     public static String blockToString(Block block) {
-        ResourceLocation loc = Block.REGISTRY.getNameForObject(block);
+        ResourceLocation loc = Block.blockRegistry.getNameForObject(block);
         String name = loc.getResourcePath(); // normally, only write the part after the minecraft:
         if (!loc.getResourceDomain().equals("minecraft")) {
             // Baritone is running on top of forge with mods installed, perhaps?
@@ -54,7 +54,7 @@ public class BlockUtils {
             return block;
         }
         if (resourceCache.containsKey(name)) {
-            return null; // cached as null
+            return null; // cached as null 
         }
         block = Block.getBlockFromName(name.contains(":") ? name : "minecraft:" + name);
         Map<String, Block> copy = new HashMap<>(resourceCache); // read only copy is safe, wont throw concurrentmodification

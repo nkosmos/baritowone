@@ -17,6 +17,17 @@
 
 package baritone.behavior;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 import baritone.Baritone;
 import baritone.api.cache.Waypoint;
 import baritone.api.event.events.BlockInteractEvent;
@@ -25,7 +36,6 @@ import baritone.api.event.events.PlayerUpdateEvent;
 import baritone.api.event.events.TickEvent;
 import baritone.api.event.events.type.EventState;
 import baritone.api.utils.BetterBlockPos;
-import baritone.api.utils.Helper;
 import baritone.cache.ContainerMemory;
 import baritone.utils.BlockStateInterface;
 import net.minecraft.block.Block;
@@ -33,27 +43,15 @@ import net.minecraft.block.BlockBed;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.CPacketCloseWindow;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.network.play.server.SPacketCloseWindow;
-import net.minecraft.network.play.server.SPacketOpenWindow;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.client.C0DPacketCloseWindow;
+import net.minecraft.network.play.server.S2DPacketOpenWindow;
+import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityLockable;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.HoverEvent;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-
-import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
 
 /**
  * doesn't work for horse inventories :^)
@@ -97,10 +95,10 @@ public final class MemoryBehavior extends Behavior {
         Packet p = event.getPacket();
 
         if (event.getState() == EventState.PRE) {
-            if (p instanceof CPacketPlayerTryUseItemOnBlock) {
-                CPacketPlayerTryUseItemOnBlock packet = event.cast();
+            if (p instanceof C08PacketPlayerBlockPlacement) {
+            	C08PacketPlayerBlockPlacement packet = event.cast();
 
-                TileEntity tileEntity = ctx.world().getTileEntity(packet.getPos());
+                TileEntity tileEntity = ctx.world().getTileEntity(packet.getPosition());
                 // if tileEntity is an ender chest, we don't need to do anything. ender chests are treated the same regardless of what coordinate right clicked
 
                 // Ensure the TileEntity is a container of some sort
@@ -122,7 +120,7 @@ public final class MemoryBehavior extends Behavior {
                 }
             }
 
-            if (p instanceof CPacketCloseWindow) {
+            if (p instanceof C0DPacketCloseWindow) {
                 getCurrent().save();
             }
         }
@@ -136,14 +134,14 @@ public final class MemoryBehavior extends Behavior {
         Packet p = event.getPacket();
 
         if (event.getState() == EventState.PRE) {
-            if (p instanceof SPacketOpenWindow) {
-                SPacketOpenWindow packet = event.cast();
+            if (p instanceof S2DPacketOpenWindow) {
+            	S2DPacketOpenWindow packet = event.cast();
                 // Remove any entries that were created over a second ago, this should make up for INSANE latency
                 futureInventories.removeIf(i -> System.nanoTime() / 1000000L - i.time > 1000);
 
                 System.out.println("Received packet " + packet.getGuiId() + " " + packet.getEntityId() + " " + packet.getSlotCount() + " " + packet.getWindowId());
                 System.out.println(packet.getWindowTitle());
-                if (packet.getWindowTitle() instanceof TextComponentTranslation && ((TextComponentTranslation) packet.getWindowTitle()).getKey().equals("container.enderchest")) {
+                if (packet.getWindowTitle() instanceof ChatComponentTranslation && ((ChatComponentTranslation) packet.getWindowTitle()).getKey().equals("container.enderchest")) {
                     // title is not customized (i.e. this isn't just a renamed shulker)
                     enderChestWindowId = packet.getWindowId();
                     return;
@@ -159,7 +157,7 @@ public final class MemoryBehavior extends Behavior {
                 });
             }
 
-            if (p instanceof SPacketCloseWindow) {
+            if (p instanceof S2EPacketCloseWindow) {
                 getCurrent().save();
             }
         }
@@ -174,26 +172,7 @@ public final class MemoryBehavior extends Behavior {
 
     @Override
     public void onPlayerDeath() {
-        Waypoint deathWaypoint = new Waypoint("death", Waypoint.Tag.DEATH, ctx.playerFeet());
-        baritone.getWorldProvider().getCurrentWorld().getWaypoints().addWaypoint(deathWaypoint);
-        ITextComponent component = new TextComponentString("Death position saved.");
-        component.getStyle()
-                .setColor(TextFormatting.WHITE)
-                .setHoverEvent(new HoverEvent(
-                        HoverEvent.Action.SHOW_TEXT,
-                        new TextComponentString("Click to goto death")
-                ))
-                .setClickEvent(new ClickEvent(
-                        ClickEvent.Action.RUN_COMMAND,
-                        String.format(
-                                "%s%s goto %s @ %d",
-                                FORCE_COMMAND_PREFIX,
-                                "wp",
-                                deathWaypoint.getTag().getName(),
-                                deathWaypoint.getCreationTimestamp()
-                        )
-                ));
-        Helper.HELPER.logDirect(component);
+        baritone.getWorldProvider().getCurrentWorld().getWaypoints().addWaypoint(new Waypoint("death", Waypoint.Tag.DEATH, ctx.playerFeet()));
     }
 
 
@@ -225,7 +204,7 @@ public final class MemoryBehavior extends Behavior {
     private BlockPos neighboringConnectedBlock(BlockPos in) {
         BlockStateInterface bsi = baritone.bsi;
         Block block = bsi.get0(in).getBlock();
-        if (block != Blocks.TRAPPED_CHEST && block != Blocks.CHEST) {
+        if (block != Blocks.trapped_chest && block != Blocks.chest) {
             return null; // other things that have contents, but can be placed adjacent without combining
         }
         for (int i = 0; i < 4; i++) {

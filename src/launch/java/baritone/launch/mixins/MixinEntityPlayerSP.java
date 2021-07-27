@@ -26,7 +26,10 @@ import baritone.api.event.events.type.EventState;
 import baritone.behavior.LookBehavior;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.PlayerCapabilities;
+import net.minecraft.world.World;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -38,9 +41,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @since 8/1/2018
  */
 @Mixin(EntityPlayerSP.class)
-public class MixinEntityPlayerSP {
+public abstract class MixinEntityPlayerSP extends EntityLivingBase { 
 
-    @Inject(
+    public MixinEntityPlayerSP(World worldIn) {
+		super(worldIn);
+	}
+
+	@Inject(
             method = "sendChatMessage",
             at = @At("HEAD"),
             cancellable = true
@@ -57,7 +64,7 @@ public class MixinEntityPlayerSP {
         }
     }
 
-    @Inject(
+	@Inject(
             method = "onUpdate",
             at = @At(
                     value = "INVOKE",
@@ -70,6 +77,9 @@ public class MixinEntityPlayerSP {
         IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityPlayerSP) (Object) this);
         if (baritone != null) {
             baritone.getGameEventHandler().onPlayerUpdate(new PlayerUpdateEvent(EventState.PRE));
+            if(isRiding()) {
+            	((LookBehavior) baritone.getLookBehavior()).pig();
+            }
         }
     }
 
@@ -126,18 +136,5 @@ public class MixinEntityPlayerSP {
             return false;
         }
         return keyBinding.isKeyDown();
-    }
-
-    @Inject(
-            method = "updateRidden",
-            at = @At(
-                    value = "HEAD"
-            )
-    )
-    private void updateRidden(CallbackInfo cb) {
-        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityPlayerSP) (Object) this);
-        if (baritone != null) {
-            ((LookBehavior) baritone.getLookBehavior()).pig();
-        }
     }
 }

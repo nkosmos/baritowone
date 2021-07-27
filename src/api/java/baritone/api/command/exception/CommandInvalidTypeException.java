@@ -19,6 +19,7 @@ package baritone.api.command.exception;
 
 import baritone.api.command.argument.ICommandArgument;
 
+@SuppressWarnings("serial")
 public class CommandInvalidTypeException extends CommandInvalidArgumentException {
 
     public CommandInvalidTypeException(ICommandArgument arg, String expected) {

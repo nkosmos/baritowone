@@ -71,11 +71,11 @@ public final class BlockOptionalMeta {
 
         ResourceLocation id = new ResourceLocation(matchResult.group(1));
 
-        if (!Block.REGISTRY.containsKey(id)) {
+        if (!Block.blockRegistry.containsKey(id)) {
             throw new IllegalArgumentException("Invalid block ID");
         }
 
-        block = Block.REGISTRY.getObject(id);
+        block = Block.blockRegistry.getObject(id);
         meta = noMeta ? 0 : Integer.parseInt(matchResult.group(2));
         blockstates = getStates(block, getMeta());
         stateHashes = getStateHashes(blockstates);
@@ -107,12 +107,6 @@ public final class BlockOptionalMeta {
         // _normalizations.put(BlockCactus.AGE, 0);
         // _normalizations.put(BlockCauldron.LEVEL, 0);
         // _normalizations.put(BlockChorusFlower.AGE, 0);
-        _normalizations.put(BlockChorusPlant.NORTH, false);
-        _normalizations.put(BlockChorusPlant.EAST, false);
-        _normalizations.put(BlockChorusPlant.SOUTH, false);
-        _normalizations.put(BlockChorusPlant.WEST, false);
-        _normalizations.put(BlockChorusPlant.UP, false);
-        _normalizations.put(BlockChorusPlant.DOWN, false);
         // _normalizations.put(BlockCocoa.AGE, 0);
         // _normalizations.put(BlockCrops.AGE, 0);
         _normalizations.put(BlockDirt.SNOWY, false);
@@ -234,10 +228,11 @@ public final class BlockOptionalMeta {
     /**
      * Evaluate the target meta value for the specified state. The target meta value is
      * most often that which is influenced by the variant/color property of the block state.
-     *
+     * 
+     * @see #normalize(IBlockState) 
+     * 
      * @param state The state to check
      * @return The target meta of the state
-     * @see #normalize(IBlockState)
      */
     public static int stateMeta(IBlockState state) {
         return state.getBlock().getMetaFromState(normalize(state));

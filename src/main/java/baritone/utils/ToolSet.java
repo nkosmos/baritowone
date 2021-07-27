@@ -17,21 +17,21 @@
 
 package baritone.utils;
 
-import baritone.Baritone;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.MobEffects;
-import net.minecraft.item.Item.ToolMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.item.ItemTool;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
+import baritone.Baritone;
+import baritonex.utils.ItemStackHelper;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTool;
+import net.minecraft.potion.Potion;
 
 /**
  * A cached list of the best tools on the hotbar for any block
@@ -84,7 +84,7 @@ public class ToolSet {
      * @return values range from -1 to 4
      */
     private int getMaterialCost(ItemStack itemStack) {
-        if (itemStack.getItem() instanceof ItemTool) {
+    	if (!ItemStackHelper.isEmpty(itemStack) && itemStack.getItem() instanceof ItemTool) {
             ItemTool tool = (ItemTool) itemStack.getItem();
             return ToolMaterial.valueOf(tool.getToolMaterialName()).ordinal();
         } else {
@@ -93,31 +93,16 @@ public class ToolSet {
     }
 
     public boolean hasSilkTouch(ItemStack stack) {
-        return EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0;
+        return EnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch.effectId, stack) > 0;
     }
 
     /**
-     * Calculate which tool on the hotbar is best for mining, depending on an override setting,
-     * related to auto tool movement cost, it will either return current selected slot, or the best slot.
+     * Calculate which tool on the hotbar is best for mining
      *
      * @param b the blockstate to be mined
      * @return An int containing the index in the tools array that worked best
      */
-
     public int getBestSlot(Block b, boolean preferSilkTouch) {
-        return getBestSlot(b, preferSilkTouch, false);
-    }
-
-    public int getBestSlot(Block b, boolean preferSilkTouch, boolean pathingCalculation) {
-
-        /*
-        If we actually want know what efficiency our held item has instead of the best one
-        possible, this lets us make pathing depend on the actual tool to be used (if auto tool is disabled)
-        */
-        if (!Baritone.settings().autoTool.value && pathingCalculation) {
-            return player.inventory.currentItem;
-        }
-
         int best = 0;
         double highestSpeed = Double.NEGATIVE_INFINITY;
         int lowestCost = Integer.MIN_VALUE;
@@ -125,13 +110,6 @@ public class ToolSet {
         IBlockState blockState = b.getDefaultState();
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = player.inventory.getStackInSlot(i);
-            if (!Baritone.settings().useSwordToMine.value && itemStack.getItem() instanceof ItemSword) {
-                continue;
-            }
-          
-            if (Baritone.settings().itemSaver.value && (itemStack.getItemDamage() + Baritone.settings().itemSaverThreshold.value) >= itemStack.getMaxDamage() && itemStack.getMaxDamage() > 1) {
-                continue;
-            }
             double speed = calculateSpeedVsBlock(itemStack, blockState);
             boolean silkTouch = hasSilkTouch(itemStack);
             if (speed > highestSpeed) {
@@ -160,7 +138,7 @@ public class ToolSet {
      * @return A double containing the destruction ticks with the best tool
      */
     private double getBestDestructionTime(Block b) {
-        ItemStack stack = player.inventory.getStackInSlot(getBestSlot(b, false, true));
+        ItemStack stack = player.inventory.getStackInSlot(getBestSlot(b, false));
         return calculateSpeedVsBlock(stack, b.getDefaultState()) * avoidanceMultiplier(b);
     }
 
@@ -177,21 +155,25 @@ public class ToolSet {
      * @return how long it would take in ticks
      */
     public static double calculateSpeedVsBlock(ItemStack item, IBlockState state) {
-        float hardness = state.getBlockHardness(null, null);
+    	Block b = state.getBlock();
+    	float hardness = b.getBlockHardness(null, null);
         if (hardness < 0) {
             return -1;
         }
-
-        float speed = item.getStrVsBlock(state);
-        if (speed > 1) {
-            int effLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, item);
-            if (effLevel > 0 && !item.isEmpty()) {
-                speed += effLevel * effLevel + 1;
+        
+        float speed = 1;
+        if(!ItemStackHelper.isEmpty(item)) {
+        	speed = item.getStrVsBlock(b);
+        	if (speed > 1) {
+                int effLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency.effectId, item);
+                if (effLevel > 0 && !ItemStackHelper.isEmpty(item)) {
+                    speed += effLevel * effLevel + 1;
+                }
             }
         }
-
         speed /= hardness;
-        if (state.getMaterial().isToolNotRequired() || (!item.isEmpty() && item.canHarvestBlock(state))) {
+
+        if (b.getMaterial().isToolNotRequired() || (!ItemStackHelper.isEmpty(item) && item.canHarvestBlock(b))) {
             return speed / 30;
         } else {
             return speed / 100;
@@ -205,11 +187,11 @@ public class ToolSet {
      */
     private double potionAmplifier() {
         double speed = 1;
-        if (player.isPotionActive(MobEffects.HASTE)) {
-            speed *= 1 + (player.getActivePotionEffect(MobEffects.HASTE).getAmplifier() + 1) * 0.2;
+        if (player.isPotionActive(Potion.digSpeed)) {
+            speed *= 1 + (player.getActivePotionEffect(Potion.digSpeed).getAmplifier() + 1) * 0.2;
         }
-        if (player.isPotionActive(MobEffects.MINING_FATIGUE)) {
-            switch (player.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier()) {
+        if (player.isPotionActive(Potion.digSlowdown)) {
+            switch (player.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) {
                 case 0:
                     speed *= 0.3;
                     break;

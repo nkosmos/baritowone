@@ -9,16 +9,13 @@
   },
   "client": [
     "MixinAnvilChunkLoader",
-    "MixinBitArray",
-    "MixinBlockStateContainer",
-    "MixinChatTabCompleter",
     "MixinChunkProviderClient",
     "MixinChunkProviderServer",
     "MixinChunkRenderContainer",
-    "MixinChunkRenderWorker",
     "MixinEntityLivingBase",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
+    "MixinGuiGameOver",
     "MixinGuiScreen",
     "MixinItemStack",
     "MixinMinecraft",
@@ -28,7 +25,6 @@
     "MixinRenderChunk",
     "MixinRenderList",
     "MixinStateImplementation",
-    "MixinTabCompleter",
     "MixinVboRenderList",
     "MixinWorldClient"
   ]

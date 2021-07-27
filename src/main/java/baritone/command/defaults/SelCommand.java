@@ -17,6 +17,15 @@
 
 package baritone.command.defaults;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
@@ -30,34 +39,28 @@ import baritone.api.command.exception.CommandInvalidTypeException;
 import baritone.api.command.helpers.TabCompleteHelper;
 import baritone.api.event.events.RenderEvent;
 import baritone.api.event.listener.AbstractGameEventListener;
-import baritone.api.schematic.*;
+import baritone.api.schematic.CompositeSchematic;
+import baritone.api.schematic.FillSchematic;
+import baritone.api.schematic.ISchematic;
+import baritone.api.schematic.ReplaceSchematic;
+import baritone.api.schematic.ShellSchematic;
+import baritone.api.schematic.WallsSchematic;
 import baritone.api.selection.ISelection;
 import baritone.api.selection.ISelectionManager;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMeta;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.utils.IRenderer;
-import baritone.utils.BlockStateInterface;
-import baritone.utils.schematic.StaticSchematic;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
-
-import java.awt.*;
-import java.util.List;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import net.minecraft.util.Vec3i;
 
 public class SelCommand extends Command {
 
     private ISelectionManager manager = baritone.getSelectionManager();
     private BetterBlockPos pos1 = null;
-    private ISchematic clipboard = null;
-    private Vec3i clipboardOffset = null;
 
     public SelCommand(IBaritone baritone) {
         super(baritone, "sel", "selection", "s");
@@ -119,7 +122,7 @@ public class SelCommand extends Command {
             }
         } else if (action == Action.SET || action == Action.WALLS || action == Action.SHELL || action == Action.CLEARAREA || action == Action.REPLACE) {
             BlockOptionalMeta type = action == Action.CLEARAREA
-                    ? new BlockOptionalMeta(Blocks.AIR)
+                    ? new BlockOptionalMeta(Blocks.air)
                     : args.getDatatypeFor(ForBlockOptionalMeta.INSTANCE);
             BlockOptionalMetaLookup replaces = null;
             if (action == Action.REPLACE) {
@@ -163,56 +166,6 @@ public class SelCommand extends Command {
             }
             baritone.getBuilderProcess().build("Fill", composite, origin);
             logDirect("Filling now");
-        } else if (action == Action.COPY) {
-            BetterBlockPos playerPos = mc.getRenderViewEntity() != null ? BetterBlockPos.from(new BlockPos(mc.getRenderViewEntity())) : ctx.playerFeet();
-            BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
-            args.requireMax(0);
-            ISelection[] selections = manager.getSelections();
-            if (selections.length < 1) {
-                throw new CommandInvalidStateException("No selections");
-            }
-            BlockStateInterface bsi = new BlockStateInterface(ctx);
-            BetterBlockPos origin = selections[0].min();
-            CompositeSchematic composite = new CompositeSchematic(0, 0, 0);
-            for (ISelection selection : selections) {
-                BetterBlockPos min = selection.min();
-                origin = new BetterBlockPos(
-                        Math.min(origin.x, min.x),
-                        Math.min(origin.y, min.y),
-                        Math.min(origin.z, min.z)
-                );
-            }
-            for (ISelection selection : selections) {
-                Vec3i size = selection.size();
-                BetterBlockPos min = selection.min();
-                IBlockState[][][] blockstates = new IBlockState[size.getX()][size.getZ()][size.getY()];
-                for (int x = 0; x < size.getX(); x++) {
-                    for (int y = 0; y < size.getY(); y++) {
-                        for (int z = 0; z < size.getZ(); z++) {
-                            blockstates[x][z][y] = bsi.get0(min.x + x, min.y + y, min.z + z);
-                        }
-                    }
-                }
-                ISchematic schematic = new StaticSchematic(){{
-                    states = blockstates;
-                    x = size.getX();
-                    y = size.getY();
-                    z = size.getZ();
-                }};
-                composite.put(schematic, min.x - origin.x, min.y - origin.y, min.z - origin.z);
-            }
-            clipboard = composite;
-            clipboardOffset = origin.subtract(pos);
-            logDirect("Selection copied");
-        } else if (action == Action.PASTE) {
-            BetterBlockPos playerPos = mc.getRenderViewEntity() != null ? BetterBlockPos.from(new BlockPos(mc.getRenderViewEntity())) : ctx.playerFeet();
-            BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
-            args.requireMax(0);
-            if (clipboard == null) {
-                throw new CommandInvalidStateException("You need to copy a selection first");
-            }
-            baritone.getBuilderProcess().build("Fill", clipboard, pos.add(clipboardOffset));
-            logDirect("Building now");
         } else if (action == Action.EXPAND || action == Action.CONTRACT || action == Action.SHIFT) {
             args.requireExactly(3);
             TransformTarget transformTarget = TransformTarget.getByName(args.getString());
@@ -307,8 +260,6 @@ public class SelCommand extends Command {
                 "> sel shell/shl [block] - The same as walls, but fills in a ceiling and floor too.",
                 "> sel cleararea/ca - Basically 'set air'.",
                 "> sel replace/r <blocks...> <with> - Replaces blocks with another block.",
-                "> sel copy/cp <x> <y> <z> - Copy the selected area relative to the specified or your position.",
-                "> sel paste/p <x> <y> <z> - Build the copied area relative to the specified or your position.",
                 "",
                 "> sel expand <target> <direction> <blocks> - Expand the targets.",
                 "> sel contract <target> <direction> <blocks> - Contract the targets.",
@@ -327,8 +278,6 @@ public class SelCommand extends Command {
         CLEARAREA("cleararea", "ca"),
         REPLACE("replace", "r"),
         EXPAND("expand", "ex"),
-        COPY("copy", "cp"),
-        PASTE("paste", "p"),
         CONTRACT("contract", "ct"),
         SHIFT("shift", "sh");
         private final String[] names;

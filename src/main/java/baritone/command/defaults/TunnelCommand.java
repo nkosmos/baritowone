@@ -17,18 +17,18 @@
 
 package baritone.command.defaults;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
 import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalStrictDirection;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class TunnelCommand extends Command {
 
@@ -77,7 +77,7 @@ public class TunnelCommand extends Command {
                     default:
                         throw new IllegalStateException("Unexpected value: " + enumFacing);
                 }
-                logDirect(String.format("Creating a tunnel %s block(s) high, %s block(s) wide, and %s block(s) deep", height + 1, width + 1, depth));
+                logDirect(String.format("Creating a tunnel %s block(s) high, %s block(s) wide, and %s block(s) deep", height+1, width+1, depth));
                 baritone.getBuilderProcess().clearArea(corner1, corner2);
             }
         } else {

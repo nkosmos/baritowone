@@ -17,31 +17,43 @@
 
 package baritone.utils;
 
+import static org.lwjgl.opengl.GL11.GL_LIGHTING_BIT;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
+import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
+import static org.lwjgl.opengl.GL11.glPopAttrib;
+import static org.lwjgl.opengl.GL11.glPushAttrib;
+
+import java.awt.Color;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import baritone.api.BaritoneAPI;
 import baritone.api.event.events.RenderEvent;
 import baritone.api.pathing.calc.IPath;
-import baritone.api.pathing.goals.*;
+import baritone.api.pathing.goals.Goal;
+import baritone.api.pathing.goals.GoalComposite;
+import baritone.api.pathing.goals.GoalGetToBlock;
+import baritone.api.pathing.goals.GoalInverted;
+import baritone.api.pathing.goals.GoalTwoBlocks;
+import baritone.api.pathing.goals.GoalXZ;
+import baritone.api.pathing.goals.GoalYLevel;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import baritone.api.utils.interfaces.IGoalRenderPos;
 import baritone.behavior.PathingBehavior;
 import baritone.pathing.path.PathExecutor;
+import baritonex.utils.BeaconBeamRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityBeaconRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-
-import java.awt.*;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static org.lwjgl.opengl.GL11.*;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * @author Brady
@@ -58,8 +70,8 @@ public final class PathRenderer implements IRenderer {
             ((GuiClick) Helper.mc.currentScreen).onRender();
         }
 
-        int thisPlayerDimension = behavior.baritone.getPlayerContext().world().provider.getDimensionType().getId();
-        int currentRenderViewDimension = BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world().provider.getDimensionType().getId();
+        int thisPlayerDimension = behavior.baritone.getPlayerContext().world().provider.getDimensionId();
+        int currentRenderViewDimension = BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world().provider.getDimensionId();
 
         if (thisPlayerDimension != currentRenderViewDimension) {
             // this is a path for a bot in a different dimension, don't render it
@@ -68,7 +80,7 @@ public final class PathRenderer implements IRenderer {
 
         Entity renderView = Helper.mc.getRenderViewEntity();
 
-        if (renderView.world != BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world()) {
+        if (renderView.worldObj != BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world()) {
             System.out.println("I have no idea what's going on");
             System.out.println("The primary baritone is in a different world than the render view entity");
             System.out.println("Not rendering the path");
@@ -188,10 +200,10 @@ public final class PathRenderer implements IRenderer {
             IBlockState state = bsi.get0(pos);
             AxisAlignedBB toDraw;
 
-            if (state.getBlock().equals(Blocks.AIR)) {
-                toDraw = Blocks.DIRT.getDefaultState().getSelectedBoundingBox(player.world, pos);
+            if (state.getBlock().equals(Blocks.air)) {
+                toDraw = Blocks.dirt.getSelectedBoundingBox(player.worldObj, pos); 
             } else {
-                toDraw = state.getSelectedBoundingBox(player.world, pos);
+                toDraw = state.getBlock().getSelectedBoundingBox(player.worldObj, pos);
             }
 
             IRenderer.drawAABB(toDraw, .002D);
@@ -199,6 +211,8 @@ public final class PathRenderer implements IRenderer {
 
         IRenderer.endLines(settings.renderSelectionBoxesIgnoreDepth.value);
     }
+    
+    private static final ResourceLocation beaconBeam = new ResourceLocation("textures/entity/beacon_beam.png");
 
     public static void drawDankLitGoalBox(Entity player, Goal goal, float partialTicks, Color color) {
         double renderPosX = renderManager.viewerPosX;
@@ -207,14 +221,8 @@ public final class PathRenderer implements IRenderer {
         double minX, maxX;
         double minZ, maxZ;
         double minY, maxY;
-        double y, y1, y2;
-        if (!settings.renderGoalAnimated.value) {
-            // y = 1 causes rendering issues when the player is at the same y as the top of a block for some reason
-            y = 0.999F;
-        }
-        else {
-            y = MathHelper.cos((float) (((float) ((System.nanoTime() / 100000L) % 20000L)) / 20000F * Math.PI * 2));
-        }
+        double y1, y2;
+        double y = MathHelper.cos((float) (((float) ((System.nanoTime() / 100000L) % 20000L)) / 20000F * Math.PI * 2));
         if (goal instanceof IGoalRenderPos) {
             BlockPos goalPos = ((IGoalRenderPos) goal).getGoalPos();
             minX = goalPos.getX() + 0.002 - renderPosX;
@@ -239,22 +247,24 @@ public final class PathRenderer implements IRenderer {
             if (settings.renderGoalXZBeacon.value) {
                 glPushAttrib(GL_LIGHTING_BIT);
 
-                Helper.mc.getTextureManager().bindTexture(TileEntityBeaconRenderer.TEXTURE_BEACON_BEAM);
+                Helper.mc.getTextureManager().bindTexture(beaconBeam);
 
                 if (settings.renderGoalIgnoreDepth.value) {
                     GlStateManager.disableDepth();
                 }
 
-                TileEntityBeaconRenderer.renderBeamSegment(
+                BeaconBeamRenderer.renderBeamSegment(
                         goalPos.getX() - renderPosX,
                         -renderPosY,
                         goalPos.getZ() - renderPosZ,
-                        settings.renderGoalAnimated.value ? partialTicks : 0,
+                        partialTicks,
                         1.0,
-                        settings.renderGoalAnimated.value ? player.world.getTotalWorldTime() : 0,
+                        player.worldObj.getTotalWorldTime(),
                         0,
                         256,
-                        color.getColorComponents(null)
+                        color.getColorComponents(null),
+                        0.2D, 
+                        0.25D
                 );
 
                 if (settings.renderGoalIgnoreDepth.value) {

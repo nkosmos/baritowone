@@ -17,23 +17,22 @@
 
 package baritone.utils;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Biomes;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
-
-import javax.annotation.Nullable;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenForest;
 
 /**
  * @author Brady
  * @since 11/5/2019
  */
-@SuppressWarnings("NullableProblems")
 public final class BlockStateInterfaceAccessWrapper implements IBlockAccess {
 
     private final BlockStateInterface bsi;
@@ -61,12 +60,7 @@ public final class BlockStateInterfaceAccessWrapper implements IBlockAccess {
 
     @Override
     public boolean isAirBlock(BlockPos pos) {
-        return this.bsi.get0(pos.getX(), pos.getY(), pos.getZ()).getMaterial() == Material.AIR;
-    }
-
-    @Override
-    public Biome getBiome(BlockPos pos) {
-        return Biomes.FOREST;
+        return this.bsi.get0(pos.getX(), pos.getY(), pos.getZ()).getBlock().getMaterial() == Material.air;
     }
 
     @Override
@@ -80,7 +74,13 @@ public final class BlockStateInterfaceAccessWrapper implements IBlockAccess {
     }
 
 	@Override
-	public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-		return getBlockState(pos).isSideSolid(this, pos, side);
+	public boolean extendedLevelsInChunkCache() {
+		//TODO: BaritoneX implementation check
+		return true;
+	}
+
+	@Override
+	public BiomeGenBase getBiomeGenForCoords(BlockPos pos) {
+		return BiomeGenForest.forest;
 	}
 }

@@ -51,7 +51,6 @@ public final class PacketEvent {
         return this.packet;
     }
 
-    @SuppressWarnings("unchecked")
     public final <T extends Packet<?>> T cast() {
         return (T) this.packet;
     }

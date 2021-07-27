@@ -84,6 +84,7 @@ public interface IWaypoint {
         /**
          * A list of all of the
          */
+    	@SuppressWarnings("unused")
         private static final List<Tag> TAG_LIST = Collections.unmodifiableList(Arrays.asList(Tag.values()));
 
         /**

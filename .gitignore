@@ -11,6 +11,13 @@ build/
 classes/
 *.class
 
+# Eclipse Files
+/bin/
+*.launch
+.classpath
+.project
+.settings/
+
 # IntelliJ Files
 .idea/
 *.iml

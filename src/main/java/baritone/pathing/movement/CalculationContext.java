@@ -17,6 +17,8 @@
 
 package baritone.pathing.movement;
 
+import static baritone.api.pathing.movement.ActionCosts.COST_INF;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.ActionCosts;
@@ -24,25 +26,23 @@ import baritone.cache.WorldData;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.ToolSet;
 import baritone.utils.pathing.BetterWorldBorder;
+import baritonex.utils.InventoryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-
-import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
 /**
  * @author Brady
  * @since 8/7/2018
  */
-public class CalculationContext {
+public class CalculationContext { 
 
-    private static final ItemStack STACK_BUCKET_WATER = new ItemStack(Items.WATER_BUCKET);
+    private static final ItemStack STACK_BUCKET_WATER = new ItemStack(Items.water_bucket);
 
     public final boolean safeForThreadedUse;
     public final IBaritone baritone;
@@ -85,7 +85,7 @@ public class CalculationContext {
         this.bsi = new BlockStateInterface(world, worldData, forUseOnAnotherThread);
         this.toolSet = new ToolSet(player);
         this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
-        this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value && InventoryPlayer.isHotbar(player.inventory.getSlotFor(STACK_BUCKET_WATER)) && !world.provider.isNether();
+        this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value && InventoryHelper.isHotbar(InventoryHelper.getSlotFor(player, STACK_BUCKET_WATER)) && !world.provider.doesWaterVaporize();
         this.canSprint = Baritone.settings().allowSprint.value && player.getFoodStats().getFoodLevel() > 6;
         this.placeBlockCost = Baritone.settings().blockPlacementPenalty.value;
         this.allowBreak = Baritone.settings().allowBreak.value;

@@ -113,7 +113,7 @@ public class MovementAscend extends Movement {
             // and in that scenario, when we arrive and break srcUp2, that lets srcUp3 fall on us and suffocate us
         }
         IBlockState srcDown = context.get(x, y - 1, z);
-        if (srcDown.getBlock() == Blocks.LADDER || srcDown.getBlock() == Blocks.VINE) {
+        if (srcDown.getBlock() == Blocks.ladder || srcDown.getBlock() == Blocks.vine) {
             return COST_INF;
         }
         // we can jump from soul sand, but not from a bottom slab
@@ -132,7 +132,7 @@ public class MovementAscend extends Movement {
             }
         } else {
             // jumpingFromBottomSlab must be false
-            if (toPlace.getBlock() == Blocks.SOUL_SAND) {
+            if (toPlace.getBlock() == Blocks.soul_sand) {
                 walk = WALK_ONE_OVER_SOUL_SAND_COST;
             } else {
                 walk = Math.max(JUMP_ONE_BLOCK_COST, WALK_ONE_BLOCK_COST);

@@ -17,6 +17,17 @@
 
 package baritone.command.defaults;
 
+import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 import baritone.api.IBaritone;
 import baritone.api.cache.IWaypoint;
 import baritone.api.cache.Waypoint;
@@ -32,18 +43,11 @@ import baritone.api.command.helpers.TabCompleteHelper;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.utils.BetterBlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.HoverEvent;
-
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
-import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 
 public class WaypointsCommand extends Command {
 
@@ -57,24 +61,24 @@ public class WaypointsCommand extends Command {
         if (action == null) {
             throw new CommandInvalidTypeException(args.consumed(), "an action");
         }
-        BiFunction<IWaypoint, Action, ITextComponent> toComponent = (waypoint, _action) -> {
-            ITextComponent component = new TextComponentString("");
-            ITextComponent tagComponent = new TextComponentString(waypoint.getTag().name() + " ");
-            tagComponent.getStyle().setColor(TextFormatting.GRAY);
+        BiFunction<IWaypoint, Action, IChatComponent> toComponent = (waypoint, _action) -> {
+        	IChatComponent component = new ChatComponentText("");
+            IChatComponent tagComponent = new ChatComponentText(waypoint.getTag().name() + " ");
+            tagComponent.getChatStyle().setColor(EnumChatFormatting.GRAY);
             String name = waypoint.getName();
-            ITextComponent nameComponent = new TextComponentString(!name.isEmpty() ? name : "<empty>");
-            nameComponent.getStyle().setColor(!name.isEmpty() ? TextFormatting.GRAY : TextFormatting.DARK_GRAY);
-            ITextComponent timestamp = new TextComponentString(" @ " + new Date(waypoint.getCreationTimestamp()));
-            timestamp.getStyle().setColor(TextFormatting.DARK_GRAY);
+            IChatComponent nameComponent = new ChatComponentText(!name.isEmpty() ? name : "<empty>");
+            nameComponent.getChatStyle().setColor(!name.isEmpty() ? EnumChatFormatting.GRAY : EnumChatFormatting.DARK_GRAY);
+            IChatComponent timestamp = new ChatComponentText(" @ " + new Date(waypoint.getCreationTimestamp()));
+            timestamp.getChatStyle().setColor(EnumChatFormatting.DARK_GRAY);
             component.appendSibling(tagComponent);
             component.appendSibling(nameComponent);
             component.appendSibling(timestamp);
-            component.getStyle()
-                    .setHoverEvent(new HoverEvent(
+            component.getChatStyle()
+                    .setChatHoverEvent(new HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            new TextComponentString("Click to select")
+                            new ChatComponentText("Click to select")
                     ))
-                    .setClickEvent(new ClickEvent(
+                    .setChatClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(
                                     "%s%s %s %s @ %d",
@@ -87,7 +91,7 @@ public class WaypointsCommand extends Command {
                     );
             return component;
         };
-        Function<IWaypoint, ITextComponent> transform = waypoint ->
+        Function<IWaypoint, IChatComponent> transform = waypoint ->
                 toComponent.apply(waypoint, action == Action.LIST ? Action.INFO : action);
         if (action == Action.LIST) {
             IWaypoint.Tag tag = args.hasAny() ? IWaypoint.Tag.getByName(args.peekString()) : null;
@@ -136,8 +140,8 @@ public class WaypointsCommand extends Command {
             args.requireMax(0);
             IWaypoint waypoint = new Waypoint(name, tag, pos);
             ForWaypoints.waypoints(this.baritone).addWaypoint(waypoint);
-            ITextComponent component = new TextComponentString("Waypoint added: ");
-            component.getStyle().setColor(TextFormatting.GRAY);
+            IChatComponent component = new ChatComponentText("Waypoint added: ");
+            component.getChatStyle().setColor(EnumChatFormatting.GRAY);
             component.appendSibling(toComponent.apply(waypoint, Action.INFO));
             logDirect(component);
         } else if (action == Action.CLEAR) {
@@ -194,8 +198,8 @@ public class WaypointsCommand extends Command {
                 if (action == Action.INFO) {
                     logDirect(transform.apply(waypoint));
                     logDirect(String.format("Position: %s", waypoint.getLocation()));
-                    ITextComponent deleteComponent = new TextComponentString("Click to delete this waypoint");
-                    deleteComponent.getStyle().setClickEvent(new ClickEvent(
+                    IChatComponent deleteComponent = new ChatComponentText("Click to delete this waypoint");
+                    deleteComponent.getChatStyle().setChatClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(
                                     "%s%s delete %s @ %d",
@@ -205,8 +209,8 @@ public class WaypointsCommand extends Command {
                                     waypoint.getCreationTimestamp()
                             )
                     ));
-                    ITextComponent goalComponent = new TextComponentString("Click to set goal to this waypoint");
-                    goalComponent.getStyle().setClickEvent(new ClickEvent(
+                    IChatComponent goalComponent = new ChatComponentText("Click to set goal to this waypoint");
+                    goalComponent.getChatStyle().setChatClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(
                                     "%s%s goal %s @ %d",
@@ -216,8 +220,8 @@ public class WaypointsCommand extends Command {
                                     waypoint.getCreationTimestamp()
                             )
                     ));
-                    ITextComponent backComponent = new TextComponentString("Click to return to the waypoints list");
-                    backComponent.getStyle().setClickEvent(new ClickEvent(
+                    IChatComponent backComponent = new ChatComponentText("Click to return to the waypoints list");
+                    backComponent.getChatStyle().setChatClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(
                                     "%s%s list",
@@ -235,10 +239,6 @@ public class WaypointsCommand extends Command {
                     Goal goal = new GoalBlock(waypoint.getLocation());
                     baritone.getCustomGoalProcess().setGoal(goal);
                     logDirect(String.format("Goal: %s", goal));
-                } else if (action == Action.GOTO) {
-                    Goal goal = new GoalBlock(waypoint.getLocation());
-                    baritone.getCustomGoalProcess().setGoalAndPath(goal);
-                    logDirect(String.format("Going to: %s", goal));
                 }
             }
         }
@@ -296,8 +296,7 @@ public class WaypointsCommand extends Command {
                 "> wp <s/save> <tag> <name> <pos> - Save the waypoint with the specified name and position.",
                 "> wp <i/info/show> <tag> - Show info on a waypoint by tag.",
                 "> wp <d/delete> <tag> - Delete a waypoint by tag.",
-                "> wp <g/goal> <tag> - Set a goal to a waypoint by tag.",
-                "> wp <goto> <tag> - Set a goal to a waypoint by tag and start pathing."
+                "> wp <g/goal/goto> <tag> - Set a goal to a waypoint by tag."
         );
     }
 
@@ -307,8 +306,7 @@ public class WaypointsCommand extends Command {
         SAVE("save", "s"),
         INFO("info", "show", "i"),
         DELETE("delete", "d"),
-        GOAL("goal", "g"),
-        GOTO("goto");
+        GOAL("goal", "goto", "g");
         private final String[] names;
 
         Action(String... names) {

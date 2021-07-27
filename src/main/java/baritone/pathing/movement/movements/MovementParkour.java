@@ -17,6 +17,9 @@
 
 package baritone.pathing.movement.movements;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
@@ -33,9 +36,6 @@ import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class MovementParkour extends Movement {
 
@@ -78,7 +78,7 @@ public class MovementParkour extends Movement {
             // second most common case -- we could just traverse not parkour
             return;
         }
-        if (MovementHelper.avoidWalkingInto(adj.getBlock()) && adj.getBlock() != Blocks.WATER && adj.getBlock() != Blocks.FLOWING_WATER) { // magma sucks
+        if (MovementHelper.avoidWalkingInto(adj.getBlock()) && adj.getBlock() != Blocks.water && adj.getBlock() != Blocks.flowing_water) { // magma sucks
             return;
         }
         if (!MovementHelper.fullyPassable(context, x + xDiff, y + 1, z + zDiff)) {
@@ -91,11 +91,11 @@ public class MovementParkour extends Movement {
             return;
         }
         IBlockState standingOn = context.get(x, y - 1, z);
-        if (standingOn.getBlock() == Blocks.VINE || standingOn.getBlock() == Blocks.LADDER || standingOn.getBlock() instanceof BlockStairs || MovementHelper.isBottomSlab(standingOn) || standingOn.getBlock() instanceof BlockLiquid) {
+        if (standingOn.getBlock() == Blocks.vine || standingOn.getBlock() == Blocks.ladder || standingOn.getBlock() instanceof BlockStairs || MovementHelper.isBottomSlab(standingOn) || standingOn.getBlock() instanceof BlockLiquid) {
             return;
         }
         int maxJump;
-        if (standingOn.getBlock() == Blocks.SOUL_SAND) {
+        if (standingOn.getBlock() == Blocks.soul_sand) {
             maxJump = 2; // 1 block gap
         } else {
             if (context.canSprint) {
@@ -114,7 +114,7 @@ public class MovementParkour extends Movement {
                 return;
             }
             IBlockState destInto = context.bsi.get0(destX, y, destZ);
-            if (!MovementHelper.fullyPassable(context.bsi.access, context.bsi.isPassableBlockPos.setPos(destX, y, destZ), destInto)) {
+            if (!MovementHelper.fullyPassable(context.bsi.access, context.bsi.isPassableBlockPos.set(destX, y, destZ), destInto)) {
                 if (i <= 3 && context.allowParkourAscend && context.canSprint && MovementHelper.canWalkOn(context.bsi, destX, y, destZ, destInto) && checkOvershootSafety(context.bsi, destX + xDiff, y + 1, destZ + zDiff)) {
                     res.x = destX;
                     res.y = y + 1;
@@ -125,7 +125,7 @@ public class MovementParkour extends Movement {
             }
             IBlockState landingOn = context.bsi.get0(destX, y - 1, destZ);
             // farmland needs to be canwalkon otherwise farm can never work at all, but we want to specifically disallow ending a jumy on farmland haha
-            if (landingOn.getBlock() != Blocks.FARMLAND && MovementHelper.canWalkOn(context.bsi, destX, y - 1, destZ, landingOn)) {
+            if (landingOn.getBlock() != Blocks.farmland && MovementHelper.canWalkOn(context.bsi, destX, y - 1, destZ, landingOn)) {
                 if (checkOvershootSafety(context.bsi, destX + xDiff, y, destZ + zDiff)) {
                     res.x = destX;
                     res.y = y;
@@ -240,7 +240,7 @@ public class MovementParkour extends Movement {
         MovementHelper.moveTowards(ctx, state, dest);
         if (ctx.playerFeet().equals(dest)) {
             Block d = BlockStateInterface.getBlock(ctx, dest);
-            if (d == Blocks.VINE || d == Blocks.LADDER) {
+            if (d == Blocks.vine || d == Blocks.ladder) {
                 // it physically hurt me to add support for parkour jumping onto a vine
                 // but i did it anyway
                 return state.setStatus(MovementStatus.SUCCESS);

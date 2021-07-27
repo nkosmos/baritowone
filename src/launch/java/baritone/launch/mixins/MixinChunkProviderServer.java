@@ -17,12 +17,12 @@
 
 package baritone.launch.mixins;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
 import baritone.utils.accessor.IChunkProviderServer;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 import net.minecraft.world.gen.ChunkProviderServer;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
 /**
  * @author Brady
@@ -32,7 +32,6 @@ import org.spongepowered.asm.mixin.Shadow;
 public class MixinChunkProviderServer implements IChunkProviderServer {
 
     @Shadow
-    @Final
     private IChunkLoader chunkLoader;
 
     @Override

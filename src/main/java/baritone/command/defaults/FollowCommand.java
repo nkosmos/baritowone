@@ -17,7 +17,13 @@
 
 package baritone.command.defaults;
 
-import baritone.KeepName;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
 import baritone.api.command.argument.IArgConsumer;
@@ -27,14 +33,8 @@ import baritone.api.command.datatypes.NearbyPlayer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.helpers.TabCompleteHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class FollowCommand extends Command {
 
@@ -80,9 +80,7 @@ public class FollowCommand extends Command {
                         .forEach(this::logDirect);
             } else {
                 classes.stream()
-                        .map(EntityList::getKey)
-                        .map(Objects::requireNonNull)
-                        .map(ResourceLocation::toString)
+                        .map(Class::getSimpleName) // TODO: BaritoneX rethink implementation, this only works in a deobfuscated environment
                         .forEach(this::logDirect);
             }
         }
@@ -131,7 +129,6 @@ public class FollowCommand extends Command {
         );
     }
 
-    @KeepName
     private enum FollowGroup {
         ENTITIES(EntityLiving.class::isInstance),
         PLAYERS(EntityPlayer.class::isInstance); /* ,
@@ -144,7 +141,6 @@ public class FollowCommand extends Command {
         }
     }
 
-    @KeepName
     private enum FollowList {
         ENTITY(EntityClassById.INSTANCE),
         PLAYER(NearbyPlayer.INSTANCE);

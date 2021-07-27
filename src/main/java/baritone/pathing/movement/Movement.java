@@ -17,21 +17,29 @@
 
 package baritone.pathing.movement;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.IMovement;
 import baritone.api.pathing.movement.MovementStatus;
-import baritone.api.utils.*;
+import baritone.api.utils.BetterBlockPos;
+import baritone.api.utils.IPlayerContext;
+import baritone.api.utils.Rotation;
+import baritone.api.utils.RotationUtils;
+import baritone.api.utils.VecUtils;
 import baritone.api.utils.input.Input;
 import baritone.behavior.PathingBehavior;
 import baritone.utils.BlockStateInterface;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.*;
 
 public abstract class Movement implements IMovement, MovementHelper {
 
@@ -158,7 +166,7 @@ public abstract class Movement implements IMovement, MovementHelper {
         }
         boolean somethingInTheWay = false;
         for (BetterBlockPos blockPos : positionsToBreak) {
-            if (!ctx.world().getEntitiesWithinAABB(EntityFallingBlock.class, new AxisAlignedBB(0, 0, 0, 1, 1.1, 1).offset(blockPos)).isEmpty() && Baritone.settings().pauseMiningForFallingBlocks.value) {
+            if (!ctx.world().getEntitiesWithinAABB(EntityFallingBlock.class, new AxisAlignedBB(0, 0, 0, 1, 1.1, 1).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ())).isEmpty() && Baritone.settings().pauseMiningForFallingBlocks.value) {
                 return false;
             }
             if (!MovementHelper.canWalkThrough(ctx, blockPos) && !(BlockStateInterface.getBlock(ctx, blockPos) instanceof BlockLiquid)) { // can't break liquid, so don't try

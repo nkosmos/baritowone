@@ -20,9 +20,8 @@ package baritone.utils;
 import baritone.Baritone;
 import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.RayTraceResult;
+import baritonex.utils.ItemStackHelper;
+import net.minecraft.util.MovingObjectPosition;
 
 public class BlockPlaceHelper implements Helper {
 
@@ -38,19 +37,17 @@ public class BlockPlaceHelper implements Helper {
             rightClickTimer--;
             return;
         }
-        RayTraceResult mouseOver = ctx.objectMouseOver();
-        if (!rightClickRequested || ctx.player().isRowingBoat() || mouseOver == null || mouseOver.getBlockPos() == null || mouseOver.typeOfHit != RayTraceResult.Type.BLOCK) {
+        MovingObjectPosition mouseOver = ctx.objectMouseOver();
+        if (!rightClickRequested || mouseOver == null || mouseOver.getBlockPos() == null || mouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
             return;
         }
         rightClickTimer = Baritone.settings().rightClickSpeed.value;
-        for (EnumHand hand : EnumHand.values()) {
-            if (ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec, hand) == EnumActionResult.SUCCESS) {
-                ctx.player().swingArm(hand);
-                return;
-            }
-            if (!ctx.player().getHeldItem(hand).isEmpty() && ctx.playerController().processRightClick(ctx.player(), ctx.world(), hand) == EnumActionResult.SUCCESS) {
-                return;
-            }
+        if (ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
+            ctx.player().swingItem();
+            return;
+        }
+        if (!ItemStackHelper.isEmpty(ctx.player().getHeldItem()) && ctx.playerController().processRightClick(ctx.player(), ctx.world())) {
+            return;
         }
     }
 }

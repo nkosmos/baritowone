@@ -17,19 +17,27 @@
 
 package baritone.cache;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 import baritone.Baritone;
 import baritone.api.cache.ICachedRegion;
 import baritone.api.utils.BlockUtils;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import net.minecraft.util.BlockPos;
 
 /**
  * @author Brady

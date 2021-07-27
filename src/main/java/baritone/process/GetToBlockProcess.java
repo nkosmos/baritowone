@@ -17,8 +17,19 @@
 
 package baritone.process;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
 import baritone.Baritone;
-import baritone.api.pathing.goals.*;
+import baritone.api.pathing.goals.Goal;
+import baritone.api.pathing.goals.GoalBlock;
+import baritone.api.pathing.goals.GoalComposite;
+import baritone.api.pathing.goals.GoalGetToBlock;
+import baritone.api.pathing.goals.GoalRunAway;
+import baritone.api.pathing.goals.GoalTwoBlocks;
 import baritone.api.process.IGetToBlockProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
@@ -30,12 +41,9 @@ import baritone.api.utils.input.Input;
 import baritone.pathing.movement.CalculationContext;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerPlayer;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.*;
+import net.minecraft.util.BlockPos;
 
 public final class GetToBlockProcess extends BaritoneProcessHelper implements IGetToBlockProcess {
 
@@ -58,7 +66,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         start = ctx.playerFeet();
         blacklist = new ArrayList<>();
         arrivalTickCount = 0;
-        rescan(new ArrayList<>(), new GetToBlockCalculationContext(false));
+        rescan(new ArrayList<>(), new CalculationContext(baritone));
     }
 
     @Override
@@ -69,7 +77,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
     @Override
     public synchronized PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         if (knownLocations == null) {
-            rescan(new ArrayList<>(), new GetToBlockCalculationContext(false));
+            rescan(new ArrayList<>(), new CalculationContext(baritone));
         }
         if (knownLocations.isEmpty()) {
             if (Baritone.settings().exploreForBlocks.value && !calcFailed) {
@@ -77,11 +85,6 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
                     @Override
                     public boolean isInGoal(int x, int y, int z) {
                         return false;
-                    }
-
-                    @Override
-                    public double heuristic() {
-                        return Double.NEGATIVE_INFINITY;
                     }
                 }, PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
             }
@@ -108,7 +111,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         int mineGoalUpdateInterval = Baritone.settings().mineGoalUpdateInterval.value;
         if (mineGoalUpdateInterval != 0 && tickCount++ % mineGoalUpdateInterval == 0) { // big brain
             List<BlockPos> current = new ArrayList<>(knownLocations);
-            CalculationContext context = new GetToBlockCalculationContext(true);
+            CalculationContext context = new CalculationContext(baritone, true);
             Baritone.getExecutor().execute(() -> rescan(current, context));
         }
         if (goal.isInGoal(ctx.playerFeet()) && goal.isInGoal(baritone.getPathingBehavior().pathStart()) && isSafeToCancel) {
@@ -153,20 +156,6 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         return !newBlacklist.isEmpty();
     }
 
-    // this is to signal to MineProcess that we don't care about the allowBreak setting
-    // it is NOT to be used to actually calculate a path
-    public class GetToBlockCalculationContext extends CalculationContext {
-
-        public GetToBlockCalculationContext(boolean forUseOnAnotherThread) {
-            super(GetToBlockProcess.super.baritone, forUseOnAnotherThread);
-        }
-
-        @Override
-        public double breakCostMultiplierAt(int x, int y, int z, IBlockState current) {
-            return 1;
-        }
-    }
-
     // safer than direct double comparison from distanceSq
     private boolean areAdjacent(BlockPos posA, BlockPos posB) {
         int diffX = Math.abs(posA.getX() - posB.getX());
@@ -202,7 +191,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         if (walkIntoInsteadOfAdjacent(gettingTo.getBlock())) {
             return new GoalTwoBlocks(pos);
         }
-        if (blockOnTopMustBeRemoved(gettingTo.getBlock()) && baritone.bsi.get0(pos.up()).isBlockNormalCube()) {
+        if (blockOnTopMustBeRemoved(gettingTo.getBlock()) && baritone.bsi.get0(pos.up()).getBlock().isBlockNormalCube()) {
             return new GoalBlock(pos.up());
         }
         return new GoalGetToBlock(pos);
@@ -235,14 +224,14 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         if (!Baritone.settings().enterPortal.value) {
             return false;
         }
-        return block == Blocks.PORTAL;
+        return block == Blocks.portal;
     }
 
     private boolean rightClickOnArrival(Block block) {
         if (!Baritone.settings().rightClickContainerOnArrival.value) {
             return false;
         }
-        return block == Blocks.CRAFTING_TABLE || block == Blocks.FURNACE || block == Blocks.ENDER_CHEST || block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST;
+        return block == Blocks.crafting_table || block == Blocks.furnace || block == Blocks.ender_chest || block == Blocks.chest || block == Blocks.trapped_chest;
     }
 
     private boolean blockOnTopMustBeRemoved(Block block) {
@@ -250,6 +239,6 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
             return false;
         }
         // only these chests; you can open a crafting table or furnace even with a block on top
-        return block == Blocks.ENDER_CHEST || block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST;
+        return block == Blocks.ender_chest || block == Blocks.chest || block == Blocks.trapped_chest;
     }
 }

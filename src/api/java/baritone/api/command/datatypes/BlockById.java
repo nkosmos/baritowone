@@ -17,13 +17,13 @@
 
 package baritone.api.command.datatypes;
 
+import java.util.stream.Stream;
+
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.helpers.TabCompleteHelper;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
-
-import java.util.stream.Stream;
 
 public enum BlockById implements IDatatypeFor<Block> {
     INSTANCE;
@@ -32,7 +32,7 @@ public enum BlockById implements IDatatypeFor<Block> {
     public Block get(IDatatypeContext ctx) throws CommandException {
         ResourceLocation id = new ResourceLocation(ctx.getConsumer().getString());
         Block block;
-        if ((block = Block.REGISTRY.getObject(id)) == Blocks.AIR) {
+        if ((block = Block.blockRegistry.getObject(id)) == Blocks.air) {
             throw new IllegalArgumentException("no block found by that id");
         }
         return block;
@@ -42,7 +42,7 @@ public enum BlockById implements IDatatypeFor<Block> {
     public Stream<String> tabComplete(IDatatypeContext ctx) throws CommandException {
         return new TabCompleteHelper()
                 .append(
-                        Block.REGISTRY.getKeys()
+                        Block.blockRegistry.getKeys()
                                 .stream()
                                 .map(Object::toString)
                 )

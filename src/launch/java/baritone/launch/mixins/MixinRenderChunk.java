@@ -17,17 +17,18 @@
 
 package baritone.launch.mixins;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
 import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.utils.IPlayerContext;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.RenderChunk;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCache;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.IBlockAccess;
 
 /**
  * @author Brady
@@ -40,11 +41,11 @@ public class MixinRenderChunk {
             method = "rebuildChunk",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/world/ChunkCache.isEmpty()Z"
+                    target = "net/minecraft/world/IBlockAccess.extendedLevelsInChunkCache()Z"
             )
     )
-    private boolean isEmpty(ChunkCache chunkCache) {
-        if (!chunkCache.isEmpty()) {
+    private boolean isEmpty(IBlockAccess chunkCache) {
+        if (!chunkCache.extendedLevelsInChunkCache()) {
             return false;
         }
         if (Baritone.settings().renderCachedChunks.value && !Minecraft.getMinecraft().isSingleplayer()) {
@@ -72,10 +73,10 @@ public class MixinRenderChunk {
             method = "rebuildChunk",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/world/ChunkCache.getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;"
+                    target = "net/minecraft/world/IBlockAccess.getBlockState(Lnet/minecraft/util/BlockPos;)Lnet/minecraft/block/state/IBlockState;"
             )
     )
-    private IBlockState getBlockState(ChunkCache chunkCache, BlockPos pos) {
+    private IBlockState getBlockState(IBlockAccess chunkCache, BlockPos pos) {
         if (Baritone.settings().renderCachedChunks.value && !Minecraft.getMinecraft().isSingleplayer()) {
             Baritone baritone = (Baritone) BaritoneAPI.getProvider().getPrimaryBaritone();
             IPlayerContext ctx = baritone.getPlayerContext();

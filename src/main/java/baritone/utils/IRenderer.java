@@ -25,20 +25,22 @@ import static org.lwjgl.opengl.GL11.GL_ZERO;
 
 import java.awt.Color;
 
+import org.lwjgl.opengl.GL11;
+
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import baritone.api.utils.Helper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
 
 public interface IRenderer {
 
     Tessellator tessellator = Tessellator.getInstance();
-    VertexBuffer buffer = tessellator.getBuffer();
+    WorldRenderer buffer = tessellator.getWorldRenderer();
     RenderManager renderManager = Helper.mc.getRenderManager();
     Settings settings = BaritoneAPI.getSettings();
 
@@ -49,9 +51,10 @@ public interface IRenderer {
 
     static void startLines(Color color, float alpha, float lineWidth, boolean ignoreDepth) {
         GlStateManager.enableBlend();
+        GlStateManager.disableLighting();
         GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
         glColor(color, alpha);
-        GlStateManager.glLineWidth(lineWidth);
+        GL11.glLineWidth(lineWidth);
         GlStateManager.disableTexture2D();
         GlStateManager.depthMask(false);
 
@@ -71,6 +74,7 @@ public interface IRenderer {
 
         GlStateManager.depthMask(true);
         GlStateManager.enableTexture2D();
+        GlStateManager.enableLighting();
         GlStateManager.disableBlend();
     }
 
@@ -109,6 +113,6 @@ public interface IRenderer {
     }
 
     static void drawAABB(AxisAlignedBB aabb, double expand) {
-        drawAABB(aabb.grow(expand, expand, expand));
+        drawAABB(aabb.expand(expand, expand, expand));
     }
 }

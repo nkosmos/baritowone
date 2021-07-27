@@ -17,6 +17,17 @@
 
 package baritone.cache;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import baritone.Baritone;
 import baritone.api.cache.IContainerMemory;
 import baritone.api.cache.IRememberedInventory;
@@ -25,13 +36,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.util.*;
+import net.minecraft.util.BlockPos;
 
 public class ContainerMemory implements IContainerMemory {
 
@@ -118,7 +123,7 @@ public class ContainerMemory implements IContainerMemory {
         int count = in.readInt();
         List<ItemStack> result = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            result.add(in.readItemStack());
+            result.add(in.readItemStackFromBuffer());
         }
         return result;
     }
@@ -134,7 +139,7 @@ public class ContainerMemory implements IContainerMemory {
         PacketBuffer out = out2; // avoid reassigning an argument LOL
         out = new PacketBuffer(out.writeInt(write.size()));
         for (ItemStack stack : write) {
-            out = out.writeItemStack(stack);
+            out.writeItemStackToBuffer(stack);
         }
         return out;
     }

@@ -17,23 +17,21 @@
 
 package baritone.api.command.datatypes;
 
+import java.util.stream.Stream;
+
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.helpers.TabCompleteHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.stream.Stream;
 
 public enum EntityClassById implements IDatatypeFor<Class<? extends Entity>> {
     INSTANCE;
 
     @Override
     public Class<? extends Entity> get(IDatatypeContext ctx) throws CommandException {
-        ResourceLocation id = new ResourceLocation(ctx.getConsumer().getString());
-        Class<? extends Entity> entity = EntityList.getClass(id);
-
-        if (entity == null) {
+        Class<? extends Entity> entity;
+        
+        if ((entity = EntityList.getClassFromID(EntityList.getIDFromString(ctx.getConsumer().getString()))) == null) {
             throw new IllegalArgumentException("no entity found by that id");
         }
         return entity;

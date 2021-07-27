@@ -17,6 +17,10 @@
 
 package baritone.command.defaults;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 import baritone.api.IBaritone;
 import baritone.api.command.Command;
 import baritone.api.command.argument.IArgConsumer;
@@ -24,11 +28,7 @@ import baritone.api.command.exception.CommandException;
 import baritone.api.command.exception.CommandInvalidStateException;
 import baritone.api.pathing.goals.GoalBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
+import net.minecraft.util.BlockPos;
 
 public class ComeCommand extends Command {
 

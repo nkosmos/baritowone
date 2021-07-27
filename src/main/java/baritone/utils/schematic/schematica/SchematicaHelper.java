@@ -17,13 +17,14 @@
 
 package baritone.utils.schematic.schematica;
 
-import baritone.api.schematic.IStaticSchematic;
+import java.util.Optional;
+
 import com.github.lunatrius.schematica.Schematica;
 import com.github.lunatrius.schematica.proxy.ClientProxy;
-import net.minecraft.util.Tuple;
-import net.minecraft.util.math.BlockPos;
 
-import java.util.Optional;
+import baritone.api.schematic.IStaticSchematic;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Tuple;
 
 public enum SchematicaHelper {
     ;

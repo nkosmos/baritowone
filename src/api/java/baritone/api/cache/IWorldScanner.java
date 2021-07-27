@@ -17,13 +17,13 @@
 
 package baritone.api.cache;
 
+import java.util.List;
+
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
 import net.minecraft.block.Block;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-
-import java.util.List;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.ChunkCoordIntPair;
 
 /**
  * @author Brady
@@ -59,7 +59,7 @@ public interface IWorldScanner {
      *                        is negative, then this condition doesn't apply.
      * @return The matching block positions
      */
-    List<BlockPos> scanChunk(IPlayerContext ctx, BlockOptionalMetaLookup filter, ChunkPos pos, int max, int yLevelThreshold);
+    List<BlockPos> scanChunk(IPlayerContext ctx, BlockOptionalMetaLookup filter, ChunkCoordIntPair pos, int max, int yLevelThreshold);
 
     /**
      * Scans a single chunk for the specified blocks.
@@ -72,7 +72,7 @@ public interface IWorldScanner {
      *                        is negative, then this condition doesn't apply.
      * @return The matching block positions
      */
-    default List<BlockPos> scanChunk(IPlayerContext ctx, List<Block> blocks, ChunkPos pos, int max, int yLevelThreshold) {
+    default List<BlockPos> scanChunk(IPlayerContext ctx, List<Block> blocks, ChunkCoordIntPair pos, int max, int yLevelThreshold) {
         return scanChunk(ctx, new BlockOptionalMetaLookup(blocks), pos, max, yLevelThreshold);
     }
 
@@ -88,7 +88,7 @@ public interface IWorldScanner {
      * Queues the chunks in a square formation around the specified player, using the specified
      * range, which represents 1/2 the square's dimensions, where the player is in the center.
      *
-     * @param ctx   The player, describing the origin
+     * @param ctx The player, describing the origin
      * @param range The range to repack
      * @return The amount of chunks successfully queued for repacking
      */
