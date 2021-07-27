@@ -70,6 +70,8 @@ minecraft {
     version = '1.9.4-12.17.0.2317-1.9.4'
     mappings = 'stable_26'
     runDir = 'run'
+    
+    clientRunArgs = ["--tweakClass", "baritone.launch.BaritoneTweaker"]
 
     // The sources jar should use SRG names not MCP to ensure compatibility with all mappings
     makeObfSourceJar = true
