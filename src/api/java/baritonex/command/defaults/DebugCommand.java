@@ -8,6 +8,7 @@ import baritone.api.IBaritone;
 import baritone.api.command.Command;
 import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
+import baritone.api.utils.IPlayerContext;
 
 public class DebugCommand extends Command {
 
@@ -23,6 +24,8 @@ public class DebugCommand extends Command {
         logDirect("version? idk <3");
         logDirect("" + (ctx.player().getEntityBoundingBox().maxX - ctx.player().getEntityBoundingBox().minX));
         logDirect(ctx.player().posY + " / " + ctx.player().getEntityBoundingBox().minY);
+        logDirect("" + ctx.player().getEyeHeight() + " / " + IPlayerContext.eyeHeight(false));
+        logDirect((ctx.player().posY + ctx.player().getEyeHeight()) + " / " + (ctx.player().getEntityBoundingBox().minY + IPlayerContext.eyeHeight(false)));
     }
 
     @Override
