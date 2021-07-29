@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableSet;
 
-import baritone.api.utils.accessor.IItemStack;
 import baritonex.utils.data.XEnumAxis;
 import baritonex.utils.data.XEnumBlockHalfSlab;
 import baritonex.utils.data.XEnumBlockHalfTrapdoor;
@@ -48,6 +47,7 @@ import baritonex.utils.data.XEnumShapeStairs;
 import baritonex.utils.data.XEnumTypeQuartz;
 import baritonex.utils.property.IProperty;
 import baritonex.utils.property.Properties;
+import baritonex.utils.registry.ItemStackRegistry;
 import baritonex.utils.state.IBlockState;
 import baritonex.utils.state.serialization.XBlockStateSerializer;
 import net.minecraft.block.Block;
@@ -280,7 +280,7 @@ public final class BlockOptionalMeta {
                                     state.getBlock().damageDropped(meta)
                             );
                         })
-                        .map(stack -> ((IItemStack) (Object) stack).getBaritoneHash())
+                        .map(ItemStackRegistry::getHash)
                         .toArray(Integer[]::new)
         );
     }
@@ -303,9 +303,8 @@ public final class BlockOptionalMeta {
     }
 
     public boolean matches(ItemStack stack) {
-        //noinspection ConstantConditions
-        int hash = ((IItemStack) (Object) stack).getBaritoneHash();
-
+    	int hash = ItemStackRegistry.getHash(stack);
+    	
         if (noMeta) {
             hash -= stack.getMetadata();
         }

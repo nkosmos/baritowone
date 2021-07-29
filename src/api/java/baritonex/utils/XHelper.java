@@ -9,16 +9,19 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
-import baritone.api.utils.accessor.IItemStack;
 import baritonex.utils.data.XEnumFacing;
 import baritonex.utils.property.IProperty;
 import baritonex.utils.property.impl.PropertyBool;
 import baritonex.utils.property.impl.PropertyEnum;
 import baritonex.utils.property.impl.PropertyInteger;
+import baritonex.utils.registry.ItemStackRegistry;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemStackAccessor;
 import net.minecraft.util.MathHelper;
 
 public class XHelper {
@@ -87,8 +90,23 @@ public class XHelper {
 
     // ITEMSTACK
     
-	public static boolean isEmpty(ItemStack itemStack) {
-		return itemStack == null ? true : ((IItemStack) (Object) itemStack).isEmpty();
+    private static final ItemStack EMPTY = new ItemStack((Item)null);
+    
+	public static boolean isEmpty(ItemStack itemStack) { // what the fuck
+		Item item = ItemStackRegistry.stackItems.getOrDefault(itemStack, null);
+		ItemStackAccessor accessor = ItemStackRegistry.accessors.computeIfAbsent(itemStack, ItemStackAccessor::new);
+		return itemStack == null 
+				? true 
+				: (itemStack == EMPTY 
+						? true 
+						: (item != null && item != Item.getItemFromBlock(Blocks.air) 
+								? (itemStack.stackSize <= 0 
+										? true 
+										: accessor.getMetadata() < -32768 || accessor.getMetadata() > 65535) 
+								: true
+						)
+				)
+		;
 	}
 	
 	// ENUMFACING
